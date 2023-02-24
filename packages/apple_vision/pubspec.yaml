@@ -1,0 +1,35 @@
+name: apple_vision
+description: A new Flutter package project.
+version: 0.0.1
+repository: https://github.com/juliansteenbakker/mobile_scanner
+publish_to: none
+
+environment:
+  sdk: '>=2.18.6 <3.0.0'
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  apple_vision_pose_detection:
+    path: ../apple_vision_pose_detection
+  apple_vision_scanner:
+    path: ../apple_vision_scanner
+#  google_mlkit_digital_ink_recognition:
+#    path: ../google_mlkit_digital_ink_recognition
+#  google_mlkit_face_detection:
+#    path: ../google_mlkit_face_detection
+#  google_mlkit_image_labeling:
+#    path: ../google_mlkit_image_labeling
+#  google_mlkit_object_detection:
+#    path: ../google_mlkit_object_detection
+#  google_mlkit_selfie_segmentation:
+#    path: ../google_mlkit_selfie_segmentation
+#  google_mlkit_text_recognition:
+#    path: ../google_mlkit_text_recognition
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
