@@ -1,0 +1,26 @@
+name: apple_vision_hand
+description: A Flutter plugin example.
+version: 0.0.1
+homepage: https://github.com/bharat-biradar/Google-Ml-Kit-plugin
+publish_to: none
+
+environment:
+  sdk: '>=2.18.6 <3.0.0'
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  apple_vision_commons:
+    path: ../apple_vision_commons
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.1
+
+flutter:
+  plugin:
+    platforms:
+      macos:
+        pluginClass: AppleVisionHandPlugin
