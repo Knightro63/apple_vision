@@ -78,14 +78,12 @@ class _VisionPose extends State<VisionPose>{
   List<Widget> showPoints(){
     if(poseData == null || poseData!.poses.isEmpty) return[];
     Map<Joint,Color> colors = {
-      Joint.rightAnkle: Colors.orange,
-      Joint.rightKnee: Colors.orange,
-      Joint.rightHip: Colors.orange,
+      Joint.rightFoot: Colors.orange,
+      Joint.rightLeg: Colors.orange,
       Joint.rightUpLeg: Colors.orange,
 
-      Joint.rightWrist: Colors.purple,
-      Joint.rightElbow: Colors.purple,
       Joint.rightHand: Colors.purple,
+      Joint.rightForearm: Colors.purple,\
 
       Joint.nose: Colors.purple,
 
@@ -93,14 +91,12 @@ class _VisionPose extends State<VisionPose>{
       Joint.rightShoulder: Colors.pink,
       Joint.leftShoulder: Colors.pink,
 
-      Joint.leftElbow: Colors.indigo,
-      Joint.leftWrist: Colors.indigo,
+      Joint.leftForearm: Colors.indigo,
       Joint.leftHand: Colors.indigo,
 
-      Joint.leftHip: Colors.grey,
-      Joint.leftKnee: Colors.grey,
-      Joint.leftAnkle: Colors.grey,
       Joint.leftUpLeg: Colors.grey,
+      Joint.leftLeg: Colors.grey,
+      Joint.leftFoot: Colors.grey,
 
       Joint.root: Colors.yellow,
 
