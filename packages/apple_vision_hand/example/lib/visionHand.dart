@@ -80,31 +80,31 @@ class _VisionHand extends State<VisionHand>{
 
   List<Widget> showPoints(){
     if(poseData == null || poseData!.poses.isEmpty) return[];
-    Map<Joint,Color> colors = {
-      Joint.thumbCMC: Colors.amber,
-      Joint.thumbIP: Colors.amber,
-      Joint.thumbMP: Colors.amber,
-      Joint.thumbTip: Colors.amber,
+    Map<FingerJoint,Color> colors = {
+      FingerJoint.thumbCMC: Colors.amber,
+      FingerJoint.thumbIP: Colors.amber,
+      FingerJoint.thumbMP: Colors.amber,
+      FingerJoint.thumbTip: Colors.amber,
 
-      Joint.indexDIP: Colors.green,
-      Joint.indexMCP: Colors.green,
-      Joint.indexPIP: Colors.green,
-      Joint.indexTip: Colors.green,
+      FingerJoint.indexDIP: Colors.green,
+      FingerJoint.indexMCP: Colors.green,
+      FingerJoint.indexPIP: Colors.green,
+      FingerJoint.indexTip: Colors.green,
 
-      Joint.middleDIP: Colors.purple,
-      Joint.middleMCP: Colors.purple,
-      Joint.middlePIP: Colors.purple,
-      Joint.middleTip: Colors.purple,
+      FingerJoint.middleDIP: Colors.purple,
+      FingerJoint.middleMCP: Colors.purple,
+      FingerJoint.middlePIP: Colors.purple,
+      FingerJoint.middleTip: Colors.purple,
 
-      Joint.ringDIP: Colors.pink,
-      Joint.ringMCP: Colors.pink,
-      Joint.ringPIP: Colors.pink,
-      Joint.ringTip: Colors.pink,
+      FingerJoint.ringDIP: Colors.pink,
+      FingerJoint.ringMCP: Colors.pink,
+      FingerJoint.ringPIP: Colors.pink,
+      FingerJoint.ringTip: Colors.pink,
 
-      Joint.littleDIP: Colors.cyanAccent,
-      Joint.littleMCP: Colors.cyanAccent,
-      Joint.littlePIP: Colors.cyanAccent,
-      Joint.littleTip: Colors.cyanAccent
+      FingerJoint.littleDIP: Colors.cyanAccent,
+      FingerJoint.littleMCP: Colors.cyanAccent,
+      FingerJoint.littlePIP: Colors.cyanAccent,
+      FingerJoint.littleTip: Colors.cyanAccent
     };
     List<Widget> widgets = [];
     for(int i = 0; i < poseData!.poses.length; i++){

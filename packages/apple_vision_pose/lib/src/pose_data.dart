@@ -23,8 +23,8 @@ enum Joint {
   root,
 }
 
-class Point {
-  Point(this.x, this.y);
+class PosePoint {
+  PosePoint(this.x, this.y);
   double x;
   double y;
 }
@@ -32,7 +32,7 @@ class Point {
 class Pose {
   Pose(this.joint, this.location, this.confidence);
   Joint joint;
-  Point location;
+  PosePoint location;
   double confidence;
 }
 
@@ -49,7 +49,7 @@ class PoseFunctions {
       Map map = (object[i] as Map);
       String temp = map.keys.first;
       data.add(Pose(getJointFromString(temp)!,
-          Point(map[temp]['x'], map[temp]['y']), map[temp]['confidence']));
+          PosePoint(map[temp]['x'], map[temp]['y']), map[temp]['confidence']));
     }
 
     return data;

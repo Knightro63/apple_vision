@@ -12,22 +12,18 @@ dependencies:
   flutter:
     sdk: flutter
 
-  apple_vision_pose_detection:
-    path: ../apple_vision_pose_detection
+  apple_vision_commons:
+    path: ../apple_vision_commons
+  apple_vision_face:
+    path: ../apple_vision_face
+  apple_vision_pose:
+    path: ../apple_vision_pose
+  apple_vision_hand:
+    path: ../apple_vision_hand
+  apple_vision_object:
+    path: ../apple_vision_object
   apple_vision_scanner:
     path: ../apple_vision_scanner
-#  google_mlkit_digital_ink_recognition:
-#    path: ../google_mlkit_digital_ink_recognition
-#  google_mlkit_face_detection:
-#    path: ../google_mlkit_face_detection
-#  google_mlkit_image_labeling:
-#    path: ../google_mlkit_image_labeling
-#  google_mlkit_object_detection:
-#    path: ../google_mlkit_object_detection
-#  google_mlkit_selfie_segmentation:
-#    path: ../google_mlkit_selfie_segmentation
-#  google_mlkit_text_recognition:
-#    path: ../google_mlkit_text_recognition
 
 dev_dependencies:
   flutter_test:

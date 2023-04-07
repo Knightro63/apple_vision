@@ -11,7 +11,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  camera_macos: ^0.0.6+2
   apple_vision_commons:
     path: ../apple_vision_commons
 

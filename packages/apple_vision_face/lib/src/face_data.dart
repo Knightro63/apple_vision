@@ -12,8 +12,8 @@ enum LandMark{
   rightEyebrow
 }
 
-class Point{
-  Point(this.x,this.y);
+class FacePoint{
+  FacePoint(this.x,this.y);
   double x;
   double y;
 }
@@ -21,7 +21,7 @@ class Point{
 class Face{
   Face(this.landmark,this.location);
   LandMark landmark;
-  List<Point> location;
+  List<FacePoint> location;
 }
 
 class FaceData{
@@ -47,9 +47,9 @@ class FaceFunctions{
     for(int i = 0; i < object.length; i++){
       Map map = (object[i] as Map);
       String temp = map.keys.first;
-      List<Point> points = [];
+      List<FacePoint> points = [];
       for(int j = 0; j < map[temp].length;j++){
-        points.add(Point(map[temp][j]['x'], map[temp][j]['y']));
+        points.add(FacePoint(map[temp][j]['x'], map[temp][j]['y']));
       }
       data.add(
         Face(

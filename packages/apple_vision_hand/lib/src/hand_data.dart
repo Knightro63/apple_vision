@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum Joint{
+enum FingerJoint{
   thumbIP,
   thumbMP,
   thumbCMC,
@@ -52,16 +52,16 @@ enum JointOther{
 
 
 
-class Point{
-  Point(this.x,this.y);
+class HandPoint{
+  HandPoint(this.x,this.y);
   double x;
   double y;
 }
 
 class Hand{
   Hand(this.joint,this.location,this.confidence);
-  Joint joint;
-  Point location;
+  FingerJoint joint;
+  HandPoint location;
   double confidence;
 }
 
@@ -78,19 +78,19 @@ class HandFunctions{
       Map map = (object[i] as Map);
       String temp = map.keys.first;
       data.add(
-        Hand(getJointFromString(temp)!, Point(map[temp]['x'], map[temp]['y']),map[temp]['confidence'])
+        Hand(getJointFromString(temp)!, HandPoint(map[temp]['x'], map[temp]['y']),map[temp]['confidence'])
       );
     }
 
     return data;
   }
-  Joint? getJointFromString(String joint){
-    for(int i = 0; i < Joint.values.length;i++){
+  FingerJoint? getJointFromString(String joint){
+    for(int i = 0; i < FingerJoint.values.length;i++){
       if(JointOther.values[i].name.toLowerCase() == joint.toLowerCase()){
-        return Joint.values[i];
+        return FingerJoint.values[i];
       }
     }
 
-    return Joint.indexDIP;
+    return FingerJoint.indexDIP;
   }
 }
