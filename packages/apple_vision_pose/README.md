@@ -1,6 +1,6 @@
 # apple\_vision\_pose
 
-[![Pub Version](https://img.shields.io/pub/v/appe_vision_pose)](https://pub.dev/packages/appe_vision_pose)
+[![Pub Version](https://img.shields.io/pub/v/appe_vision_pose)](https://pub.dev/packages/apple_vision_pose)
 [![analysis](https://github.com/Knightro63/apple_vision/actions/workflows/flutter.yml/badge.svg)](https://github.com/Knightro63/apple_vision/actions/)
 [![Star on Github](https://img.shields.io/github/stars/Knightro63/apple_vision.svg?style=flat&logo=github&colorB=deeppink&label=stars)](https://github.com/Knightro63/apple_vision)
 [![License: MIT](https://img.shields.io/badge/license-MIT-purple.svg)](https://opensource.org/licenses/MIT)
