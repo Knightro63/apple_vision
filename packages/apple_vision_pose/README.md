@@ -14,7 +14,7 @@ Apple Vision Pose Detection is a Flutter plugin that enables Flutter apps to use
 **MacOS**
  - Minimum osx Deployment Target: 11.0
  - Xcode 13 or newer
- - Swift 5 ß
+ - Swift 5
  - ML Kit only supports 64-bit architectures (x86_64 and arm64).
 
 ## Getting Started
