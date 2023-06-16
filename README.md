@@ -1,115 +1,170 @@
-# apple_vision
+# apple\_vision
 
-A Flutter plugin with common methods used in [apple\_vision](https://github.com/Knightro63/apple_vision).
+[![Pub Version](https://img.shields.io/pub/v/appe_vision)](https://pub.dev/packages/appe_vision)
+[![analysis](https://github.com/Knightro63/apple_vision/actions/workflows/flutter.yml/badge.svg)](https://github.com/Knightro63/apple_vision/actions/)
+[![Star on Github](https://img.shields.io/github/stars/Knightro63/apple_vision.svg?style=flat&logo=github&colorB=deeppink&label=stars)](https://github.com/Knightro63/apple_vision)
+[![License: MIT](https://img.shields.io/badge/license-MIT-purple.svg)](https://opensource.org/licenses/MIT)
 
-**PLEASE READ THIS** before continuing or posting a [new issue](https://github.com/Knightro63/apple_vision):
+Apple Vision is a Flutter plugin that enables Flutter apps to use [Apple Vision](https://developer.apple.com/documentation/vision).
 
-- [Apple Vision](https://developer.apple.com/documentation/vision) was build only for osx apps.
+## Features
 
-- This plugin is not sponsor or maintained by Apple. The [authors](https://github.com/Knightro63/apple_vision/blob/master/AUTHORS) are developers wanted to make a similar plugin to Google's ml kit for macos.
+### Vision APIs
 
-- Apple Vision API are ony developed natively for iOS and osx. This plugin uses Flutter Platform Channels as explained [here](https://docs.flutter.dev/development/platform-integration/platform-channels).
+| Feature                                                                                       | Plugin | Source Code| MacOS | iOS |
+|-----------------------------------------------------------------------------------------------|--------|------------|---------|-----|
+|[Face Detection](https://developer.apple.com/documentation/vision/tracking_the_user_s_face_in_real_time)                   | [apple\_vision\_face](https://pub.dev/packages/apple_vision_face) [![Pub Version](https://img.shields.io/pub/v/apple_vision_face)](https://pub.dev/packages/apple_vision_face)                                        | [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Knightro63/apple_vision/tree/master/packages/apple_vision_face)             | ✅ | ❌ |
+|[Pose Detection](https://developer.apple.com/documentation/vision/detecting_human_body_poses_in_images)                   | [apple\_vision\_pose](https://pub.dev/packages/apple_vision_pose) [![Pub Version](https://img.shields.io/pub/v/apple_vision_pose)](https://pub.dev/packages/apple_vision_pose)                                        | [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Knightro63/apple_vision/tree/master/packages/apple_vision_pose)             | ✅ | ❌ |
+|[Hand Detection](https://developer.apple.com/documentation/vision/detecting_hand_poses_with_vision)                   | [apple\_vision\_hand](https://pub.dev/packages/apple_vision_hand) [![Pub Version](https://img.shields.io/pub/v/apple_vision_hand)](https://pub.dev/packages/apple_vision_hand)                                        | [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/bharat-biradar/apple_vision/tree/master/packages/apple_vision_hand)             | ✅ | ❌ |
 
-  Messages are passed between the client (the app/plugin) and host (platform) using platform channels as illustrated in this diagram:
+## Requirements ##
 
-  <p align="center" width="100%">
-    <img src="https://docs.flutter.dev/assets/images/docs/PlatformChannels.png"> 
-  </p>
-
-  Messages and responses are passed asynchronously, to ensure the user interface remains responsive. To read more about platform channels go [here](https://docs.flutter.dev/development/platform-integration/platform-channels).
-
-  Because this plugin uses platform channels, no Machine Learning processing is done in Flutter/Dart, all the calls are passed to the native platform using `FlutterMethodChannel`, and executed using the Apple Vision API. Think of this plugin as a bridge between your app and Apple's API. This plugin only passes the call to the native API and the processing is done by Google's API. It is important that you understand this concept when it comes to debugging errors for your ML model and/or app.
-
-- Since the plugin uses platform channels, you may encounter issues with the native API. Before submitting a new issue, identify the source of the issue. You can run both iOS and/or Android native [example apps by Google](https://github.com/googlesamples/mlkit) and make sure that the issue is not reproducible with their native examples. If you can reproduce the issue in their apps then report the issue to Google. The [authors](https://github.com/flutter-ml/google_ml_kit_flutter/blob/master/AUTHORS) do not have access to the source code of their native APIs, so you need to report the issue to them. If you find that their example apps are okay and still you have an issue using this plugin, then look at our [closed and open issues](https://github.com/flutter-ml/google_ml_kit_flutter/issues). If you cannot find anything that can help you then report the issue and provide enough details. Be patient, someone from the community will eventually help you.
+**MacOS**
+ - Minimum osx Deployment Target: 13.0
+ - Xcode 13 or newer
+ - Swift 5
+ - ML Kit only supports 64-bit architectures (x86_64 and arm64).
 
 ## Getting Started
 
-Before you get started read about the requirements and known issues of this plugin [here](https://github.com/flutter-ml/google_ml_kit_flutter#requirements).
+**PLEASE READ THIS** before continuing or posting a [new issue](https://github.com/Knightro63/apple_vision):
 
-## Usage
+- [Apple Vision](https://developer.apple.com/documentation/vision) was built only for osx apps with the intention on making it available for iOS in future releases.
 
-### Creating an `InputImage`
+- This plugin is not sponsor or maintained by Apple. The [authors](https://github.com/Knightro63/apple_vision/blob/main/AUTHORS) are developers who wanted to make a similar plugin to Google's ml kit for macos.
 
-From path:
+- Apple Vision API in only developed natively for osx. This plugin uses Flutter Platform Channels as explained [here](https://docs.flutter.dev/development/platform-integration/platform-channels).
 
-```dart
-final inputImage = InputImage.fromFilePath(filePath);
-```
+  Because this plugin uses platform channels, no Machine Learning processing is done in Flutter/Dart, all the calls are passed to the native platform using `FlutterMethodChannel`, and executed using the Apple Vision API.
 
-From file:
+- Since the plugin uses platform channels, you may encounter issues with the native API. Before submitting a new issue, identify the source of the issue. This plugin is only for osx. The [authors](https://github.com/Knightro63/apple_vision/blob/main/AUTHORS) do not have access to the source code of their native APIs, so you need to report the issue to them. If you have an issue using this plugin, then look at our [closed and open issues](https://github.com/flutter-ml/google_ml_kit_flutter/issues). If you cannot find anything that can help you then report the issue and provide enough details. Be patient, someone from the community will eventually help you.
 
-```dart
-final inputImage = InputImage.fromFile(file);
-```
+## Example
 
-From bytes:
+You need to first import 'package:apple_vision/apple_vision.dart';
 
 ```dart
-final inputImage = InputImage.fromBytes(bytes: bytes, metadata: metadata);
-```
+  final GlobalKey cameraKey = GlobalKey(debugLabel: "cameraKey");
+  late AppleVisionFaceController cameraController;
+  late List<CameraMacOSDevice> _cameras;
+  CameraMacOSController? controller;
+  String? deviceId;
 
-If you are using the [Camera plugin](https://pub.dev/packages/camera)) make sure to configure your [CameraController](https://pub.dev/documentation/camera/latest/camera/CameraController-class.html) to only use `nv21` for Android and `bgra8888` for iOS.
+  FaceData? faceData;
 
-```dart
-import 'dart:io';
+  @override
+  void initState() {
+    cameraController = AppleVisionFaceController();
+    CameraMacOS.instance.listDevices(deviceType: CameraMacOSDeviceType.video).then((value){
+      _cameras = value;
+      deviceId = _cameras.first.deviceId;
+    });
+    super.initState();
+  }
+  @override
+  void dispose() {
+    controller?.destroy();
+    super.dispose();
+  }
+  void onTakePictureButtonPressed() async{
+    CameraMacOSFile? file = await controller?.takePicture();
+    if(file != null && mounted) {
+      Uint8List? image = file.bytes;
+      cameraController.process(image!, const Size(640,480)).then((data){
+        faceData = data;
+        setState(() {
+          
+        });
+      });
+    }
+  }
 
-import 'package:camera/camera.dart';
-import 'package:google_mlkit_commons/google_mlkit_commons.dart';
+  @override
+  Widget build(BuildContext context) {
+    deviceWidth = MediaQuery.of(context).size.width;
+    deviceHeight = MediaQuery.of(context).size.height;
+    return Stack(
+      children:<Widget>[
+        SizedBox(
+          width: 640, 
+          height: 480, 
+          child: _getScanWidgetByPlatform()
+      ),
+      ]+showPoints()
+    );
+  }
 
-final camera; // your camera instance
-final controller = CameraController(
-  camera,
-  ResolutionPreset.max,
-  enableAudio: false,
-  imageFormatGroup: Platform.isAndroid
-          ? ImageFormatGroup.nv21 // for Android
-          : ImageFormatGroup.bgra8888, // for iOS
-);
+  List<Widget> showPoints(){
+    if(faceData == null || faceData!.marks.isEmpty) return[];
+    Map<LandMark,Color> colors = {
+      LandMark.faceContour: Colors.amber,
+      LandMark.outerLips: Colors.red,
+      LandMark.innerLips: Colors.pink,
+      LandMark.leftEye: Colors.green,
+      LandMark.rightEye: Colors.green,
+      LandMark.leftPupil: Colors.purple,
+      LandMark.rightPupil: Colors.purple,
+      LandMark.leftEyebrow: Colors.lime,
+      LandMark.rightEyebrow: Colors.lime,
+    };
+    List<Widget> widgets = [];
 
-InputImage? _inputImageFromCameraImage(CameraImage image) {
-  // get camera rotation
-  final camera = cameras[_cameraIndex];
-  final rotation =
-  InputImageRotationValue.fromRawValue(camera.sensorOrientation);
-  if (rotation == null) return null;
+    for(int i = 0; i < faceData!.marks.length; i++){
+      List<Point> points = faceData!.marks[i].location;
+      for(int j = 0; j < points.length;j++){
+        widgets.add(
+          Positioned(
+            left: points[j].x,
+            bottom: points[j].y,
+            child: Container(
+              width: 10,
+              height: 10,
+              decoration: BoxDecoration(
+                color: colors[faceData!.marks[i].landmark],
+                borderRadius: BorderRadius.circular(5)
+              ),
+            )
+          )
+        );
+      }
+    }
+    return widgets;
+  }
 
-  // get image format
-  final format = InputImageFormatValue.fromRawValue(image.format.raw);
-  // validate format depending on platform
-  // only supported formats:
-  // * nv21 for Android
-  // * bgra8888 for iOS
-  if (format == null ||
-          (Platform.isAndroid && format != InputImageFormat.nv21) ||
-          (Platform.isIOS && format != InputImageFormat.bgra8888)) return null;
-
-  // since format is constraint to nv21 or bgra8888, both only have one plane
-  if (image.planes.length != 1) return null;
-  final plane = image.planes.first;
-
-  // compose InputImage using bytes
-  return InputImage.fromBytes(
-    bytes: plane.bytes,
-    metadata: InputImageMetadata(
-      size: Size(image.width.toDouble(), image.height.toDouble()),
-      rotation: rotation, // used only in Android
-      format: format, // used only in iOS
-      bytesPerRow: plane.bytesPerRow, // used only in iOS
-    ),
-  );
-}
-
-CameraImage image; // your image from camera/controller image stream
-final inputImage = _inputImageFromCameraImage(image);
+  Widget _getScanWidgetByPlatform() {
+    return CameraMacOSView(
+      key: cameraKey,
+      fit: BoxFit.fill,
+      cameraMode: CameraMacOSMode.photo,
+      enableAudio: false,
+      onCameraLoading: (ob){
+        return Container(
+          width: deviceWidth,
+          height: deviceHeight,
+          color: Theme.of(context).canvasColor,
+          alignment: Alignment.center,
+          child: const CircularProgressIndicator(color: Colors.blue)
+        );
+      },
+      onCameraInizialized: (CameraMacOSController controller) {
+        setState(() {
+          this.controller = controller;
+          Timer.periodic(const Duration(milliseconds: 32),(_){
+            onTakePictureButtonPressed();
+          });
+        });
+      },
+    );
+  }
 ```
 
 ## Example app
 
-Find the example app [here](https://github.com/flutter-ml/google_ml_kit_flutter/tree/master/packages/example).
+Find the example for each of the packages in there example folder.
 
 ## Contributing
 
 Contributions are welcome.
-In case of any problems look at [existing issues](https://github.com/flutter-ml/google_ml_kit_flutter/issues), if you cannot find anything related to your problem then open an issue.
-Create an issue before opening a [pull request](https://github.com/flutter-ml/google_ml_kit_flutter/pulls) for non trivial fixes.
-In case of trivial fixes open a [pull request](https://github.com/flutter-ml/google_ml_kit_flutter/pulls) directly.
+In case of any problems look at [existing issues](https://github.com/Knightro63/apple_vision/issues), if you cannot find anything related to your problem then open an issue.
+Create an issue before opening a [pull request](https://github.com/Knightro63/apple_vision/pulls) for non trivial fixes.
+In case of trivial fixes open a [pull request](https://github.com/Knightro63/apple_vision/pulls) directly.
