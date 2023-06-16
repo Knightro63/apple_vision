@@ -1,0 +1,65 @@
+# # This workflow uses actions that are not certified by GitHub.
+# # They are provided by a third-party and are governed by
+# # separate terms of service, privacy policy, and support
+# # documentation.
+
+# name: Dart
+
+# on:
+#   push:
+#     branches: [ "main" ]
+#   pull_request:
+#     branches: [ "main" ]
+
+# jobs:
+#   build:
+#     runs-on: macos-latest
+
+#     steps:
+#       - uses: actions/checkout@v3.5.2
+#       - uses: actions/setup-java@v3.11.0
+#         with:
+#           java-version: 11
+#           distribution: temurin
+#       - uses: subosito/flutter-action@v2.10.0
+#         with:
+#           flutter-version: '3.3.6'
+#           cache: true
+
+#       - name: Install dependencies for apple_vision
+#         working-directory: ./packages/apple_vision
+#         run: flutter pub get
+
+#       - name: Install dependencies for apple_vision_commons
+#         working-directory: ./packages/apple_vision_commons
+#         run: flutter pub get
+        
+#       - name: Install dependencies for apple_vision_face
+#         working-directory: ./packages/apple_vision_face
+#         run: flutter pub get
+        
+#       - name: Install dependencies for apple_vision_hand
+#         working-directory: ./packages/apple_vision_hand
+#         run: flutter pub get
+        
+#       - name: Install dependencies for apple_vision_pose
+#         working-directory: ./packages/apple_vision_pose
+#         run: flutter pub get
+        
+#       - name: Install dependencies for apple_vision_face example
+#         working-directory: ./packages/apple_vision_face/example
+#         run: flutter pub get
+
+#       - name: Install dependencies for apple_vision_hand example
+#         working-directory: ./packages/apple_vision_hand/example
+#         run: flutter pub get
+        
+#       - name: Install dependencies for apple_vision_pose example
+#         working-directory: ./packages/apple_vision_pose/example
+#         run: flutter pub get
+        
+#       # Check for any formatting issues in the code.
+#       - run: flutter format --set-exit-if-changed .
+
+#       # Statically analyze the Dart code for any errors.
+#       - run: flutter analyze .
