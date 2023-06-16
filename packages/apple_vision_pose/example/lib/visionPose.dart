@@ -83,7 +83,7 @@ class _VisionPose extends State<VisionPose>{
       Joint.rightUpLeg: Colors.orange,
 
       Joint.rightHand: Colors.purple,
-      Joint.rightForearm: Colors.purple,\
+      Joint.rightForearm: Colors.purple,
 
       Joint.nose: Colors.purple,
 
