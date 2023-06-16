@@ -158,9 +158,9 @@ You need to first import 'package:apple_vision/apple_vision.dart';
   }
 ```
 
-## Example app
+## Example
 
-Find the example for each of the packages in there example folder.
+Find the example for this API [here](https://github.com/Knightro63/apple_vision/tree/main/packages/apple_vision_pose/example/lib/visionPose.dart).
 
 ## Contributing
 
