@@ -7,6 +7,12 @@
 
 Apple Vision is a Flutter plugin that enables Flutter apps to use [Apple Vision](https://developer.apple.com/documentation/vision).
 
+**PLEASE READ THIS** before continuing or posting a [new issue](https://github.com/Knightro63/apple_vision):
+
+- [Apple Vision](https://developer.apple.com/documentation/vision) was built only for osx apps.
+
+- This plugin is not sponsor or maintained by Apple. The [authors](https://github.com/Knightro63/apple_vision/blob/main/AUTHORS) are developers who wanted to make a similar plugin to Google's ml kit for macos.
+
 ## Features
 
 ### Vision APIs
@@ -17,7 +23,7 @@ Apple Vision is a Flutter plugin that enables Flutter apps to use [Apple Vision]
 |[Pose Detection](https://developer.apple.com/documentation/vision/detecting_human_body_poses_in_images)                   | [apple\_vision\_pose](https://pub.dev/packages/apple_vision_pose) [![Pub Version](https://img.shields.io/pub/v/apple_vision_pose)](https://pub.dev/packages/apple_vision_pose)                                        | [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Knightro63/apple_vision/tree/master/packages/apple_vision_pose)             | ✅ | ❌ |
 |[Hand Detection](https://developer.apple.com/documentation/vision/detecting_hand_poses_with_vision)                   | [apple\_vision\_hand](https://pub.dev/packages/apple_vision_hand) [![Pub Version](https://img.shields.io/pub/v/apple_vision_hand)](https://pub.dev/packages/apple_vision_hand)                                        | [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/bharat-biradar/apple_vision/tree/master/packages/apple_vision_hand)             | ✅ | ❌ |
 
-## Requirements ##
+## Requirements
 
 **MacOS**
  - Minimum osx Deployment Target: 13.0

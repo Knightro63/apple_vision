@@ -7,7 +7,9 @@
 
 Apple Vision Face Detection is a Flutter plugin that enables Flutter apps to use [Apple Vision Face Detection](https://developer.apple.com/documentation/vision/tracking_the_user_s_face_in_real_time).
 
-## Requirements ##
+- This plugin is not sponsor or maintained by Apple. The [authors](https://github.com/Knightro63/apple_vision/blob/main/AUTHORS) are developers who wanted to make a similar plugin to Google's ml kit for macos.
+
+## Requirements
 
 **MacOS**
  - Minimum osx Deployment Target: 11.0

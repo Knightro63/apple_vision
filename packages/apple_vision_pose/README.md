@@ -7,7 +7,9 @@
 
 Apple Vision Pose Detection is a Flutter plugin that enables Flutter apps to use [Apple Vision Pose Detection](https://developer.apple.com/documentation/vision/detecting_human_body_poses_in_images).
 
-## Requirements ##
+- This plugin is not sponsor or maintained by Apple. The [authors](https://github.com/Knightro63/apple_vision/blob/main/AUTHORS) are developers who wanted to make a similar plugin to Google's ml kit for macos.
+
+## Requirements
 
 **MacOS**
  - Minimum osx Deployment Target: 11.0
