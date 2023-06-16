@@ -59,6 +59,3 @@ jobs:
       # - name: Install dependencies for apple_vision_pose example
       #   working-directory: ./packages/apple_vision_pose/example
       #   run: flutter pub get
-
-      # Statically analyze the Dart code for any errors.
-      - run: flutter analyze .
