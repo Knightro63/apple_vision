@@ -38,7 +38,7 @@ public class AppleVisionFacePlugin: NSObject, FlutterPlugin {
     func convertImage(_ data: Data,_ imageSize: CGSize) -> [String:Any?]{
         let imageRequestHandler = VNImageRequestHandler(
             data: data,
-            orientation: .up)
+            orientation: .downMirrored)
 
         var event:[String:Any?] = ["name":"noData"];
         do {

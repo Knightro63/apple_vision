@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:apple_vision_face/apple_vision_face.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,8 @@ import 'package:camera_macos/camera_macos_device.dart';
 import 'package:camera_macos/camera_macos_file.dart';
 import 'package:camera_macos/camera_macos_platform_interface.dart';
 import 'package:camera_macos/camera_macos_view.dart';
+
+import 'package:camera/camera.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,7 +34,7 @@ class MyApp extends StatelessWidget {
 class VisionFace extends StatefulWidget {
   const VisionFace({
     Key? key,
-    this.size = const Size(750,750),
+    this.size = const Size(640,480),
     this.onScanned
   }):super(key: key);
 
@@ -47,7 +50,9 @@ class _VisionFace extends State<VisionFace>{
   late AppleVisionFaceController cameraController;
   late List<CameraMacOSDevice> _cameras;
   CameraMacOSController? controller;
+  CameraController? iosCameraController;
   String? deviceId;
+  bool loading = true;
 
   FaceData? faceData;
   late double deviceWidth;
@@ -56,10 +61,17 @@ class _VisionFace extends State<VisionFace>{
   @override
   void initState() {
     cameraController = AppleVisionFaceController();
-    CameraMacOS.instance.listDevices(deviceType: CameraMacOSDeviceType.video).then((value){
-      _cameras = value;
-      deviceId = _cameras.first.deviceId;
-    });
+
+    if(Platform.isMacOS){
+      CameraMacOS.instance.listDevices(deviceType: CameraMacOSDeviceType.video).then((value){
+        _cameras = value;
+        deviceId = _cameras.first.deviceId;
+      });
+    }
+    else{
+
+      
+    }
     super.initState();
   }
   @override
@@ -87,8 +99,8 @@ class _VisionFace extends State<VisionFace>{
     return Stack(
       children:<Widget>[
         SizedBox(
-          width: 640, 
-          height: 480, 
+          width: widget.size.width, 
+          height: widget.size.height, 
           child: _getScanWidgetByPlatform()
       ),
       ]+showPoints()
@@ -116,7 +128,7 @@ class _VisionFace extends State<VisionFace>{
         widgets.add(
           Positioned(
             left: points[j].x,
-            top: 480-points[j].y,
+            top: points[j].y,
             child: Container(
               width: 10,
               height: 10,
@@ -132,20 +144,43 @@ class _VisionFace extends State<VisionFace>{
     return widgets;
   }
 
+  Future<bool> onCameraInizialized() async{
+    Completer<bool> c = Completer<bool>();
+
+      await availableCameras().then((value) async{
+        iosCameraController = CameraController(value[0], ResolutionPreset.max);
+        print('here');
+        await iosCameraController!.initialize().then((value){
+          setState(() {
+            loading = false;
+          });
+          c.complete(true);
+        }).onError((error, stackTrace){
+          c.complete(false);
+        });
+      });
+ 
+    return c.future;
+  }
+
+  Widget loadingWidget(){
+    return Container(
+      width: widget.size.width,
+      height: widget.size.height,
+      color: Theme.of(context).canvasColor,
+      alignment: Alignment.center,
+      child: const CircularProgressIndicator(color: Colors.blue)
+    );
+  }
+
   Widget _getScanWidgetByPlatform() {
-    return CameraMacOSView(
+    return Platform.isMacOS?CameraMacOSView(
       key: cameraKey,
       fit: BoxFit.fill,
       cameraMode: CameraMacOSMode.photo,
       enableAudio: false,
       onCameraLoading: (ob){
-        return Container(
-          width: 640,
-          height: 480,
-          color: Theme.of(context).canvasColor,
-          alignment: Alignment.center,
-          child: const CircularProgressIndicator(color: Colors.blue)
-        );
+        return loadingWidget();
       },
       onCameraInizialized: (CameraMacOSController controller) {
         setState(() {
@@ -155,6 +190,14 @@ class _VisionFace extends State<VisionFace>{
           });
         });
       },
+    ):FutureBuilder<bool>(
+      future: onCameraInizialized(),
+      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+        return loading?loadingWidget():CameraPreview(
+          iosCameraController!,
+          key: cameraKey,
+        );
+      }
     );
   }
 }

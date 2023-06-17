@@ -12,6 +12,7 @@ dependencies:
   apple_vision_face:
     path: ../../apple_vision_face
   camera_macos: ^0.0.6+2
+  camera: ^0.10.5+2
   cupertino_icons: ^1.0.2
 
 dev_dependencies:

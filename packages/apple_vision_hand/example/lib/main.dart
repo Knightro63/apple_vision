@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
 class VisionHand extends StatefulWidget {
   const VisionHand({
     Key? key,
-    this.size = const Size(750,750),
+    this.size = const Size(640,480),
     this.onScanned
   }):super(key: key);
 
@@ -72,7 +72,7 @@ class _VisionHand extends State<VisionHand>{
     if(file != null && mounted) {
       Uint8List? image = file.bytes;
       if(image != null){
-        cameraController.processImage(image, const Size(640,480)).then((data){
+        cameraController.processImage(image, widget.size).then((data){
           poseData = data;
           setState(() {
             
@@ -89,8 +89,8 @@ class _VisionHand extends State<VisionHand>{
     return Stack(
       children:<Widget>[
         SizedBox(
-          width: 640, 
-          height: 480, 
+          width: widget.size.width, 
+          height: widget.size.height, 
           child: _getScanWidgetByPlatform()
         )
       ]+showPoints()
@@ -130,7 +130,7 @@ class _VisionHand extends State<VisionHand>{
       if(poseData!.poses[i].confidence > 0.5){
         widgets.add(
           Positioned(
-            bottom: poseData!.poses[i].location.y,
+            top: poseData!.poses[i].location.y,
             left: poseData!.poses[i].location.x,
             child: Container(
               width: 10,
@@ -155,8 +155,8 @@ class _VisionHand extends State<VisionHand>{
       enableAudio: false,
       onCameraLoading: (ob){
         return Container(
-          width: deviceWidth,
-          height: deviceHeight,
+          width: widget.size.width,
+          height: widget.size.height,
           color: Theme.of(context).canvasColor,
           alignment: Alignment.center,
           child: const CircularProgressIndicator(color: Colors.blue)

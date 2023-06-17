@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
 class VisionPose extends StatefulWidget {
   const VisionPose({
     Key? key,
-    this.size = const Size(750,750),
+    this.size = const Size(640,480),
     this.onScanned
   }):super(key: key);
 
@@ -71,12 +71,14 @@ class _VisionPose extends State<VisionPose>{
     CameraMacOSFile? file = await controller?.takePicture();
     if(file != null && mounted) {
       Uint8List? image = file.bytes;
-      cameraController.process(image!, const Size(640,480)).then((data){
-        poseData = data;
-        setState(() {
-          
+      if(image != null){
+        cameraController.process(image, widget.size).then((data){
+          poseData = data;
+          setState(() {
+            
+          });
         });
-      });
+      }
     }
   }
 
@@ -87,8 +89,8 @@ class _VisionPose extends State<VisionPose>{
     return Stack(
       children:<Widget>[
         SizedBox(
-          width: 640, 
-          height: 480, 
+          width: widget.size.width, 
+          height: widget.size.height, 
           child: _getScanWidgetByPlatform()
         )
       ]+showPoints()
@@ -131,7 +133,7 @@ class _VisionPose extends State<VisionPose>{
       if(poseData!.poses[i].confidence > 0.5){
         widgets.add(
           Positioned(
-            bottom: poseData!.poses[i].location.y,
+            top: poseData!.poses[i].location.y,
             left: poseData!.poses[i].location.x,
             child: Container(
               width: 10,
@@ -156,8 +158,8 @@ class _VisionPose extends State<VisionPose>{
       enableAudio: false,
       onCameraLoading: (ob){
         return Container(
-          width: deviceWidth,
-          height: deviceHeight,
+          width: widget.size.width,
+          height: widget.size.height,
           color: Theme.of(context).canvasColor,
           alignment: Alignment.center,
           child: const CircularProgressIndicator(color: Colors.blue)

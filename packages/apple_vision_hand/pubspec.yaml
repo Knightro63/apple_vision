@@ -1,6 +1,6 @@
 name: apple_vision_hand
 description: A Flutter plugin to use Apple Vision Hand Detection to detect a single hand and fingers in an image or video stream, and identify key distal features.
-version: 0.0.1
+version: 0.0.2
 homepage: https://github.com/Knightro63/apple_vision/tree/main/packages/apple_vision_hand
 
 environment:

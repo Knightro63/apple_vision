@@ -1,6 +1,6 @@
 name: apple_vision_face
 description: A Flutter plugin to use Apple Vision Face Detection to detect faces in an image or video stream, identify key facial features, and get the contours of detected faces.
-version: 0.0.1
+version: 0.0.2
 homepage: https://github.com/Knightro63/apple_vision/tree/main/packages/apple_vision_face
 
 environment:
