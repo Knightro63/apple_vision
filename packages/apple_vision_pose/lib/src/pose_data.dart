@@ -63,7 +63,6 @@ class PoseFunctions {
         return Joint.values[i];
       }
     }
-    print(joint);
     return null;
   }
 }

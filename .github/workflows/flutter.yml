@@ -36,26 +36,26 @@ jobs:
         working-directory: ./packages/apple_vision_commons
         run: flutter pub get
         
-      # - name: Install dependencies for apple_vision_face
-      #   working-directory: ./packages/apple_vision_face
-      #   run: flutter pub get
+      - name: Install dependencies for apple_vision_face
+        working-directory: ./packages/apple_vision_face
+        run: flutter pub get
         
-      # - name: Install dependencies for apple_vision_hand
-      #   working-directory: ./packages/apple_vision_hand
-      #   run: flutter pub get
+      - name: Install dependencies for apple_vision_hand
+        working-directory: ./packages/apple_vision_hand
+        run: flutter pub get
         
-      # - name: Install dependencies for apple_vision_pose
-      #   working-directory: ./packages/apple_vision_pose
-      #   run: flutter pub get
+      - name: Install dependencies for apple_vision_pose
+        working-directory: ./packages/apple_vision_pose
+        run: flutter pub get
         
-      # - name: Install dependencies for apple_vision_face example
-      #   working-directory: ./packages/apple_vision_face/example
-      #   run: flutter pub get
+      - name: Install dependencies for apple_vision_face example
+        working-directory: ./packages/apple_vision_face/example
+        run: flutter pub get
 
-      # - name: Install dependencies for apple_vision_hand example
-      #   working-directory: ./packages/apple_vision_hand/example
-      #   run: flutter pub get
+      - name: Install dependencies for apple_vision_hand example
+        working-directory: ./packages/apple_vision_hand/example
+        run: flutter pub get
         
-      # - name: Install dependencies for apple_vision_pose example
-      #   working-directory: ./packages/apple_vision_pose/example
-      #   run: flutter pub get
+      - name: Install dependencies for apple_vision_pose example
+        working-directory: ./packages/apple_vision_pose/example
+        run: flutter pub get

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:apple_vision_commons/apple_vision_commons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:apple_vision_pose/apple_vision_pose.dart';

@@ -4,44 +4,34 @@ packages:
   apple_vision_commons:
     dependency: "direct main"
     description:
-      path: "../apple_vision_commons"
-      relative: true
-    source: path
+      name: apple_vision_commons
+      sha256: c75376bb049c59d7da1dedf0334bab5162a0f72973d93e644e637944d5e10e71
+      url: "https://pub.dev"
+    source: hosted
     version: "0.0.1"
   apple_vision_face:
     dependency: "direct main"
     description:
-      path: "../apple_vision_face"
-      relative: true
-    source: path
+      name: apple_vision_face
+      sha256: "398629fcc74a5bdebbc839dc485dff27221cc8983a9a021462ff01c6ead36ab4"
+      url: "https://pub.dev"
+    source: hosted
     version: "0.0.1"
   apple_vision_hand:
     dependency: "direct main"
     description:
-      path: "../apple_vision_hand"
-      relative: true
-    source: path
-    version: "0.0.1"
-  apple_vision_object:
-    dependency: "direct main"
-    description:
-      path: "../apple_vision_object"
-      relative: true
-    source: path
+      name: apple_vision_hand
+      sha256: "4537ca9e6dd89203ca875c1a04e02364aebea552342b5dac045358571da5901a"
+      url: "https://pub.dev"
+    source: hosted
     version: "0.0.1"
   apple_vision_pose:
     dependency: "direct main"
     description:
-      path: "../apple_vision_pose"
-      relative: true
-    source: path
-    version: "0.0.1"
-  apple_vision_scanner:
-    dependency: "direct main"
-    description:
-      path: "../apple_vision_scanner"
-      relative: true
-    source: path
+      name: apple_vision_pose
+      sha256: fa31cdcbe864fc165cc12711dce8adc375e264a00d868817d068118074701909
+      url: "https://pub.dev"
+    source: hosted
     version: "0.0.1"
   async:
     dependency: transitive
@@ -59,14 +49,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
-  camera_macos:
-    dependency: transitive
-    description:
-      name: camera_macos
-      sha256: "331eb9ec54f3b4c8edbd809b71046d40049469a12af8d536eeb4ae2fa3e66310"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.6+4"
   characters:
     dependency: transitive
     description:
@@ -165,14 +147,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.8.2"
-  plugin_platform_interface:
-    dependency: transitive
-    description:
-      name: plugin_platform_interface
-      sha256: "6a2128648c854906c53fa8e33986fc0247a1116122f9534dd20e3ab9e16a32bc"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.4"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -236,4 +210,4 @@ packages:
     version: "2.1.4"
 sdks:
   dart: ">=2.18.6 <3.0.0"
-  flutter: ">=2.5.0"
+  flutter: ">=1.20.0"

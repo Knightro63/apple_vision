@@ -1,6 +1,4 @@
 import 'dart:async';
-
-import 'package:apple_vision_hand/src/hand_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:apple_vision_hand/apple_vision_hand.dart';
