@@ -1,16 +1,45 @@
 import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:apple_vision_pose/apple_vision_pose.dart';
+import 'package:apple_vision/apple_vision.dart';
 import 'package:camera_macos/camera_macos_controller.dart';
 import 'package:camera_macos/camera_macos_device.dart';
 import 'package:camera_macos/camera_macos_file.dart';
 import 'package:camera_macos/camera_macos_platform_interface.dart';
 import 'package:camera_macos/camera_macos_view.dart';
 
-class VisionPose extends StatefulWidget {
-  const VisionPose({
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        // This is the theme of your application.
+        //
+        // Try running your application with "flutter run". You'll see the
+        // application has a blue toolbar. Then, without quitting the app, try
+        // changing the primarySwatch below to Colors.green and then invoke
+        // "hot reload" (press "r" in the console where you ran "flutter run",
+        // or simply save your changes to "hot reload" in a Flutter IDE).
+        // Notice that the counter didn't reset back to zero; the application
+        // is not restarted.
+        primarySwatch: Colors.blue,
+      ),
+      home: const VisionFace(),
+    );
+  }
+}
+
+class VisionFace extends StatefulWidget {
+  const VisionFace({
     Key? key,
     this.size = const Size(750,750),
     this.onScanned
@@ -20,22 +49,23 @@ class VisionPose extends StatefulWidget {
   final Function(dynamic data)? onScanned; 
 
   @override
-  _VisionPose createState() => _VisionPose();
+  _VisionFace createState() => _VisionFace();
 }
 
-class _VisionPose extends State<VisionPose>{
+class _VisionFace extends State<VisionFace>{
   final GlobalKey cameraKey = GlobalKey(debugLabel: "cameraKey");
-  late AppleVisionPoseController cameraController;
+  late AppleVisionFaceController cameraController;
   late List<CameraMacOSDevice> _cameras;
   CameraMacOSController? controller;
   String? deviceId;
 
-  PoseData? poseData;
+  FaceData? faceData;
   late double deviceWidth;
   late double deviceHeight;
+
   @override
   void initState() {
-    cameraController = AppleVisionPoseController();
+    cameraController = AppleVisionFaceController();
     CameraMacOS.instance.listDevices(deviceType: CameraMacOSDeviceType.video).then((value){
       _cameras = value;
       deviceId = _cameras.first.deviceId;
@@ -52,7 +82,7 @@ class _VisionPose extends State<VisionPose>{
     if(file != null && mounted) {
       Uint8List? image = file.bytes;
       cameraController.process(image!, const Size(640,480)).then((data){
-        poseData = data;
+        faceData = data;
         setState(() {
           
         });
@@ -70,54 +100,38 @@ class _VisionPose extends State<VisionPose>{
           width: 640, 
           height: 480, 
           child: _getScanWidgetByPlatform()
-        )
+      ),
       ]+showPoints()
     );
   }
 
   List<Widget> showPoints(){
-    if(poseData == null || poseData!.poses.isEmpty) return[];
-    Map<Joint,Color> colors = {
-      Joint.rightFoot: Colors.orange,
-      Joint.rightLeg: Colors.orange,
-      Joint.rightUpLeg: Colors.orange,
-
-      Joint.rightHand: Colors.purple,
-      Joint.rightForearm: Colors.purple,
-
-      Joint.nose: Colors.purple,
-
-      Joint.neck: Colors.pink,
-      Joint.rightShoulder: Colors.pink,
-      Joint.leftShoulder: Colors.pink,
-
-      Joint.leftForearm: Colors.indigo,
-      Joint.leftHand: Colors.indigo,
-
-      Joint.leftUpLeg: Colors.grey,
-      Joint.leftLeg: Colors.grey,
-      Joint.leftFoot: Colors.grey,
-
-      Joint.root: Colors.yellow,
-
-      Joint.leftEye: Colors.cyanAccent,
-      Joint.leftEar: Colors.cyanAccent,
-      Joint.rightEar: Colors.cyanAccent,
-      Joint.rightEye: Colors.cyanAccent,
-      Joint.head: Colors.cyanAccent
+    if(faceData == null || faceData!.marks.isEmpty) return[];
+    Map<LandMark,Color> colors = {
+      LandMark.faceContour: Colors.amber,
+      LandMark.outerLips: Colors.red,
+      LandMark.innerLips: Colors.pink,
+      LandMark.leftEye: Colors.green,
+      LandMark.rightEye: Colors.green,
+      LandMark.leftPupil: Colors.purple,
+      LandMark.rightPupil: Colors.purple,
+      LandMark.leftEyebrow: Colors.lime,
+      LandMark.rightEyebrow: Colors.lime,
     };
     List<Widget> widgets = [];
-    for(int i = 0; i < poseData!.poses.length; i++){
-      if(poseData!.poses[i].confidence > 0.5){
+
+    for(int i = 0; i < faceData!.marks.length; i++){
+      List<FacePoint> points = faceData!.marks[i].location;
+      for(int j = 0; j < points.length;j++){
         widgets.add(
           Positioned(
-            bottom: poseData!.poses[i].location.y,
-            left: poseData!.poses[i].location.x,
+            left: points[j].x,
+            top: points[j].y,
             child: Container(
               width: 10,
               height: 10,
               decoration: BoxDecoration(
-                color: colors[poseData!.poses[i].joint],
+                color: colors[faceData!.marks[i].landmark],
                 borderRadius: BorderRadius.circular(5)
               ),
             )
@@ -146,7 +160,7 @@ class _VisionPose extends State<VisionPose>{
       onCameraInizialized: (CameraMacOSController controller) {
         setState(() {
           this.controller = controller;
-          Timer.periodic(const Duration(milliseconds: 128),(_){
+          Timer.periodic(const Duration(milliseconds: 32),(_){
             onTakePictureButtonPressed();
           });
         });
@@ -154,3 +168,4 @@ class _VisionPose extends State<VisionPose>{
     );
   }
 }
+
