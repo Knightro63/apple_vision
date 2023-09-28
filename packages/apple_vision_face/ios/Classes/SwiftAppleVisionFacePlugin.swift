@@ -3,7 +3,7 @@ import Flutter
 import Vision
 import UIKit
 
-public class AppleVisionFacePlugin: NSObject, FlutterPlugin {
+public class SwiftAppleVisionFacePlugin: NSObject, FlutterPlugin {
     let registry: FlutterTextureRegistry
     
     init(_ registry: FlutterTextureRegistry) {
@@ -12,8 +12,8 @@ public class AppleVisionFacePlugin: NSObject, FlutterPlugin {
     }
     
     public static func register(with registrar: FlutterPluginRegistrar) {
-        let method = FlutterMethodChannel(name:"apple_vision/face", binaryMessenger: registrar.messenger)
-        let instance = AppleVisionFacePlugin(registrar.textures)
+        let method = FlutterMethodChannel(name:"apple_vision/face", binaryMessenger: registrar.messenger())
+        let instance = SwiftAppleVisionFacePlugin(registrar.textures())
         registrar.addMethodCallDelegate(instance, channel: method)
     }
     
@@ -111,7 +111,7 @@ public class AppleVisionFacePlugin: NSObject, FlutterPlugin {
         }
         
         var pitch: Double?;
-        if #available(macOS 12.0, *){
+        if #available(iOS 15.0, *){
             pitch = face.pitch as! Double?
         }
         

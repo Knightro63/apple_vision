@@ -1,4 +1,4 @@
 #import <Flutter/Flutter.h>
 
-@interface NordicDfuPlugin : NSObject<FlutterPlugin>
+@interface AppleVisionFacePlugin : NSObject<FlutterPlugin>
 @end

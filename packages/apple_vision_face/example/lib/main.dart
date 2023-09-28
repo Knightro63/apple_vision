@@ -1,15 +1,10 @@
 import 'dart:async';
-import 'dart:io';
-import 'dart:typed_data';
 import 'package:apple_vision_face/apple_vision_face.dart';
 import 'package:flutter/material.dart';
-import 'package:camera_macos/camera_macos_controller.dart';
-import 'package:camera_macos/camera_macos_device.dart';
-import 'package:camera_macos/camera_macos_file.dart';
-import 'package:camera_macos/camera_macos_platform_interface.dart';
-import 'package:camera_macos/camera_macos_view.dart';
-
-import 'package:camera/camera.dart';
+import '../camera/camera_insert.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'camera/input_image.dart';
 
 void main() {
   runApp(const MyApp());
@@ -45,14 +40,13 @@ class VisionFace extends StatefulWidget {
   _VisionFace createState() => _VisionFace();
 }
 
-class _VisionFace extends State<VisionFace>{
+class _VisionFace extends State<VisionFace> with WidgetsBindingObserver{
   final GlobalKey cameraKey = GlobalKey(debugLabel: "cameraKey");
   late AppleVisionFaceController cameraController;
-  late List<CameraMacOSDevice> _cameras;
-  CameraMacOSController? controller;
-  CameraController? iosCameraController;
+  InsertCamera camera = InsertCamera();
   String? deviceId;
   bool loading = true;
+  Size imageSize = const Size(640,640*9/16);
 
   FaceData? faceData;
   late double deviceWidth;
@@ -62,34 +56,32 @@ class _VisionFace extends State<VisionFace>{
   void initState() {
     cameraController = AppleVisionFaceController();
 
-    if(Platform.isMacOS){
-      CameraMacOS.instance.listDevices(deviceType: CameraMacOSDeviceType.video).then((value){
-        _cameras = value;
-        deviceId = _cameras.first.deviceId;
+    camera.setupCameras().then((value){
+      setState(() {
+        loading = false;
       });
-    }
-    else{
-
-      
-    }
+      camera.startLiveFeed((InputImage i){
+        if(i.metadata?.size != null){
+          imageSize = i.metadata!.size;
+        }
+        if(i != null && mounted) {
+          Uint8List? image = i.bytes;
+          cameraController.process(image!, i.metadata!.size).then((data){
+            faceData = data;
+            setState(() {
+              
+            });
+          });
+        }
+      });
+    });
     super.initState();
   }
   @override
   void dispose() {
-    controller?.destroy();
+    WidgetsBinding.instance.removeObserver(this);
+    camera.dispose();
     super.dispose();
-  }
-  void onTakePictureButtonPressed() async{
-    CameraMacOSFile? file = await controller?.takePicture();
-    if(file != null && mounted) {
-      Uint8List? image = file.bytes;
-      cameraController.process(image!, const Size(640,480)).then((data){
-        faceData = data;
-        setState(() {
-          
-        });
-      });
-    }
   }
 
   @override
@@ -101,7 +93,7 @@ class _VisionFace extends State<VisionFace>{
         SizedBox(
           width: widget.size.width, 
           height: widget.size.height, 
-          child: _getScanWidgetByPlatform()
+          child: loading?Container():CameraSetup(camera: camera, size: imageSize)
       ),
       ]+showPoints()
     );
@@ -144,24 +136,24 @@ class _VisionFace extends State<VisionFace>{
     return widgets;
   }
 
-  Future<bool> onCameraInizialized() async{
-    Completer<bool> c = Completer<bool>();
-
-      await availableCameras().then((value) async{
-        iosCameraController = CameraController(value[0], ResolutionPreset.max);
-        print('here');
-        await iosCameraController!.initialize().then((value){
-          setState(() {
-            loading = false;
-          });
-          c.complete(true);
-        }).onError((error, stackTrace){
-          c.complete(false);
-        });
-      });
+  // Future<bool> onCameraInizialized() async{
+  //   Completer<bool> c = Completer<bool>();
+  //   print('here');
+  //   await availableCameras().then((value) async{
+  //     iosCameraController = CameraController(value[0], ResolutionPreset.max);
+  //     print('here');
+  //     await iosCameraController!.initialize().then((value){
+  //       setState(() {
+  //         loading = false;
+  //       });
+  //       c.complete(true);
+  //     }).onError((error, stackTrace){
+  //       c.complete(false);
+  //     });
+  //   });
  
-    return c.future;
-  }
+  //   return c.future;
+  // }
 
   Widget loadingWidget(){
     return Container(
@@ -170,34 +162,6 @@ class _VisionFace extends State<VisionFace>{
       color: Theme.of(context).canvasColor,
       alignment: Alignment.center,
       child: const CircularProgressIndicator(color: Colors.blue)
-    );
-  }
-
-  Widget _getScanWidgetByPlatform() {
-    return Platform.isMacOS?CameraMacOSView(
-      key: cameraKey,
-      fit: BoxFit.fill,
-      cameraMode: CameraMacOSMode.photo,
-      enableAudio: false,
-      onCameraLoading: (ob){
-        return loadingWidget();
-      },
-      onCameraInizialized: (CameraMacOSController controller) {
-        setState(() {
-          this.controller = controller;
-          Timer.periodic(const Duration(milliseconds: 64),(_){
-            onTakePictureButtonPressed();
-          });
-        });
-      },
-    ):FutureBuilder<bool>(
-      future: onCameraInizialized(),
-      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-        return loading?loadingWidget():CameraPreview(
-          iosCameraController!,
-          key: cameraKey,
-        );
-      }
     );
   }
 }

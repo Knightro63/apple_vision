@@ -50,7 +50,7 @@ public class AppleVisionHandPlugin: NSObject, FlutterPlugin {
                         }
                     }
                 } else {
-                    event = ["name":"error","code": "No Face In Detected", "message": error!.localizedDescription]
+                    event = ["name":"error","code": "No Hand In Detected", "message": error!.localizedDescription]
                     print(error!.localizedDescription)
                 }
             }])
