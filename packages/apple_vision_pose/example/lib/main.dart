@@ -1,12 +1,9 @@
-import 'dart:async';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:apple_vision_pose/apple_vision_pose.dart';
-import 'package:camera_macos/camera_macos_controller.dart';
-import 'package:camera_macos/camera_macos_device.dart';
-import 'package:camera_macos/camera_macos_file.dart';
-import 'package:camera_macos/camera_macos_platform_interface.dart';
-import 'package:camera_macos/camera_macos_view.dart';
+import 'package:flutter/material.dart';
+import '../camera/camera_insert.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'camera/input_image.dart';
 
 void main() {
   runApp(const MyApp());
@@ -45,41 +42,43 @@ class VisionPose extends StatefulWidget {
 
 class _VisionPose extends State<VisionPose>{
   final GlobalKey cameraKey = GlobalKey(debugLabel: "cameraKey");
-  late AppleVisionPoseController cameraController;
-  late List<CameraMacOSDevice> _cameras;
-  CameraMacOSController? controller;
+  late AppleVisionPoseController visionController = AppleVisionPoseController();
+  InsertCamera camera = InsertCamera();
+  Size imageSize = const Size(640,640*9/16);
   String? deviceId;
+  bool loading = true;
 
   PoseData? poseData;
   late double deviceWidth;
   late double deviceHeight;
+
   @override
   void initState() {
-    cameraController = AppleVisionPoseController();
-    CameraMacOS.instance.listDevices(deviceType: CameraMacOSDeviceType.video).then((value){
-      _cameras = value;
-      deviceId = _cameras.first.deviceId;
+    camera.setupCameras().then((value){
+      setState(() {
+        loading = false;
+      });
+      camera.startLiveFeed((InputImage i){
+        if(i.metadata?.size != null){
+          imageSize = i.metadata!.size;
+        }
+        if(mounted) {
+          Uint8List? image = i.bytes;
+          visionController.processImage(rgba2bitmap(image!, i.metadata!.size.width.toInt(), i.metadata!.size.height.toInt()) , i.metadata!.size).then((data){
+            poseData = data;
+            setState(() {
+              
+            });
+          });
+        }
+      });
     });
     super.initState();
   }
   @override
   void dispose() {
-    controller?.destroy();
+    camera.dispose();
     super.dispose();
-  }
-  void onTakePictureButtonPressed() async{
-    CameraMacOSFile? file = await controller?.takePicture();
-    if(file != null && mounted) {
-      Uint8List? image = file.bytes;
-      if(image != null){
-        cameraController.process(image, widget.size).then((data){
-          poseData = data;
-          setState(() {
-            
-          });
-        });
-      }
-    }
   }
 
   @override
@@ -91,8 +90,8 @@ class _VisionPose extends State<VisionPose>{
         SizedBox(
           width: widget.size.width, 
           height: widget.size.height, 
-          child: _getScanWidgetByPlatform()
-        )
+          child: loading?Container():CameraSetup(camera: camera, size: imageSize)
+      ),
       ]+showPoints()
     );
   }
@@ -150,29 +149,13 @@ class _VisionPose extends State<VisionPose>{
     return widgets;
   }
 
-  Widget _getScanWidgetByPlatform() {
-    return CameraMacOSView(
-      key: cameraKey,
-      fit: BoxFit.fill,
-      cameraMode: CameraMacOSMode.photo,
-      enableAudio: false,
-      onCameraLoading: (ob){
-        return Container(
-          width: widget.size.width,
-          height: widget.size.height,
-          color: Theme.of(context).canvasColor,
-          alignment: Alignment.center,
-          child: const CircularProgressIndicator(color: Colors.blue)
-        );
-      },
-      onCameraInizialized: (CameraMacOSController controller) {
-        setState(() {
-          this.controller = controller;
-          Timer.periodic(const Duration(milliseconds: 128),(_){
-            onTakePictureButtonPressed();
-          });
-        });
-      },
+  Widget loadingWidget(){
+    return Container(
+      width: widget.size.width,
+      height: widget.size.height,
+      color: Theme.of(context).canvasColor,
+      alignment: Alignment.center,
+      child: const CircularProgressIndicator(color: Colors.blue)
     );
   }
 }

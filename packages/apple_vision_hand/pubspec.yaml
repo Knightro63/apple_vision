@@ -22,3 +22,5 @@ flutter:
     platforms:
       macos:
         pluginClass: AppleVisionHandPlugin
+      ios:
+        pluginClass: AppleVisionHand

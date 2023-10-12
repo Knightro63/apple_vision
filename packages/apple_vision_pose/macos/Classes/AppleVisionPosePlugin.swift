@@ -1,4 +1,8 @@
+#if os(iOS)
+import Flutter
+#elseif os(macOS)
 import FlutterMacOS
+#endif
 import Vision
 
 public class AppleVisionPosePlugin: NSObject, FlutterPlugin {
@@ -11,8 +15,13 @@ public class AppleVisionPosePlugin: NSObject, FlutterPlugin {
     }
     
     public static func register(with registrar: FlutterPluginRegistrar) {
+        #if os(iOS)
+        let method = FlutterMethodChannel(name:"apple_vision/pose", binaryMessenger: registrar.messenger())
+        let instance = AppleVisionPosePlugin(registrar.textures())
+        #elseif os(macOS)
         let method = FlutterMethodChannel(name:"apple_vision/pose", binaryMessenger: registrar.messenger)
         let instance = AppleVisionPosePlugin(registrar.textures)
+        #endif
         registrar.addMethodCallDelegate(instance, channel: method)
     }
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -25,13 +34,18 @@ public class AppleVisionPosePlugin: NSObject, FlutterPlugin {
             }
             let width = arguments["width"] as? Double ?? 0
             let height = arguments["height"] as? Double ?? 0
-            return result(convertImage(Data(data.data),CGSize(width: width , height: height)))
+            if #available(iOS 14.0, *) {
+                return result(convertImage(Data(data.data),CGSize(width: width , height: height)))
+            } else {
+                return result(FlutterError(code: "INVALID OS", message: "requires version 14.0", details: nil))
+            }
         default:
             result(FlutterMethodNotImplemented)
         }
     }
     
     // Gets called when a new image is added to the buffer
+    @available(iOS 14.0, *)
     func convertImage(_ data: Data,_ imageSize: CGSize) -> [String:Any?]{
         let imageRequestHandler = VNImageRequestHandler(
             data: data,
@@ -58,6 +72,7 @@ public class AppleVisionPosePlugin: NSObject, FlutterPlugin {
         return event
     }
     
+    @available(iOS 14.0, *)
     func processObservation(_ observation: VNHumanBodyPoseObservation,_ imageSize: CGSize) -> [String:Any?] {
         // Retrieve all torso points.
         guard let recognizedPoints =

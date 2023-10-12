@@ -23,4 +23,4 @@ flutter:
       macos:
         pluginClass: AppleVisionFacePlugin
       ios:
-        pluginClass: AppleVisionFacePlugin
+        pluginClass: AppleVisionFace

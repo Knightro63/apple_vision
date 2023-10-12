@@ -1,4 +1,4 @@
-#import "AppleVisionFacePlugin.h"
+#import "AppleVisionFace.h"
 #if __has_include(<apple_vision_face/apple_vision_face-Swift.h>)
 #import <apple_vision_face/apple_vision_face-Swift.h>
 #else
@@ -8,8 +8,8 @@
 #import "apple_vision_face-Swift.h"
 #endif
 
-@implementation AppleVisionFacePlugin
+@implementation AppleVisionFace
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  [SwiftAppleVisionFacePlugin registerWithRegistrar:registrar];
+  [AppleVisionFacePlugin registerWithRegistrar:registrar];
 }
 @end

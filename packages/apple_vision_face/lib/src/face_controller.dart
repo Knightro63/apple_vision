@@ -9,7 +9,7 @@ import 'package:apple_vision_face/apple_vision_face.dart';
 class AppleVisionFaceController {
   static const MethodChannel _methodChannel = MethodChannel('apple_vision/face');
 
-  Future<FaceData?> process(Uint8List image, Size imageSize) async{
+  Future<FaceData?> processImage(Uint8List image, Size imageSize) async{
     try {
       final data = await _methodChannel.invokeMapMethod<String, dynamic>(  
         'process',

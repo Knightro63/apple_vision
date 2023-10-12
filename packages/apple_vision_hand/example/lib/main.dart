@@ -1,12 +1,9 @@
-import 'dart:async';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:apple_vision_hand/apple_vision_hand.dart';
-import 'package:camera_macos/camera_macos_controller.dart';
-import 'package:camera_macos/camera_macos_device.dart';
-import 'package:camera_macos/camera_macos_file.dart';
-import 'package:camera_macos/camera_macos_platform_interface.dart';
-import 'package:camera_macos/camera_macos_view.dart';
+import 'package:flutter/material.dart';
+import '../camera/camera_insert.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'camera/input_image.dart';
 
 void main() {
   runApp(const MyApp());
@@ -44,42 +41,43 @@ class VisionHand extends StatefulWidget {
 
 class _VisionHand extends State<VisionHand>{
   final GlobalKey cameraKey = GlobalKey(debugLabel: "cameraKey");
-  late AppleVisionHandController cameraController;
-  late List<CameraMacOSDevice> _cameras;
-  CameraMacOSController? controller;
+  AppleVisionHandController visionController = AppleVisionHandController();
+  InsertCamera camera = InsertCamera();
+  Size imageSize = const Size(640,640*9/16);
   String? deviceId;
+  bool loading = true;
 
-  HandData? poseData;
+  HandData? handData;
   late double deviceWidth;
   late double deviceHeight;
 
   @override
   void initState() {
-    cameraController = AppleVisionHandController();
-    CameraMacOS.instance.listDevices(deviceType: CameraMacOSDeviceType.video).then((value){
-      _cameras = value;
-      deviceId = _cameras.first.deviceId;
+    camera.setupCameras().then((value){
+      setState(() {
+        loading = false;
+      });
+      camera.startLiveFeed((InputImage i){
+        if(i.metadata?.size != null){
+          imageSize = i.metadata!.size;
+        }
+        if(mounted) {
+          Uint8List? image = i.bytes;
+          visionController.processImage(rgba2bitmap(image!, i.metadata!.size.width.toInt(), i.metadata!.size.height.toInt()) , i.metadata!.size).then((data){
+            handData = data;
+            setState(() {
+              
+            });
+          });
+        }
+      });
     });
     super.initState();
   }
   @override
   void dispose() {
-    controller?.destroy();
+    camera.dispose();
     super.dispose();
-  }
-  void onTakePictureButtonPressed() async{
-    CameraMacOSFile? file = await controller?.takePicture();
-    if(file != null && mounted) {
-      Uint8List? image = file.bytes;
-      if(image != null){
-        cameraController.processImage(image, widget.size).then((data){
-          poseData = data;
-          setState(() {
-            
-          });
-        });
-      }
-    }
   }
 
   @override
@@ -91,14 +89,14 @@ class _VisionHand extends State<VisionHand>{
         SizedBox(
           width: widget.size.width, 
           height: widget.size.height, 
-          child: _getScanWidgetByPlatform()
-        )
+          child: loading?Container():CameraSetup(camera: camera, size: imageSize)
+      ),
       ]+showPoints()
     );
   }
 
   List<Widget> showPoints(){
-    if(poseData == null || poseData!.poses.isEmpty) return[];
+    if(handData == null || handData!.poses.isEmpty) return[];
     Map<FingerJoint,Color> colors = {
       FingerJoint.thumbCMC: Colors.amber,
       FingerJoint.thumbIP: Colors.amber,
@@ -126,17 +124,17 @@ class _VisionHand extends State<VisionHand>{
       FingerJoint.littleTip: Colors.cyanAccent
     };
     List<Widget> widgets = [];
-    for(int i = 0; i < poseData!.poses.length; i++){
-      if(poseData!.poses[i].confidence > 0.5){
+    for(int i = 0; i < handData!.poses.length; i++){
+      if(handData!.poses[i].confidence > 0.5){
         widgets.add(
           Positioned(
-            top: poseData!.poses[i].location.y,
-            left: poseData!.poses[i].location.x,
+            top: handData!.poses[i].location.y,
+            left: handData!.poses[i].location.x,
             child: Container(
               width: 10,
               height: 10,
               decoration: BoxDecoration(
-                color: colors[poseData!.poses[i].joint],
+                color: colors[handData!.poses[i].joint],
                 borderRadius: BorderRadius.circular(5)
               ),
             )
@@ -147,29 +145,13 @@ class _VisionHand extends State<VisionHand>{
     return widgets;
   }
 
-  Widget _getScanWidgetByPlatform() {
-    return CameraMacOSView(
-      key: cameraKey,
-      fit: BoxFit.fill,
-      cameraMode: CameraMacOSMode.photo,
-      enableAudio: false,
-      onCameraLoading: (ob){
-        return Container(
-          width: widget.size.width,
-          height: widget.size.height,
-          color: Theme.of(context).canvasColor,
-          alignment: Alignment.center,
-          child: const CircularProgressIndicator(color: Colors.blue)
-        );
-      },
-      onCameraInizialized: (CameraMacOSController controller) {
-        setState(() {
-          this.controller = controller;
-          Timer.periodic(const Duration(milliseconds: 128),(_){
-            onTakePictureButtonPressed();
-          });
-        });
-      },
+  Widget loadingWidget(){
+    return Container(
+      width: widget.size.width,
+      height: widget.size.height,
+      color: Theme.of(context).canvasColor,
+      alignment: Alignment.center,
+      child: const CircularProgressIndicator(color: Colors.blue)
     );
   }
 }

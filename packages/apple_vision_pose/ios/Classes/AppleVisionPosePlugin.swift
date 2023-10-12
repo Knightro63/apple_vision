@@ -1,0 +1,1 @@
+/Users/johnsparkman/Documents/GitHub/apple_vision/packages/apple_vision_pose/macos/Classes/AppleVisionPosePlugin.swift

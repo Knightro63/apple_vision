@@ -8,7 +8,7 @@ import 'package:apple_vision_pose/apple_vision_pose.dart';
 class AppleVisionPoseController {
   static const MethodChannel _methodChannel = MethodChannel('apple_vision/pose');
 
-  Future<PoseData?> process(Uint8List image, Size imageSize) async{
+  Future<PoseData?> processImage(Uint8List image, Size imageSize) async{
     try {
       final Map<String, dynamic>? result = await _methodChannel.invokeMapMethod<String, dynamic>(  
         'process',

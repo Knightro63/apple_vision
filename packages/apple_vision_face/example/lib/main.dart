@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:apple_vision_face/apple_vision_face.dart';
 import 'package:flutter/material.dart';
 import '../camera/camera_insert.dart';
@@ -40,9 +39,9 @@ class VisionFace extends StatefulWidget {
   _VisionFace createState() => _VisionFace();
 }
 
-class _VisionFace extends State<VisionFace> with WidgetsBindingObserver{
+class _VisionFace extends State<VisionFace> {
   final GlobalKey cameraKey = GlobalKey(debugLabel: "cameraKey");
-  late AppleVisionFaceController cameraController;
+  AppleVisionFaceController visionController = AppleVisionFaceController();
   InsertCamera camera = InsertCamera();
   String? deviceId;
   bool loading = true;
@@ -54,8 +53,6 @@ class _VisionFace extends State<VisionFace> with WidgetsBindingObserver{
 
   @override
   void initState() {
-    cameraController = AppleVisionFaceController();
-
     camera.setupCameras().then((value){
       setState(() {
         loading = false;
@@ -64,9 +61,9 @@ class _VisionFace extends State<VisionFace> with WidgetsBindingObserver{
         if(i.metadata?.size != null){
           imageSize = i.metadata!.size;
         }
-        if(i != null && mounted) {
+        if(mounted) {
           Uint8List? image = i.bytes;
-          cameraController.process(image!, i.metadata!.size).then((data){
+          visionController.processImage(rgba2bitmap(image!, i.metadata!.size.width.toInt(), i.metadata!.size.height.toInt()) , i.metadata!.size).then((data){
             faceData = data;
             setState(() {
               
@@ -79,7 +76,6 @@ class _VisionFace extends State<VisionFace> with WidgetsBindingObserver{
   }
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
     camera.dispose();
     super.dispose();
   }
@@ -135,25 +131,6 @@ class _VisionFace extends State<VisionFace> with WidgetsBindingObserver{
     }
     return widgets;
   }
-
-  // Future<bool> onCameraInizialized() async{
-  //   Completer<bool> c = Completer<bool>();
-  //   print('here');
-  //   await availableCameras().then((value) async{
-  //     iosCameraController = CameraController(value[0], ResolutionPreset.max);
-  //     print('here');
-  //     await iosCameraController!.initialize().then((value){
-  //       setState(() {
-  //         loading = false;
-  //       });
-  //       c.complete(true);
-  //     }).onError((error, stackTrace){
-  //       c.complete(false);
-  //     });
-  //   });
- 
-  //   return c.future;
-  // }
 
   Widget loadingWidget(){
     return Container(

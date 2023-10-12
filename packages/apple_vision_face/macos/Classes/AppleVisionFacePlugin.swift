@@ -1,7 +1,13 @@
 import AVFoundation
-import FlutterMacOS
 import Vision
+
+#if os(iOS)
+import Flutter
+import UIKit
+#elseif os(macOS)
+import FlutterMacOS
 import AppKit
+#endif
 
 public class AppleVisionFacePlugin: NSObject, FlutterPlugin {
     let registry: FlutterTextureRegistry
@@ -12,8 +18,13 @@ public class AppleVisionFacePlugin: NSObject, FlutterPlugin {
     }
     
     public static func register(with registrar: FlutterPluginRegistrar) {
+        #if os(iOS)
+        let method = FlutterMethodChannel(name:"apple_vision/face", binaryMessenger: registrar.messenger())
+        let instance = AppleVisionFacePlugin(registrar.textures())
+        #elseif os(macOS)
         let method = FlutterMethodChannel(name:"apple_vision/face", binaryMessenger: registrar.messenger)
         let instance = AppleVisionFacePlugin(registrar.textures)
+        #endif
         registrar.addMethodCallDelegate(instance, channel: method)
     }
     
@@ -77,7 +88,7 @@ public class AppleVisionFacePlugin: NSObject, FlutterPlugin {
            face.landmarks?.rightEyebrow
         ]
         
-        var marks: [String] = [
+        let marks: [String] = [
            "faceContour",
            "outerLips",
            "innerLips",
@@ -111,10 +122,15 @@ public class AppleVisionFacePlugin: NSObject, FlutterPlugin {
         }
         
         var pitch: Double?;
-        if #available(macOS 12.0, *){
-            pitch = face.pitch as! Double?
-        }
-        
+        #if os(iOS)
+            if #available(iOS 15.0, *){
+                pitch = face.pitch as! Double?
+            }
+        #elseif os(macOS)
+            if #available(macOS 12.0, *){
+                pitch = face.pitch as! Double?
+            }
+        #endif
         let data:[String: Any?] = [
             "yaw": face.yaw,
             "roll": face.roll,
