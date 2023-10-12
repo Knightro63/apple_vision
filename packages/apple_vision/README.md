@@ -19,14 +19,20 @@ Apple Vision is a Flutter plugin that enables Flutter apps to use [Apple Vision]
 
 | Feature                                                                                       | Plugin | Source Code| MacOS | iOS |
 |-----------------------------------------------------------------------------------------------|--------|------------|---------|-----|
-|[Face Detection](https://developer.apple.com/documentation/vision/tracking_the_user_s_face_in_real_time)                   | [apple\_vision\_face](https://pub.dev/packages/apple_vision_face) [![Pub Version](https://img.shields.io/pub/v/apple_vision_face)](https://pub.dev/packages/apple_vision_face)                                        | [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Knightro63/apple_vision/tree/master/packages/apple_vision_face)             | ✅ | ❌ |
-|[Pose Detection](https://developer.apple.com/documentation/vision/detecting_human_body_poses_in_images)                   | [apple\_vision\_pose](https://pub.dev/packages/apple_vision_pose) [![Pub Version](https://img.shields.io/pub/v/apple_vision_pose)](https://pub.dev/packages/apple_vision_pose)                                        | [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Knightro63/apple_vision/tree/master/packages/apple_vision_pose)             | ✅ | ❌ |
-|[Hand Detection](https://developer.apple.com/documentation/vision/detecting_hand_poses_with_vision)                   | [apple\_vision\_hand](https://pub.dev/packages/apple_vision_hand) [![Pub Version](https://img.shields.io/pub/v/apple_vision_hand)](https://pub.dev/packages/apple_vision_hand)                                        | [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/bharat-biradar/apple_vision/tree/master/packages/apple_vision_hand)             | ✅ | ❌ |
+|[Face Detection](https://developer.apple.com/documentation/vision/tracking_the_user_s_face_in_real_time)                   | [apple\_vision\_face](https://pub.dev/packages/apple_vision_face) [![Pub Version](https://img.shields.io/pub/v/apple_vision_face)](https://pub.dev/packages/apple_vision_face)                                        | [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Knightro63/apple_vision/tree/master/packages/apple_vision_face)             | ✅ | ✅ |
+|[Pose Detection](https://developer.apple.com/documentation/vision/detecting_human_body_poses_in_images)                   | [apple\_vision\_pose](https://pub.dev/packages/apple_vision_pose) [![Pub Version](https://img.shields.io/pub/v/apple_vision_pose)](https://pub.dev/packages/apple_vision_pose)                                        | [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Knightro63/apple_vision/tree/master/packages/apple_vision_pose)             | ✅ | ✅ |
+|[Hand Detection](https://developer.apple.com/documentation/vision/detecting_hand_poses_with_vision)                   | [apple\_vision\_hand](https://pub.dev/packages/apple_vision_hand) [![Pub Version](https://img.shields.io/pub/v/apple_vision_hand)](https://pub.dev/packages/apple_vision_hand)                                        | [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/bharat-biradar/apple_vision/tree/master/packages/apple_vision_hand)             | ✅ | ✅ |
 
 ## Requirements
 
 **MacOS**
- - Minimum osx Deployment Target: 13.0
+ - Minimum os Deployment Target: 13.0
+ - Xcode 13 or newer
+ - Swift 5
+ - ML Kit only supports 64-bit architectures (x86_64 and arm64).
+
+**iOS**
+ - Minimum os Deployment Target: 14.0
  - Xcode 13 or newer
  - Swift 5
  - ML Kit only supports 64-bit architectures (x86_64 and arm64).

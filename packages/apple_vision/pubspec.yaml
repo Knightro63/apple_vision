@@ -1,6 +1,6 @@
 name: apple_vision
 description: A Flutter plugin to use all API's from Apple vision made for osx.
-version: 0.0.1
+version: 0.0.2
 homepage: https://github.com/Knightro63/apple_vision/tree/main/packages/apple_vision
 
 environment:
@@ -12,9 +12,9 @@ dependencies:
     sdk: flutter
 
   apple_vision_commons: ^0.0.1
-  apple_vision_face: ^0.0.1
-  apple_vision_pose: ^0.0.1
-  apple_vision_hand: ^0.0.1
+  apple_vision_face: ^0.0.2
+  apple_vision_pose: ^0.0.2
+  apple_vision_hand: ^0.0.2
 
 # dependency_overrides:
 #   apple_vision_commons:
