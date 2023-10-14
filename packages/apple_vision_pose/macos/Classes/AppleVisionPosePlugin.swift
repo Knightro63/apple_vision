@@ -34,18 +34,24 @@ public class AppleVisionPosePlugin: NSObject, FlutterPlugin {
             }
             let width = arguments["width"] as? Double ?? 0
             let height = arguments["height"] as? Double ?? 0
-            if #available(iOS 14.0, *) {
+            #if os(iOS)
+                if #available(iOS 14.0, *) {
+                    return result(convertImage(Data(data.data),CGSize(width: width , height: height)))
+                } else {
+                    return result(FlutterError(code: "INVALID OS", message: "requires version 14.0", details: nil))
+                }
+            #elseif os(macOS)
                 return result(convertImage(Data(data.data),CGSize(width: width , height: height)))
-            } else {
-                return result(FlutterError(code: "INVALID OS", message: "requires version 14.0", details: nil))
-            }
+            #endif
         default:
             result(FlutterMethodNotImplemented)
         }
     }
     
     // Gets called when a new image is added to the buffer
+    #if os(iOS)
     @available(iOS 14.0, *)
+    #endif
     func convertImage(_ data: Data,_ imageSize: CGSize) -> [String:Any?]{
         let imageRequestHandler = VNImageRequestHandler(
             data: data,
@@ -72,7 +78,9 @@ public class AppleVisionPosePlugin: NSObject, FlutterPlugin {
         return event
     }
     
+    #if os(iOS)
     @available(iOS 14.0, *)
+    #endif
     func processObservation(_ observation: VNHumanBodyPoseObservation,_ imageSize: CGSize) -> [String:Any?] {
         // Retrieve all torso points.
         guard let recognizedPoints =

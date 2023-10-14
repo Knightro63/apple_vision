@@ -28,11 +28,9 @@ class MyApp extends StatelessWidget {
 class VisionHand extends StatefulWidget {
   const VisionHand({
     Key? key,
-    this.size = const Size(640,480),
     this.onScanned
   }):super(key: key);
 
-  final Size size;
   final Function(dynamic data)? onScanned; 
 
   @override
@@ -87,8 +85,8 @@ class _VisionHand extends State<VisionHand>{
     return Stack(
       children:<Widget>[
         SizedBox(
-          width: widget.size.width, 
-          height: widget.size.height, 
+          width: imageSize.width, 
+          height: imageSize.height, 
           child: loading?Container():CameraSetup(camera: camera, size: imageSize)
       ),
       ]+showPoints()
@@ -147,8 +145,8 @@ class _VisionHand extends State<VisionHand>{
 
   Widget loadingWidget(){
     return Container(
-      width: widget.size.width,
-      height: widget.size.height,
+      width: deviceWidth,
+      height:deviceHeight,
       color: Theme.of(context).canvasColor,
       alignment: Alignment.center,
       child: const CircularProgressIndicator(color: Colors.blue)
