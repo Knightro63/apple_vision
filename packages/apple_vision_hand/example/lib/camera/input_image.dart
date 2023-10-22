@@ -38,7 +38,25 @@ Uint8List rgba2bitmap(
 
   return headerIntList;
 }
+Uint8List rgb2rgba(Uint8List content,int alpha,[int? toTransparent]){
+  final int size = content.length~/3;
+  alpha = alpha<0?0:alpha>255?255:alpha;
+  final Uint8List list = Uint8List(size*4);
 
+  for(int i = 0, j= 0; i < list.length-4;i+=4,j+=3){
+    list[i] = content[j];
+    list[i+1] = content[j+1];
+    list[i+2] = content[j+2];
+    int val = content[j]+content[j+1]+content[j+2];
+    if(toTransparent != null && val < 75){
+      list[i+3] = 0;
+    }
+    else{
+      list[i+3] = alpha;
+    }
+  }
+  return list;
+}
 /// Image format that ML Kit takes to process the image.
 class InputImage {
   /// The file path to the image.

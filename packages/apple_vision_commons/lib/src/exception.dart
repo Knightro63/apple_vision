@@ -23,6 +23,10 @@ class AppleVisionException implements Exception {
 }
 
 /// The raw error details for a [AppleVisionException].
+/// 
+/// [code] The error code thrown
+/// [details] The details of the message
+/// [message] The error message
 class AppleVisionErrorDetails {
   const AppleVisionErrorDetails({
     this.code,

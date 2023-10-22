@@ -45,7 +45,7 @@ class _VisionHand extends State<VisionHand>{
   String? deviceId;
   bool loading = true;
 
-  HandData? handData;
+  List<HandData>? handData;
   late double deviceWidth;
   late double deviceHeight;
 
@@ -61,7 +61,7 @@ class _VisionHand extends State<VisionHand>{
         }
         if(mounted) {
           Uint8List? image = i.bytes;
-          visionController.processImage(rgba2bitmap(image!, i.metadata!.size.width.toInt(), i.metadata!.size.height.toInt()) , i.metadata!.size).then((data){
+          visionController.processImage(image!, imageSize).then((data){
             handData = data;
             setState(() {
               
@@ -94,7 +94,8 @@ class _VisionHand extends State<VisionHand>{
   }
 
   List<Widget> showPoints(){
-    if(handData == null || handData!.poses.isEmpty) return[];
+    if(handData == null || handData!.isEmpty) return[];
+    List<Widget> widgets = [];
     Map<FingerJoint,Color> colors = {
       FingerJoint.thumbCMC: Colors.amber,
       FingerJoint.thumbIP: Colors.amber,
@@ -121,23 +122,24 @@ class _VisionHand extends State<VisionHand>{
       FingerJoint.littlePIP: Colors.cyanAccent,
       FingerJoint.littleTip: Colors.cyanAccent
     };
-    List<Widget> widgets = [];
-    for(int i = 0; i < handData!.poses.length; i++){
-      if(handData!.poses[i].confidence > 0.5){
-        widgets.add(
-          Positioned(
-            top: handData!.poses[i].location.y,
-            left: handData!.poses[i].location.x,
-            child: Container(
-              width: 10,
-              height: 10,
-              decoration: BoxDecoration(
-                color: colors[handData!.poses[i].joint],
-                borderRadius: BorderRadius.circular(5)
-              ),
+    for(int j = 0; j < handData!.length; j++){
+      for(int i = 0; i < handData![j].poses.length; i++){
+        if(handData![j].poses[i].confidence > 0.5){
+          widgets.add(
+            Positioned(
+              top: handData![j].poses[i].location.y,
+              left: handData![j].poses[i].location.x,
+              child: Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(
+                  color: colors[handData![j].poses[i].joint],
+                  borderRadius: BorderRadius.circular(5)
+                ),
+              )
             )
-          )
-        );
+          );
+        }
       }
     }
     return widgets;

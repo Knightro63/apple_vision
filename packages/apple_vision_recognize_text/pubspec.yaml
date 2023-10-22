@@ -1,0 +1,24 @@
+name: apple_vision_recognize_text
+description: A Flutter plugin to use Apple Vision Recognize Text in an image or live camera feed.
+version: 0.0.1
+homepage: https://github.com/Knightro63/apple_vision/tree/main/packages/apple_vision_recognize_text
+
+environment:
+  sdk: '>=2.18.6 <4.0.0'
+  flutter: ">=1.20.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  apple_vision_commons: ^0.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.3
+
+flutter:
+  plugin:
+    platforms:
+      macos:
+        pluginClass: AppleVisionRecognizeTextPlugin

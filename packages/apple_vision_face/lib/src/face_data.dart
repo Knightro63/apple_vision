@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// The landmarks of the face received from apple vision
 enum LandMark{
   faceContour,
   outerLips,
@@ -12,18 +13,34 @@ enum LandMark{
   rightEyebrow
 }
 
+/// The coordinate points of the face
+/// 
+/// [x] X location
+/// [y] Y location
 class FacePoint{
   FacePoint(this.x,this.y);
-  double x;
-  double y;
+  final double x;
+  final double y;
 }
 
+/// A class that gives The type of landmark and the location of the landmark or marks
+/// 
+/// [landmark] the spot on the face
+/// [location] where the position of the spot in x and y coords
 class Face{
   Face(this.landmark,this.location);
-  LandMark landmark;
-  List<FacePoint> location;
+  final LandMark landmark;
+  final List<FacePoint> location;
 }
 
+/// A class that has all the information on the face detected
+/// 
+/// [marks] The marks found in the image.
+/// [imageSize] The size of the image sent.
+/// [yaw] The yaw of the face. This is the head turned to the side.
+/// [roll] The roll of the face. This is head tilted to the side.
+/// [pitch] The pitch of the face. This is the head tilting backwards.
+/// [quality] The quality of the information returned
 class FaceData{
   FaceData({
     required this.marks,
@@ -33,16 +50,19 @@ class FaceData{
     this.pitch,
     this.quality
   });
-  List<Face> marks;
-  Size imageSize;
-  double yaw;
-  double roll;
-  double? pitch;
-  double? quality;
+  final List<Face> marks;
+  final Size imageSize;
+  final double yaw;
+  final double roll;
+  final double? pitch;
+  final double? quality;
 }
 
+/// A class that converts the information from apple vision to dart
 class FaceFunctions{
-  List<Face> getFaceDataFromList(List<Object?> object){
+
+  /// Convert face data from apple vision to usable dart data
+  static List<Face> getFaceDataFromList(List<Object?> object){
     List<Face> data = [];
     for(int i = 0; i < object.length; i++){
       Map map = (object[i] as Map);
@@ -61,7 +81,9 @@ class FaceFunctions{
 
     return data;
   }
-  LandMark? getJointFromString(String joint){
+
+  /// Get the joint information for a string format and convert to an enum Landmark
+  static LandMark? getJointFromString(String joint){
     for(int i = 0; i < LandMark.values.length;i++){
       if(LandMark.values[i].name == joint){
         return LandMark.values[i];

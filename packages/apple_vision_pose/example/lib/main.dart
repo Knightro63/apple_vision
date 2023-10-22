@@ -46,7 +46,7 @@ class _VisionPose extends State<VisionPose>{
   String? deviceId;
   bool loading = true;
 
-  PoseData? poseData;
+  List<PoseData>? poseData;
   late double deviceWidth;
   late double deviceHeight;
 
@@ -95,7 +95,7 @@ class _VisionPose extends State<VisionPose>{
   }
 
   List<Widget> showPoints(){
-    if(poseData == null || poseData!.poses.isEmpty) return[];
+    if(poseData == null || poseData!.isEmpty) return[];
     Map<Joint,Color> colors = {
       Joint.rightFoot: Colors.orange,
       Joint.rightLeg: Colors.orange,
@@ -126,22 +126,24 @@ class _VisionPose extends State<VisionPose>{
       Joint.head: Colors.cyanAccent
     };
     List<Widget> widgets = [];
-    for(int i = 0; i < poseData!.poses.length; i++){
-      if(poseData!.poses[i].confidence > 0.5){
-        widgets.add(
-          Positioned(
-            top: poseData!.poses[i].location.y,
-            left: poseData!.poses[i].location.x,
-            child: Container(
-              width: 10,
-              height: 10,
-              decoration: BoxDecoration(
-                color: colors[poseData!.poses[i].joint],
-                borderRadius: BorderRadius.circular(5)
-              ),
+    for(int j = 0; j < poseData!.length;j++){
+      for(int i = 0; i < poseData![j].poses.length; i++){
+        if(poseData![j].poses[i].confidence > 0.5){
+          widgets.add(
+            Positioned(
+              top: poseData![j].poses[i].location.y,
+              left: poseData![j].poses[i].location.x,
+              child: Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(
+                  color: colors[poseData![j].poses[i].joint],
+                  borderRadius: BorderRadius.circular(5)
+                ),
+              )
             )
-          )
-        );
+          );
+        }
       }
     }
     return widgets;

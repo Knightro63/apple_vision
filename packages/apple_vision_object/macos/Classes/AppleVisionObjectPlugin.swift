@@ -6,6 +6,7 @@ import AppKit
 public class AppleVisionObjectPlugin: NSObject, FlutterPlugin {
     
     let registry: FlutterTextureRegistry
+    var model:VNCoreMLModel?
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let instance = AppleVisionObjectPlugin(registrar.textures)
@@ -36,55 +37,72 @@ public class AppleVisionObjectPlugin: NSObject, FlutterPlugin {
     
     // Gets called when a new image is added to the buffer
     func convertImage(_ data: Data,_ imageSize: CGSize) -> [String:Any?]{
-        let imageRequestHandler = VNImageRequestHandler(
+        let handler = VNImageRequestHandler(
             data: data,
             orientation: .downMirrored)
             
         var event:[String:Any?] = ["name":"noData"];
-
-        do {
-            try
-            imageRequestHandler.perform([VNTrackObjectRequest(de: inputObservations.value) { (request, error)in
-                if error == nil {
-                    
-                    if let results = request.results as? [VNDetectedObjectObservation] {
-                        for object in results {
-                            event = self.processObservation(object,imageSize)
-                        }
+        
+        if model == nil{
+            model = AppleVisionObjectPlugin.createImageClassifier()
+        }
+        else{
+            let imageRecognition = VNCoreMLRequest(model: model!, completionHandler: { (request, error) in
+                if let results = request.results as? [VNRecognizedObjectObservation] {
+                    var objects:[[String:Any?]] = []
+                    for object in results {
+                        objects.append(self.processObservation(object,imageSize))
                     }
-                } else {
-                    event = ["name":"error","code": "No Face In Detected", "message": error!.localizedDescription]
-                    print(error!.localizedDescription)
+                    event = [
+                        "name": "object",
+                        "data": objects,
+                        "imageSize": [
+                            "width": imageSize.width,
+                            "height": imageSize.height
+                        ]
+                    ]
                 }
-            }])
-        } catch {
-            event = ["name":"error","code": "Data Corropted", "message": error.localizedDescription]
-            print(error)
+            })
+            let requests: [VNRequest] = [imageRecognition]
+            // Start the image classification request.
+            try? handler.perform(requests)
         }
 
         return event;
     }
-    
-    func processObservation(_ observation: VNFaceObservation,_ imageSize: CGSize) -> [String:Any?] {
+    /// - Tag: name
+    static func createImageClassifier() -> VNCoreMLModel {
+        // Use a default model configuration.
+        let defaultConfig = MLModelConfiguration()
+        // Create an instance of the image classifier's wrapper class.
+        let imageClassifierWrapper = try? YOLOv3Int8LUT(configuration: defaultConfig)
+        guard let imageClassifier = imageClassifierWrapper else {
+            fatalError("App failed to create an image classifier model instance.")
+        }
+        // Get the underlying model instance.
+        let imageClassifierModel = imageClassifier.model
+        // Create a Vision instance using the image classifier's model instance.
+        guard let imageClassifierVisionModel = try? VNCoreMLModel(for: imageClassifierModel) else {
+            fatalError("App failed to create a `VNCoreMLModel` instance.")
+        }
+        return imageClassifierVisionModel
+    }
+    func processObservation(_ observation: VNRecognizedObjectObservation,_ imageSize: CGSize) -> [String:Any?] {
         // Retrieve all torso points.
         let recognizedPoints = observation.boundingBox
         let coord =  VNImagePointForNormalizedPoint(recognizedPoints.origin,
                                              Int(imageSize.width),
                                              Int(imageSize.height))
-        let event: [String: Any?] = [
-            "name": "object",
-            "data" : [
-                "minX":Double(recognizedPoints.minX),
-                "maxX":Double(recognizedPoints.maxX),
-                "minY":Double(recognizedPoints.minY),
-                "maxY":Double(recognizedPoints.maxX),
-                "height":Double(recognizedPoints.height),
-                "width":Double(recognizedPoints.width),
-                "origin": ["x":coord.x,"y":coord.y]
-            ],
-            "imageSize": ["width":imageSize.width ,"height":imageSize.height]
+        return [
+            "minX":Double(recognizedPoints.minX),
+            "maxX":Double(recognizedPoints.maxX),
+            "minY":Double(recognizedPoints.minY),
+            "maxY":Double(recognizedPoints.maxX),
+            "height":Double(recognizedPoints.height),
+            "width":Double(recognizedPoints.width),
+            "origin": ["x":coord.x,"y":coord.y],
+            "label": observation.labels[0].identifier,
+            "confidence": observation.confidence
         ]
-        
-        return event
     }
 }

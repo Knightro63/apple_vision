@@ -61,9 +61,15 @@ public class AppleVisionPosePlugin: NSObject, FlutterPlugin {
             try imageRequestHandler.perform([VNDetectHumanBodyPoseRequest { (request, error) in
                 if error == nil {
                     if let results = request.results as? [VNHumanBodyPoseObservation] {
+                        var poseData:[[String:Any?]] = []
                         for pose in results {
-                            event = self.processObservation(pose,imageSize)
+                            poseData.append(self.processObservation(pose,imageSize))
                         }
+                        event = [
+                            "name": "pose",
+                            "imageSize": imageSize,
+                            "data": poseData
+                        ]
                     }
                 } else {
                     event = ["name":"error","code": "No Face In Detected", "message": error!.localizedDescription]
@@ -81,10 +87,10 @@ public class AppleVisionPosePlugin: NSObject, FlutterPlugin {
     #if os(iOS)
     @available(iOS 14.0, *)
     #endif
-    func processObservation(_ observation: VNHumanBodyPoseObservation,_ imageSize: CGSize) -> [String:Any?] {
+    func processObservation(_ observation: VNHumanBodyPoseObservation,_ imageSize: CGSize) -> [[String:Any?]] {
         // Retrieve all torso points.
         guard let recognizedPoints =
-                try? observation.recognizedPoints(.all) else { return ["name":"noData"]}
+                try? observation.recognizedPoints(.all) else { return [[:]]}
         
         // Torso joint names in a clockwise ordering.
         let torsoJointNames: [VNHumanBodyPoseObservation.JointName] = [
@@ -119,13 +125,7 @@ public class AppleVisionPosePlugin: NSObject, FlutterPlugin {
                                                   Int(imageSize.height))
             return [$0.rawValue.rawValue.description: ["x":coord.x ,"y":coord.y, "confidence": point.confidence]]
         }
-            
-        let event: [String: Any?] = [
-            "name": "pose",
-            "data" : imagePoints,
-            "imageSize": ["width":imageSize.width ,"height":imageSize.height]
-        ]
         
-        return event
+        return imagePoints
     }
 }

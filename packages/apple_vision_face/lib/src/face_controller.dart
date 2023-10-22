@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:apple_vision_commons/apple_vision_commons.dart';
 import 'package:apple_vision_face/apple_vision_face.dart';
 
 /// The [AppleVisionFaceController] holds all the logic of this plugin,
@@ -9,7 +10,13 @@ import 'package:apple_vision_face/apple_vision_face.dart';
 class AppleVisionFaceController {
   static const MethodChannel _methodChannel = MethodChannel('apple_vision/face');
 
-  Future<FaceData?> processImage(Uint8List image, Size imageSize) async{
+  /// Process the image using apple vision and return the requested information or null value
+  /// 
+  /// [image] as Uint8List is the image that needs to be processed
+  /// this needs to be in an image format raw will not work.
+  /// 
+  /// [imageSize] as Size is the size of the image that is being processed
+  Future<List<FaceData>?> processImage(Uint8List image, Size imageSize) async{
     try {
       final data = await _methodChannel.invokeMapMethod<String, dynamic>(  
         'process',
@@ -27,20 +34,25 @@ class AppleVisionFaceController {
   }
 
   /// Faceles a returning event from the platform side
-  FaceData? _convertData(Map? event) {
+  List<FaceData>? _convertData(Map? event) {
     if(event == null) return null;
     final name = event['name'];
 
     switch (name) {
       case 'face':
-        FaceData data = FaceData(
-          marks:FaceFunctions().getFaceDataFromList(event['data']),
-          imageSize:Size(event['imageSize']['width'],event['imageSize']['height']),
-          yaw: event['orientation']['yaw'],
-          pitch: event['orientation']['pitch'],
-          roll: event['orientation']['roll'],
-          quality: event['orientation']['quality']
-        );
+        List<FaceData> data = [];
+        for(int i = 0; i < event['data'].length;i++){
+          data.add(
+            FaceData(
+              marks:FaceFunctions.getFaceDataFromList(event['data'][i]['data']),
+              imageSize:Size(event['imageSize']['width'],event['imageSize']['height']),
+              yaw: event['data'][i]['orientation']['yaw'],
+              pitch: event['data'][i]['orientation']['pitch'],
+              roll: event['data'][i]['orientation']['roll'],
+              quality: event['data'][i]['orientation']['quality']
+            )
+          );
+        }
         return data;
       case 'noData':
         break;

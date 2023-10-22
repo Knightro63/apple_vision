@@ -1,26 +1,32 @@
 import 'package:flutter/material.dart';
 
-class Object{
-  Object(this.rect);
-  Rect rect;
-}
-
+/// All the data received from apple vision
+/// 
+/// [object] is the location and size of the object
+/// 
+/// [label] the label of the object
+/// [confidence] confidence that object is that object as a double between 0-1
 class ObjectData{
-  ObjectData(this.objects,this.imageSize);
-  List<Object> objects;
-  Size imageSize;
+  ObjectData({
+    required this.object,
+    required this.label,
+    required this.confidence
+  });
+  Rect object;
+  final double confidence;
+  final String label;
 }
 
+/// A class that converts the information from apple vision to dart
 class ObjectFunctions{
-  List<Object> getObjectDataFromList(List<Object?> object){
-    List<Object> data = [];
-    for(int i = 0; i < object.length; i++){
-      Map map = (object[i] as Map);
-      String temp = map.keys.first;
-      data.add(
-        Object(Rect.fromCenter(center: Offset(map['origin']['x'],map['origin']['y']),width: map['width'],height: map['height']))
-      );
-    }
+  /// Convert rect data from apple vision to usable dart data
+  static ObjectData getObjectDataFromList(Object? object){
+    Map map = object as Map;
+    ObjectData data = ObjectData(
+      confidence: map['confidence'],
+      label: map['label'],
+      object: Rect.fromCenter(center: Offset(map['origin']['x'],map['origin']['y']),width: map['width'],height: map['height'])
+    );
 
     return data;
   }

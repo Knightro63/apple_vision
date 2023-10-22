@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:apple_vision_commons/apple_vision_commons.dart';
 import 'package:apple_vision_pose/apple_vision_pose.dart';
 
 /// The [AppleVisionPoseController] holds all the logic of this plugin,
@@ -8,7 +9,13 @@ import 'package:apple_vision_pose/apple_vision_pose.dart';
 class AppleVisionPoseController {
   static const MethodChannel _methodChannel = MethodChannel('apple_vision/pose');
 
-  Future<PoseData?> processImage(Uint8List image, Size imageSize) async{
+  /// Process the image using apple vision and return the requested information or null value
+  /// 
+  /// [image] as Uint8List is the image that needs to be processed
+  /// this needs to be in an image format raw will not work.
+  /// 
+  /// [imageSize] as Size is the size of the image that is being processed
+  Future<List<PoseData>?> processImage(Uint8List image, Size imageSize) async{
     try {
       final Map<String, dynamic>? result = await _methodChannel.invokeMapMethod<String, dynamic>(  
         'process',
@@ -24,14 +31,18 @@ class AppleVisionPoseController {
 
     return null;
   }
+  
   /// Handles a returning event from the platform side
-  PoseData? _convertData(Map? event) {
+  List<PoseData>? _convertData(Map? event) {
     if(event == null) return null;
     final name = event['name'];
 
     switch (name) {
       case 'pose':
-        PoseData data = PoseData(PoseFunctions().getPoseDataFromList(event['data']),Size(event['imageSize']['width'],event['imageSize']['height']));
+        List<PoseData> data = [];
+        for(int i = 0; i < event['data'].length;i++){
+          data.add(PoseData(PoseFunctions.getPoseDataFromList(event['data'][i]),Size(event['imageSize']['width'],event['imageSize']['height'])));
+        }
         return data;
       case 'noData':
         break;

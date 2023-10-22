@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 /// The start arguments of the scanner.
+/// 
+/// [size] the size of the image.
+/// [textureId] the id of the capture
 class AppleVisionArguments {
   /// The output size of the camera.
   /// This value can be used to draw a box in the image.

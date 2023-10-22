@@ -45,7 +45,7 @@ class _VisionFace extends State<VisionFace> {
   bool loading = true;
   Size imageSize = const Size(640,640*9/16);
 
-  FaceData? faceData;
+  List<FaceData>? faceData;
   late double deviceWidth;
   late double deviceHeight;
 
@@ -61,7 +61,7 @@ class _VisionFace extends State<VisionFace> {
         }
         if(mounted) {
           Uint8List? image = i.bytes;
-          visionController.processImage(rgba2bitmap(image!, i.metadata!.size.width.toInt(), i.metadata!.size.height.toInt()) , i.metadata!.size).then((data){
+          visionController.processImage(image!, i.metadata!.size).then((data){
             faceData = data;
             setState(() {
               
@@ -94,7 +94,8 @@ class _VisionFace extends State<VisionFace> {
   }
 
   List<Widget> showPoints(){
-    if(faceData == null || faceData!.marks.isEmpty) return[];
+    if(faceData == null || faceData!.isEmpty) return[];
+    List<Widget> widgets = [];
     Map<LandMark,Color> colors = {
       LandMark.faceContour: Colors.amber,
       LandMark.outerLips: Colors.red,
@@ -106,25 +107,28 @@ class _VisionFace extends State<VisionFace> {
       LandMark.leftEyebrow: Colors.lime,
       LandMark.rightEyebrow: Colors.lime,
     };
-    List<Widget> widgets = [];
 
-    for(int i = 0; i < faceData!.marks.length; i++){
-      List<FacePoint> points = faceData!.marks[i].location;
-      for(int j = 0; j < points.length;j++){
-        widgets.add(
-          Positioned(
-            left: points[j].x,
-            top: points[j].y,
-            child: Container(
-              width: 10,
-              height: 10,
-              decoration: BoxDecoration(
-                color: colors[faceData!.marks[i].landmark],
-                borderRadius: BorderRadius.circular(5)
-              ),
-            )
-          )
-        );
+    for(int k = 0; k < faceData!.length;k++){
+      if(faceData![k].marks.isNotEmpty){
+        for(int i = 0; i < faceData![k].marks.length; i++){
+          List<FacePoint> points = faceData![k].marks[i].location;
+          for(int j = 0; j < points.length;j++){
+            widgets.add(
+              Positioned(
+                left: points[j].x,
+                top: points[j].y,
+                child: Container(
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    color: colors[faceData![k].marks[i].landmark],
+                    borderRadius: BorderRadius.circular(5)
+                  ),
+                )
+              )
+            );
+          }
+        }
       }
     }
     return widgets;

@@ -65,9 +65,15 @@ public class AppleVisionHandPlugin: NSObject, FlutterPlugin {
                 if error == nil {
                     
                     if let results = request.results as? [VNHumanHandPoseObservation] {
+                        var handData:[[[String:Any?]]] = []
                         for hand in results {
-                            event = self.processObservation(hand,imageSize)
+                            handData.append(self.processObservation(hand,imageSize))
                         }
+                        event = [
+                            "name": "hand",
+                            "imageSize": ["width":imageSize.width ,"height":imageSize.height],
+                            "data": handData
+                        ]
                     }
                 } else {
                     event = ["name":"error","code": "No Hand In Detected", "message": error!.localizedDescription]
@@ -85,10 +91,10 @@ public class AppleVisionHandPlugin: NSObject, FlutterPlugin {
     #if os(iOS)
     @available(iOS 14.0, *)
     #endif
-    func processObservation(_ observation: VNHumanHandPoseObservation,_ imageSize: CGSize) -> [String:Any?]{
+    func processObservation(_ observation: VNHumanHandPoseObservation,_ imageSize: CGSize) -> [[String:Any?]]{
         // Retrieve all torso points.
         guard let recognizedPoints =
-                try? observation.recognizedPoints(.all) else { return ["name":"noData"]}
+                try? observation.recognizedPoints(.all) else { return [[:]]}
         
         // Torso joint names in a clockwise ordering.
         let handJointNames: [VNHumanHandPoseObservation.JointName] = [
@@ -128,13 +134,7 @@ public class AppleVisionHandPlugin: NSObject, FlutterPlugin {
                                                   Int(imageSize.height))
             return [$0.rawValue.rawValue: ["x":coord.x ,"y":coord.y, "confidence": point.confidence]]
         }
-            
-        let event: [String: Any?] = [
-            "name": "hand",
-            "data" : imagePoints,
-            "imageSize": ["width":imageSize.width ,"height":imageSize.height]
-        ]
         
-        return event
+        return imagePoints
     }
 }

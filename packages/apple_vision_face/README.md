@@ -18,7 +18,7 @@ Apple Vision Face Detection is a Flutter plugin that enables Flutter apps to use
  - ML Kit only supports 64-bit architectures (x86_64 and arm64).
 
 **iOS**
- - Minimum osx Deployment Target: 13.0
+ - Minimum ios Deployment Target: 13.0
  - Xcode 13 or newer
  - Swift 5
  - ML Kit only supports 64-bit architectures (x86_64 and arm64).

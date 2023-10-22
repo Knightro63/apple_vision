@@ -1,6 +1,6 @@
 ## 0.0.2
 
-* Added ios compatibility
+* Added ios compatibility, and updated comments.
 
 ## 0.0.1
 

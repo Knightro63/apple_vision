@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// The Joint of the body received from apple vision
 enum Joint {
   rightFoot, // Right Ankle
   rightLeg, // Right Knee
@@ -23,27 +24,42 @@ enum Joint {
   root,
 }
 
+/// The coordinate points of the body
+/// 
+/// [x] X location
+/// [y] Y location
 class PosePoint {
   PosePoint(this.x, this.y);
-  double x;
-  double y;
+  final double x;
+  final double y;
 }
 
+/// A class that gives the type of joint and the location of the joint and the confidence that it is that joint
+/// 
+/// [joint] the joint found
+/// [location] where the position of the joint in x and y coords
+/// [confidence] the percentage that it is that joint
 class Pose {
   Pose(this.joint, this.location, this.confidence);
-  Joint joint;
-  PosePoint location;
-  double confidence;
+  final Joint joint;
+  final PosePoint location;
+  final double confidence;
 }
 
+/// A class that has all the information on the body detected
+/// 
+/// [poses] The joint information gathered.
+/// [imageSize] The size of the image sent.
 class PoseData {
   PoseData(this.poses, this.imageSize);
   List<Pose> poses;
   Size imageSize;
 }
 
+/// A class that converts the information from apple vision to dart
 class PoseFunctions {
-  List<Pose> getPoseDataFromList(List<Object?> object) {
+  /// Convert pose data from apple vision to usable dart data
+  static List<Pose> getPoseDataFromList(List<Object?> object) {
     List<Pose> data = [];
     for (int i = 0; i < object.length; i++) {
       Map map = (object[i] as Map);
@@ -55,7 +71,8 @@ class PoseFunctions {
     return data;
   }
 
-  Joint? getJointFromString(String joint) {
+  /// Get the joint information for a string format and convert to an enum Joint
+  static Joint? getJointFromString(String joint) {
     for (int i = 0; i < Joint.values.length; i++) {
       String other =
           joint.replaceAll("joint", '').replaceAll('1', '').replaceAll('_', '');

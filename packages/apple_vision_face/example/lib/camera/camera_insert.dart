@@ -142,19 +142,43 @@ class InsertCamera{
     _returnImage = returnImage;
     isLive = true;
     if(Platform.isMacOS){
-      controllerMacos?.startImageStream((p){
-        imageSize ??= imageSize = Size(p.width.toDouble(), p.height.toDouble());
-        InputImage i = InputImage.fromBytes(
-          bytes: p.bytes,
-          metadata: InputImageMetadata(
-            size: imageSize!,
-            rotation: InputImageRotation.rotation0deg,
-            format: InputImageFormat.bgra8888,
-            bytesPerRow: 0,
-          )
-        );
-        _returnImage!(i);
+      _liveTimerMacos = Timer.periodic(const Duration(milliseconds: 16),(_){
+        if(!_processingLiveMacos){
+          _processingLiveMacos = true;
+          
+          takePicture().then((data){
+            Uint8List send = data.file!;
+            imageSize = Size(960,540);
+            if(kIsWeb){
+              send = data.file!;//img.data!.buffer.asUint8List();
+            }
+            InputImage i = InputImage.fromBytes(
+              bytes: send,
+              metadata: InputImageMetadata(
+                size: imageSize!,
+                rotation: InputImageRotation.rotation0deg,
+                format: InputImageFormat.bgra8888,
+                bytesPerRow: 0,
+              )
+            );
+            _returnImage!(i);
+            _processingLiveMacos = false;
+          });
+        }
       });
+      // controllerMacos?.startImageStream((p){
+      //   imageSize ??= imageSize = Size(p.width.toDouble(), p.height.toDouble());
+      //   InputImage i = InputImage.fromBytes(
+      //     bytes: p.bytes,
+      //     metadata: InputImageMetadata(
+      //       size: imageSize!,
+      //       rotation: InputImageRotation.rotation0deg,
+      //       format: InputImageFormat.bgra8888,
+      //       bytesPerRow: 0,
+      //     )
+      //   );
+      //   _returnImage!(i);
+      // });
     }
     else{
       controller?.startImageStream(_processCameraImage);

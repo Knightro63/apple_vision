@@ -55,11 +55,16 @@ public class AppleVisionFacePlugin: NSObject, FlutterPlugin {
         do {
             try imageRequestHandler.perform([VNDetectFaceLandmarksRequest { (request, error) in
                 if error == nil {
-                    
                     if let results = request.results as? [VNFaceObservation] {
+                        var faceData:[[String:Any?]] = []
                         for face in results {
-                            event = self.processObservation(face,imageSize)
+                            faceData.append(self.processObservation(face,imageSize))
                         }
+                        event = [
+                            "name": "face",
+                            "data": faceData,
+                            "imageSize": ["width":imageSize.width ,"height":imageSize.height]
+                        ]
                     }
                 } else {
                     event = ["name":"error","code": "No Face In Detected", "message": error!.localizedDescription]
@@ -140,10 +145,8 @@ public class AppleVisionFacePlugin: NSObject, FlutterPlugin {
         
             
         let event: [String: Any?] = [
-            "name": "face",
             "data" : imagePoints,
             "orientation": data,
-            "imageSize": ["width":imageSize.width ,"height":imageSize.height]
         ]
         
         return event

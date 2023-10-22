@@ -1,0 +1,33 @@
+name: example
+description: A new Flutter project.
+version: 1.0.0+1
+publish_to: none
+
+environment:
+  sdk: '>=2.18.6 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  camera_macos:
+    git:
+      url: https://github.com/Knightro63/camera_macos.git
+  camera: ^0.10.5+2
+  apple_vision_recognize_text:
+    path: ../../apple_vision_recognize_text
+  cupertino_icons: ^1.0.2
+  permission_handler: ^11.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.3
+
+dependency_overrides:
+  permission_handler_apple:
+    git:
+      url: https://github.com/riccardo-lomazzi/flutter-permission-handler.git
+      path: permission_handler_apple/
+
+flutter:
+  uses-material-design: true
