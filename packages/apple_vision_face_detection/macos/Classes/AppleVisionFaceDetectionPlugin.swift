@@ -1,15 +1,26 @@
 import AVFoundation
-import FlutterMacOS
 import Vision
+
+#if os(iOS)
+import Flutter
+import UIKit
+#elseif os(macOS)
+import FlutterMacOS
 import AppKit
+#endif
 
 public class AppleVisionFaceDetectionPlugin: NSObject, FlutterPlugin {
     
     let registry: FlutterTextureRegistry
     
     public static func register(with registrar: FlutterPluginRegistrar) {
-        let instance = AppleVisionFaceDetectionPlugin(registrar.textures)
+        #if os(iOS)
+        let method = FlutterMethodChannel(name:"apple_vision/face_detection", binaryMessenger: registrar.messenger())
+        let instance = AppleVisionFacePlugin(registrar.textures())
+        #elseif os(macOS)
         let method = FlutterMethodChannel(name:"apple_vision/face_detection", binaryMessenger: registrar.messenger)
+        let instance = AppleVisionFacePlugin(registrar.textures)
+        #endif
         registrar.addMethodCallDelegate(instance, channel: method)
     }
     

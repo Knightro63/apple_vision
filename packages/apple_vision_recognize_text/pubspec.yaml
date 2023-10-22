@@ -22,3 +22,5 @@ flutter:
     platforms:
       macos:
         pluginClass: AppleVisionRecognizeTextPlugin
+      ios:
+        pluginClass: AppleVisionRecognizeText

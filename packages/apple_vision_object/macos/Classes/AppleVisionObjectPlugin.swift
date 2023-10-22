@@ -1,7 +1,13 @@
 import AVFoundation
-import FlutterMacOS
 import Vision
+
+#if os(iOS)
+import Flutter
+import UIKit
+#elseif os(macOS)
+import FlutterMacOS
 import AppKit
+#endif
 
 public class AppleVisionObjectPlugin: NSObject, FlutterPlugin {
     
@@ -9,8 +15,13 @@ public class AppleVisionObjectPlugin: NSObject, FlutterPlugin {
     var model:VNCoreMLModel?
     
     public static func register(with registrar: FlutterPluginRegistrar) {
-        let instance = AppleVisionObjectPlugin(registrar.textures)
+        #if os(iOS)
+        let method = FlutterMethodChannel(name:"apple_vision/object", binaryMessenger: registrar.messenger())
+        let instance = AppleVisionFacePlugin(registrar.textures())
+        #elseif os(macOS)
         let method = FlutterMethodChannel(name:"apple_vision/object", binaryMessenger: registrar.messenger)
+        let instance = AppleVisionFacePlugin(registrar.textures)
+        #endif
         registrar.addMethodCallDelegate(instance, channel: method)
     }
     

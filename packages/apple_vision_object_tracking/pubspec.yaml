@@ -22,3 +22,5 @@ flutter:
     platforms:
       macos:
         pluginClass: AppleVisionObjectTrackingPlugin
+      ios:
+        pluginClass: AppleVisionObjectTracking

@@ -26,3 +26,5 @@ flutter:
     platforms:
       macos:
         pluginClass: AppleVisionScannerPlugin
+      macos:
+        pluginClass: AppleVisionScanner

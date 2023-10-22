@@ -1,9 +1,11 @@
+import Vision
+
 #if os(iOS)
 import Flutter
 #elseif os(macOS)
 import FlutterMacOS
 #endif
-import Vision
+
 import VideoToolbox
 
 public class AppleVisionSelfiePlugin: NSObject, FlutterPlugin {

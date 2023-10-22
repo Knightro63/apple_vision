@@ -5,7 +5,7 @@
 [![Star on Github](https://img.shields.io/github/stars/Knightro63/apple_vision.svg?style=flat&logo=github&colorB=deeppink&label=stars)](https://github.com/Knightro63/apple_vision)
 [![License: MIT](https://img.shields.io/badge/license-MIT-purple.svg)](https://opensource.org/licenses/MIT)
 
-Apple Vision Selfie Detection is a Flutter plugin that enables Flutter apps to use [Apple Vision Selfie Detection](https://developer.apple.com/documentation/vision/selecting_a_selfie_based_on_capture_quality).
+Apple Vision Selfie Detection is a Flutter plugin that enables Flutter apps to use [Apple Vision Selfie Detection](https://developer.apple.com/documentation/vision/recognizing_objects_in_live_capture).
 
 - This plugin is not sponsor or maintained by Apple. The [authors](https://github.com/Knightro63/apple_vision/blob/main/AUTHORS) are developers who wanted to make a similar plugin to Google's ml kit for macos.
 
@@ -18,7 +18,7 @@ Apple Vision Selfie Detection is a Flutter plugin that enables Flutter apps to u
  - ML Kit only supports 64-bit architectures (x86_64 and arm64).
 
 **iOS**
- - Minimum osx Deployment Target: 14.0
+ - Minimum osx Deployment Target: 12.0
  - Xcode 13 or newer
  - Swift 5
  - ML Kit only supports 64-bit architectures (x86_64 and arm64).

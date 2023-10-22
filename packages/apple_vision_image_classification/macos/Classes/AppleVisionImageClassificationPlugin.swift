@@ -1,7 +1,13 @@
 import AVFoundation
-import FlutterMacOS
 import Vision
+
+#if os(iOS)
+import Flutter
+import UIKit
+#elseif os(macOS)
+import FlutterMacOS
 import AppKit
+#endif
 
 public class AppleVisionImageClassificationPlugin: NSObject, FlutterPlugin {
     
@@ -10,8 +16,13 @@ public class AppleVisionImageClassificationPlugin: NSObject, FlutterPlugin {
     var confidence:Double = 0.75
     
     public static func register(with registrar: FlutterPluginRegistrar) {
-        let instance = AppleVisionImageClassificationPlugin(registrar.textures)
+        #if os(iOS)
+        let method = FlutterMethodChannel(name:"apple_vision/image_classification", binaryMessenger: registrar.messenger())
+        let instance = AppleVisionFacePlugin(registrar.textures())
+        #elseif os(macOS)
         let method = FlutterMethodChannel(name:"apple_vision/image_classification", binaryMessenger: registrar.messenger)
+        let instance = AppleVisionFacePlugin(registrar.textures)
+        #endif
         registrar.addMethodCallDelegate(instance, channel: method)
     }
     
