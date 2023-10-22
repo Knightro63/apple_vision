@@ -1,6 +1,6 @@
 # apple\_vision
 
-[![Pub Version](https://img.shields.io/pub/v/appe_vision)](https://pub.dev/packages/apple_vision)
+[![Pub Version](https://img.shields.io/pub/v/apple_vision)](https://pub.dev/packages/apple_vision)
 [![analysis](https://github.com/Knightro63/apple_vision/actions/workflows/flutter.yml/badge.svg)](https://github.com/Knightro63/apple_vision/actions/)
 [![Star on Github](https://img.shields.io/github/stars/Knightro63/apple_vision.svg?style=flat&logo=github&colorB=deeppink&label=stars)](https://github.com/Knightro63/apple_vision)
 [![License: MIT](https://img.shields.io/badge/license-MIT-purple.svg)](https://opensource.org/licenses/MIT)
@@ -9,7 +9,7 @@ Apple Vision is a Flutter plugin that enables Flutter apps to use [Apple Vision]
 
 **PLEASE READ THIS** before continuing or posting a [new issue](https://github.com/Knightro63/apple_vision):
 
-- [Apple Vision](https://developer.apple.com/documentation/vision) was built only for osx apps.
+- [Apple Vision](https://developer.apple.com/documentation/vision) was built only for osx and ios apps.
 
 - This plugin is not sponsor or maintained by Apple. The [authors](https://github.com/Knightro63/apple_vision/blob/main/AUTHORS) are developers who wanted to make a similar plugin to Google's ml kit for macos.
 
