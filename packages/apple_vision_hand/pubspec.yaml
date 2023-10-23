@@ -22,5 +22,7 @@ flutter:
     platforms:
       macos:
         pluginClass: AppleVisionHandPlugin
+        sharedDarwinSource: true
       ios:
-        pluginClass: AppleVisionHand
+        pluginClass: AppleVisionHandPlugin
+        sharedDarwinSource: true

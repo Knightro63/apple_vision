@@ -20,7 +20,9 @@ dev_dependencies:
 flutter:
   plugin:
     platforms:
+      ios:
+        pluginClass: AppleVisionFacePlugin
+        sharedDarwinSource: true
       macos:
         pluginClass: AppleVisionFacePlugin
-      ios:
-        pluginClass: AppleVisionFace
+        sharedDarwinSource: true

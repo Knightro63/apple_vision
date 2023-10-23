@@ -4,7 +4,7 @@ version: 0.0.1
 homepage: https://github.com/Knightro63/apple_vision/tree/main/packages/apple_vision_object
 
 environment:
-  sdk: '>=2.18.6 <3.0.0'
+  sdk: '>=2.18.6 <4.0.0'
   flutter: ">=1.20.0"
 
 dependencies:
@@ -15,12 +15,14 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.1
+  flutter_lints: ^2.0.3
 
 flutter:
   plugin:
     platforms:
       macos:
         pluginClass: AppleVisionObjectPlugin
+        sharedDarwinSource: true
       ios:
-        pluginClass: AppleVisionObject
+        pluginClass: AppleVisionObjectPlugin
+        sharedDarwinSource: true

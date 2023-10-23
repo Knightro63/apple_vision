@@ -22,7 +22,9 @@ flutter:
     platforms:
       macos:
         pluginClass: AppleVisionImageClassificationPlugin
+        sharedDarwinSource: true
       ios:
-        pluginClass: AppleVisionImageClassification
+        pluginClass: AppleVisionImageClassificationPlugin
+        sharedDarwinSource: true
 
   

@@ -21,6 +21,8 @@ flutter:
   plugin:
     platforms:
       ios:
-        pluginClass: AppleVisionPose
+        pluginClass: AppleVisionPosePlugin
+        sharedDarwinSource: true
       macos:
         pluginClass: AppleVisionPosePlugin
+        sharedDarwinSource: true

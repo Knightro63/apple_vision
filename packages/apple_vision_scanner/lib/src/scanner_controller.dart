@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter/services.dart';
 import 'dart:async';
 import 'package:apple_vision_commons/apple_vision_commons.dart';
@@ -18,7 +17,7 @@ class AppleVisionScannerController {
   /// Returns a barcode scanner with the given [formats] options.
   AppleVisionScannerController({this.formats = const [BarcodeFormat.all]});
 
-  Future<String?> processImage(Uint8List image, Size imageSize) async{
+  Future<List<Barcode>?> processImage(Uint8List image, Size imageSize) async{
     try {
       final Map<String, dynamic>? result = await _methodChannel.invokeMapMethod<String, dynamic>(  
         'process',
@@ -27,23 +26,40 @@ class AppleVisionScannerController {
           'height':imageSize.height
         },
       );
-
-      // final barcodesList = <Barcode>[];
-      // for (String data in result['data']['payload']) {
-      //   barcodesList.add(Barcode.fromJson(json));
-      // }
-      if(result != null && result['data'] != null){
-        return result['data']['payload'];
-      }
+      return _convertData(result);
     } catch (e) {
       debugPrint('$e');
     }
 
     return null;
   }
-  /// Closes the scanner and releases its resources.
-  Future<void> close() => _methodChannel.invokeMethod('vision#closeBarcodeScanner', {'id': id});
 }
+
+  /// Handles a returning event from the platform side
+  List<Barcode>? _convertData(Map? event) {
+    if(event == null) return null;
+    final name = event['name'];
+    switch (name) {
+      case 'barcode':
+        List<Barcode> barCodes = [];
+        for(int i = 0; i < event['data'].length;i++){
+          barCodes.add(Barcode.fromJson(event['data'][i]));
+        }
+        return barCodes;
+      case 'noData':
+        break;
+      case 'done':
+        break;
+      case 'error':
+        throw AppleVisionException(
+          errorCode: AppleVisionErrorCode.genericError,
+          errorDetails: AppleVisionErrorDetails(message: event['message'] as String?),
+        );
+      default:
+        throw UnimplementedError(name as String?);
+    }
+    return null;
+  }
 
 /// Barcode formats supported by the barcode scanner.
 /// Options for specifying the barcode formats that the library can detect.
@@ -60,8 +76,16 @@ enum BarcodeFormat {
   /// Barcode format constant for Code 39.
   code39,
 
+  code39Checksum,
+
+  code39FullASCII,
+
+  code39FullASCIIChecksum,
+
   /// Barcode format constant for Code 93.
   code93,
+
+  code93i,
 
   /// Barcode format constant for CodaBar.
   codabar,
@@ -75,11 +99,20 @@ enum BarcodeFormat {
   /// Barcode format constant for EAN-8.
   ean8,
 
+  gs1DataBar,
+
+  gs1DataBarExpanded,
+
+  gs1DataBarLimited,
+
   /// Barcode format constant for ITF (Interleaved Two-of-Five).
   itf,
+  itf14,
+
 
   /// Barcode format constant for QR Code.
-  qrCode,
+  qr,
+  microQR,
 
   /// Barcode format constant for UPC-A.
   upca,
@@ -89,50 +122,22 @@ enum BarcodeFormat {
 
   /// Barcode format constant for PDF-417.
   pdf417,
+  microPDF417,
+
 
   /// Barcode format constant for AZTEC.
   aztec,
+
+  i2of5,
+  i2of5Checksum,
+
+  msiPlessey
 }
 
 extension BarcodeFormatValue on BarcodeFormat {
-  int get rawValue {
-    switch (this) {
-      case BarcodeFormat.all:
-        return 0xFFFF;
-      case BarcodeFormat.unknown:
-        return 0;
-      case BarcodeFormat.code128:
-        return 0x0001;
-      case BarcodeFormat.code39:
-        return 0x0002;
-      case BarcodeFormat.code93:
-        return 0x0004;
-      case BarcodeFormat.codabar:
-        return 0x0008;
-      case BarcodeFormat.dataMatrix:
-        return 0x0010;
-      case BarcodeFormat.ean13:
-        return 0x0020;
-      case BarcodeFormat.ean8:
-        return 0x0040;
-      case BarcodeFormat.itf:
-        return 0x0080;
-      case BarcodeFormat.qrCode:
-        return 0x0100;
-      case BarcodeFormat.upca:
-        return 0x0200;
-      case BarcodeFormat.upce:
-        return 0x0400;
-      case BarcodeFormat.pdf417:
-        return 0x0800;
-      case BarcodeFormat.aztec:
-        return 0x1000;
-    }
-  }
-
-  static BarcodeFormat fromRawValue(int rawValue) {
+  static BarcodeFormat fromString(String format) {
     return BarcodeFormat.values.firstWhere(
-        (element) => element.rawValue == rawValue,
+        (element) => element.name.toLowerCase() == format.toLowerCase(),
         orElse: () => BarcodeFormat.unknown);
   }
 }
@@ -179,6 +184,15 @@ enum BarcodeType {
   driverLicense,
 }
 
+extension BarcodeFormatType on BarcodeType {
+  static BarcodeType fromString(String? type) {
+    if(type == null) return BarcodeType.unknown;
+    return BarcodeType.values.firstWhere(
+        (element) => element.name.toLowerCase() == type.toLowerCase(),
+        orElse: () => BarcodeType.unknown);
+  }
+}
+
 /// A class to represent the contents of a barcode in an [InputImage].
 class Barcode {
   /// The format type of the barcode value.
@@ -217,11 +231,6 @@ class Barcode {
   /// Could be null if the bounding rectangle can not be determined.
   final Rect? boundingBox;
 
-  /// The four corner points of the barcode, in clockwise order starting with the top left relative to the detected image in the view coordinate system.
-  ///
-  /// Due to the possible perspective distortions, this is not necessarily a rectangle.
-  final List<Point<int>>? cornerPoints;
-
   /// Constructor to create an instance of [Barcode].
   Barcode({
     required this.type,
@@ -230,14 +239,13 @@ class Barcode {
     required this.rawValue,
     required this.rawBytes,
     required this.boundingBox,
-    required this.cornerPoints,
     required this.value,
   });
 
   /// Returns an instance of [Barcode] from a given [json].
   factory Barcode.fromJson(Map<dynamic, dynamic> json) {
-    final type = BarcodeType.values[json['type'].toInt()];
-    final format = BarcodeFormatValue.fromRawValue(json['format']);
+    final type = BarcodeFormatType.fromString(json['displayValue']?.toString().split(':')[0]);
+    final format = BarcodeFormatValue.fromString(json['format']);
     final displayValue = json['displayValue'];
     final rawValue = json['rawValue'];
     final rawBytes = json['rawBytes'];
@@ -249,12 +257,6 @@ class Barcode {
             (json['boundingBoxBottom']).toDouble())
         : null;
     BarcodeValue? value;
-    final points = json['cornerPoints'];
-    final List<Point<int>> cornerPoints = [];
-    for (final point in points) {
-      final cornerPoint = Point<int>(point['x'].toInt(), point['y'].toInt());
-      cornerPoints.add(cornerPoint);
-    }
 
     switch (type) {
       case BarcodeType.wifi:
@@ -296,7 +298,6 @@ class Barcode {
       rawValue: rawValue,
       rawBytes: rawBytes,
       boundingBox: boundingBox,
-      cornerPoints: cornerPoints.isEmpty ? null : cornerPoints,
     );
   }
 }

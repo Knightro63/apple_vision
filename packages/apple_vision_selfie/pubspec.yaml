@@ -21,6 +21,8 @@ flutter:
   plugin:
     platforms:
       ios:
-        pluginClass: AppleVisionSelfie
+        pluginClass: AppleVisionSelfiePlugin
+        sharedDarwinSource: true
       macos:
         pluginClass: AppleVisionSelfiePlugin
+        sharedDarwinSource: true

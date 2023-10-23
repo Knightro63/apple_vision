@@ -22,5 +22,7 @@ flutter:
     platforms:
       macos:
         pluginClass: AppleVisionObjectTrackingPlugin
+        sharedDarwinSource: true
       ios:
-        pluginClass: AppleVisionObjectTracking
+        pluginClass: AppleVisionObjectTrackingPlugin
+        sharedDarwinSource: true
