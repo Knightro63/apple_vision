@@ -49,6 +49,8 @@ class _VisionScanner extends State<VisionScanner> {
   late double deviceWidth;
   late double deviceHeight;
 
+  Uint8List? image;
+  
   @override
   void initState() {
     camera.setupCameras().then((value){

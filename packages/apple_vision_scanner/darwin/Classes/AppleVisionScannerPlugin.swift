@@ -48,9 +48,15 @@ public class AppleVisionScannerPlugin: NSObject, FlutterPlugin {
     
     // Gets called when a new image is added to the buffer
     func convertImage(_ data: Data,_ imageSize: CGSize) -> [String:Any?]{
-        let imageRequestHandler = VNImageRequestHandler(
-            data: data,
-            orientation: .downMirrored)
+        let imageRequestHandler:VNImageRequestHandler
+        if data.count == (Int(imageSize.height)*Int(imageSize.width)*16){
+            imageRequestHandler = VNImageRequestHandler(ciImage: CIImage(bitmapData: data, bytesPerRow: Int(imageSize.width), size: imageSize, format: CIFormat.BGRA8, colorSpace: nil))
+        }
+        else{
+            imageRequestHandler = VNImageRequestHandler(
+                data: data,
+                orientation: .downMirrored)
+        }
         
         var event:[String:Any?] = ["name":"noData"];
 
