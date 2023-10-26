@@ -39,17 +39,37 @@ public class AppleVisionFacePlugin: NSObject, FlutterPlugin {
             }
             let width = arguments["width"] as? Double ?? 0
             let height = arguments["height"] as? Double ?? 0
-            return result(convertImage(Data(data.data),CGSize(width: width , height: height)))
+
+            #if os(iOS)
+                if #available(iOS 13.0, *) {
+                    return result(convertImage(Data(data.data),CGSize(width: width , height: height),CIFormat.BGRA8))
+                } else {
+                    return result(FlutterError(code: "INVALID OS", message: "requires version 13.0", details: nil))
+                }
+            #elseif os(macOS)
+                return result(convertImage(Data(data.data),CGSize(width: width , height: height),CIFormat.ARGB8))
+            #endif
         default:
             result(FlutterMethodNotImplemented)
         }
     }
     
-    
-    func convertImage(_ data: Data,_ imageSize: CGSize) -> [String:Any?]{
-        let imageRequestHandler = VNImageRequestHandler(
-            data: data,
-            orientation: .downMirrored)
+    #if os(iOS)
+    @available(iOS 13.0, *)
+    #endif
+    func convertImage(_ data: Data,_ imageSize: CGSize,_ format: CIFormat) -> [String:Any?]{
+        let imageRequestHandler:VNImageRequestHandler
+        if data.count == (Int(imageSize.height)*Int(imageSize.width)*4){
+            // Create a bitmap graphics context with the sample buffer data
+            let context =  CIImage(bitmapData: data, bytesPerRow: Int(imageSize.width)*4, size: imageSize, format: format, colorSpace: nil)
+            
+            imageRequestHandler = VNImageRequestHandler(ciImage:context)
+        }
+        else{
+            imageRequestHandler = VNImageRequestHandler(
+                data: data,
+                orientation: .downMirrored)
+        }
 
         var event:[String:Any?] = ["name":"noData"];
         do {
@@ -79,6 +99,9 @@ public class AppleVisionFacePlugin: NSObject, FlutterPlugin {
         return event;
     }
     
+    #if os(iOS)
+    @available(iOS 13.0, *)
+    #endif
     func processObservation(_ face: VNFaceObservation,_ imageSize: CGSize) -> [String:Any?] {
         // Retrieve all torso points.
         let landmarksToDraw = [

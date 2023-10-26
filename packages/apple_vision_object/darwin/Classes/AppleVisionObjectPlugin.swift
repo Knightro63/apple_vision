@@ -40,17 +40,38 @@ public class AppleVisionObjectPlugin: NSObject, FlutterPlugin {
             }
             let width = arguments["width"] as? Double ?? 0
             let height = arguments["height"] as? Double ?? 0
-            return result(convertImage(Data(data.data),CGSize(width: width , height: height)))
+            #if os(iOS)
+                if #available(iOS 12.0, *) {
+                    return result(convertImage(Data(data.data),CGSize(width: width , height: height),CIFormat.BGRA8))
+                } else {
+                    return result(FlutterError(code: "INVALID OS", message: "requires version 12.0", details: nil))
+                }
+            #elseif os(macOS)
+                return result(convertImage(Data(data.data),CGSize(width: width , height: height),CIFormat.ARGB8))
+            #endif        
         default:
             result(FlutterMethodNotImplemented)
         }
     }
     
     // Gets called when a new image is added to the buffer
-    func convertImage(_ data: Data,_ imageSize: CGSize) -> [String:Any?]{
-        let handler = VNImageRequestHandler(
-            data: data,
-            orientation: .downMirrored)
+    // Gets called when a new image is added to the buffer
+    #if os(iOS)
+    @available(iOS 12.0, *)
+    #endif
+    func convertImage(_ data: Data,_ imageSize: CGSize,_ format: CIFormat) -> [String:Any?]{
+        let imageRequestHandler:VNImageRequestHandler
+        if data.count == (Int(imageSize.height)*Int(imageSize.width)*4){
+            // Create a bitmap graphics context with the sample buffer data
+            let context =  CIImage(bitmapData: data, bytesPerRow: Int(imageSize.width)*4, size: imageSize, format: format, colorSpace: nil)
+            
+            imageRequestHandler = VNImageRequestHandler(ciImage:context)
+        }
+        else{
+            imageRequestHandler = VNImageRequestHandler(
+                data: data,
+                orientation: .downMirrored)
+        }
             
         var event:[String:Any?] = ["name":"noData"];
         
@@ -74,14 +95,23 @@ public class AppleVisionObjectPlugin: NSObject, FlutterPlugin {
                     ]
                 }
             })
-            let requests: [VNRequest] = [imageRecognition]
-            // Start the image classification request.
-            try? handler.perform(requests)
+            do {
+                let requests: [VNRequest] = [imageRecognition]
+                // Start the image classification request.
+                try imageRequestHandler.perform(requests)
+            } catch {
+                event = ["name":"error","code": "Data Corropted", "message": error.localizedDescription]
+                print(error)
+            }
         }
 
         return event;
     }
     /// - Tag: name
+    // Gets called when a new image is added to the buffer
+    #if os(iOS)
+    @available(iOS 12.0, *)
+    #endif
     static func createImageClassifier() -> VNCoreMLModel {
         // Use a default model configuration.
         let defaultConfig = MLModelConfiguration()

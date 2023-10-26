@@ -1,5 +1,5 @@
 name: apple_vision
-description: A Flutter plugin to use all API's from Apple vision made for osx.
+description: A Flutter plugin to use all API's from Apple vision made for osx and ios.
 version: 0.0.2
 homepage: https://github.com/Knightro63/apple_vision/tree/main/packages/apple_vision
 

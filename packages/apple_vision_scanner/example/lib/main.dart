@@ -63,7 +63,10 @@ class _VisionScanner extends State<VisionScanner> {
         }
         if(mounted) {
           Uint8List? image = i.bytes;
-          visionController.processImage(image!, i.metadata!.size).then((data){
+          visionController.processImage(
+            image!, 
+            i.metadata!.size
+          ).then((data){
             barcodeData = data;
             setState(() {
               

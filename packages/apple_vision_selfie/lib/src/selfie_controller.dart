@@ -4,6 +4,35 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
 enum PictureFormat{jpg,jpeg,tiff,bmp,png}
+enum SelfieQuality{fast,balanced,accurate}
+
+class SelfieSegmentationData{
+  /// Process the image using apple vision and return the requested information or null value
+  /// 
+  /// [image] as Uint8List is the image that needs to be processed
+  /// this needs to be in an image format raw will not work.
+  /// 
+  /// [imageSize] as Size is the size of the image that is being processed
+  /// 
+  /// [format] the output format of the image
+  /// 
+  /// [quality] the quality of the output image
+  /// 
+  /// [backGround] the background image needs to be an image e.g.(png,jpg,jpeg,bmp,tiff)
+  SelfieSegmentationData({
+    required this.image,
+    required this.imageSize,
+    this.format = PictureFormat.tiff,
+    this.quality = SelfieQuality.fast,
+    this.backGround
+  });
+  /// Image to be processed
+  Uint8List image;
+  Uint8List? backGround;
+  Size imageSize; 
+  PictureFormat format;
+  SelfieQuality quality;
+}
 
 /// The [AppleVisionSelfieController] holds all the logic of this plugin,
 /// where as the [AppleVisionSelfie] class is the frontend of this plugin.
@@ -16,14 +45,16 @@ class AppleVisionSelfieController {
   /// this needs to be in an image format raw will not work.
   /// 
   /// [imageSize] as Size is the size of the image that is being processed
-  Future<List<Uint8List?>?> processImage(Uint8List image, Size imageSize, [PictureFormat format = PictureFormat.tiff]) async{
+  Future<List<Uint8List?>?> processImage(SelfieSegmentationData data) async{
     try {
       final result = await _methodChannel.invokeMapMethod<String, dynamic>(  
         'process',
-        {'image':image,
-          'width': imageSize.width,
-          'height':imageSize.height,
-          'format': format.name
+        {'image':data.image,
+          'width': data.imageSize.width,
+          'height':data.imageSize.height,
+          'format': data.format.name,
+          'quality': data.quality.index,
+          'background': data.backGround
         },
       );
       return _convertData(result);

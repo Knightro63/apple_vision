@@ -39,17 +39,37 @@ public class AppleVisionObjectTrackingPlugin: NSObject, FlutterPlugin {
             }
             let width = arguments["width"] as? Double ?? 0
             let height = arguments["height"] as? Double ?? 0
-            return result(convertImage(Data(data.data),CGSize(width: width , height: height)))
-        default:
+            #if os(iOS)
+                if #available(iOS 12.0, *) {
+                    return result(convertImage(Data(data.data),CGSize(width: width , height: height),CIFormat.BGRA8))
+                } else {
+                    return result(FlutterError(code: "INVALID OS", message: "requires version 12.0", details: nil))
+                }
+            #elseif os(macOS)
+                return result(convertImage(Data(data.data),CGSize(width: width , height: height),CIFormat.ARGB8))
+            #endif       
+         default:
             result(FlutterMethodNotImplemented)
         }
     }
     
     // Gets called when a new image is added to the buffer
-    func convertImage(_ data: Data,_ imageSize: CGSize) -> [String:Any?]{
-        let imageRequestHandler = VNImageRequestHandler(
-            data: data,
-            orientation: .downMirrored)
+    #if os(iOS)
+    @available(iOS 12.0, *)
+    #endif
+    func convertImage(_ data: Data,_ imageSize: CGSize,_ format: CIFormat) -> [String:Any?]{
+        let imageRequestHandler:VNImageRequestHandler
+        if data.count == (Int(imageSize.height)*Int(imageSize.width)*4){
+            // Create a bitmap graphics context with the sample buffer data
+            let context =  CIImage(bitmapData: data, bytesPerRow: Int(imageSize.width)*4, size: imageSize, format: format, colorSpace: nil)
+            
+            imageRequestHandler = VNImageRequestHandler(ciImage:context)
+        }
+        else{
+            imageRequestHandler = VNImageRequestHandler(
+                data: data,
+                orientation: .downMirrored)
+        }
             
         var event:[String:Any?] = ["name":"noData"];
 
@@ -85,6 +105,9 @@ public class AppleVisionObjectTrackingPlugin: NSObject, FlutterPlugin {
         return event;
     }
     
+    #if os(iOS)
+    @available(iOS 12.0, *)
+    #endif
     func processObservation(_ observation: VNDetectedObjectObservation,_ imageSize: CGSize) -> [String:Any?] {
         // Retrieve all torso points.
         let recognizedPoints = observation.boundingBox

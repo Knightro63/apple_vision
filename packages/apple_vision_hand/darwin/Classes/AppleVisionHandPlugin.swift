@@ -36,12 +36,12 @@ public class AppleVisionHandPlugin: NSObject, FlutterPlugin {
             let height = arguments["height"] as? Double ?? 0
             #if os(iOS)
                 if #available(iOS 14.0, *) {
-                    return result(convertImage(Data(data.data),CGSize(width: width , height: height)))
+                    return result(convertImage(Data(data.data),CGSize(width: width , height: height),CIFormat.BGRA8))
                 } else {
                     return result(FlutterError(code: "INVALID OS", message: "requires version 14.0", details: nil))
                 }
             #elseif os(macOS)
-                return result(convertImage(Data(data.data),CGSize(width: width , height: height)))
+                return result(convertImage(Data(data.data),CGSize(width: width , height: height),CIFormat.ARGB8))
             #endif
         default:
             result(FlutterMethodNotImplemented)
@@ -53,10 +53,19 @@ public class AppleVisionHandPlugin: NSObject, FlutterPlugin {
     #if os(iOS)
     @available(iOS 14.0, *)
     #endif
-    func convertImage(_ data: Data,_ imageSize: CGSize) -> [String:Any?]{
-        let imageRequestHandler = VNImageRequestHandler(
-            data: data,
-            orientation: .downMirrored)
+    func convertImage(_ data: Data,_ imageSize: CGSize,_ format: CIFormat) -> [String:Any?]{
+        let imageRequestHandler:VNImageRequestHandler
+        if data.count == (Int(imageSize.height)*Int(imageSize.width)*4){
+            // Create a bitmap graphics context with the sample buffer data
+            let context =  CIImage(bitmapData: data, bytesPerRow: Int(imageSize.width)*4, size: imageSize, format: format, colorSpace: nil)
+            
+            imageRequestHandler = VNImageRequestHandler(ciImage:context)
+        }
+        else{
+            imageRequestHandler = VNImageRequestHandler(
+                data: data,
+                orientation: .downMirrored)
+        }
         
         var event:[String:Any?] = ["name":"noData"];
 

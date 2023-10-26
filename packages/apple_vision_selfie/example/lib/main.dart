@@ -49,9 +49,15 @@ class _VisionSelfie extends State<VisionSelfie>{
   List<Uint8List?>? selfieImage;
   late double deviceWidth;
   late double deviceHeight;
+  Uint8List? bg;
+
+  int j = 0;
 
   @override
   void initState() {
+    rootBundle.load('assets/WaterOnTheMoonFull.jpg').then((value){
+      bg = value.buffer.asUint8List();
+    });
     camera.setupCameras().then((value){
       setState(() {
         loading = false;
@@ -62,11 +68,23 @@ class _VisionSelfie extends State<VisionSelfie>{
         }
         if(mounted) {
           Uint8List? image = i.bytes;
-          visionController.processImage(image!, i.metadata!.size, PictureFormat.png).then((data){
-            selfieImage = data;
-            setState(() {
-              
-            });
+          visionController.processImage(
+            SelfieSegmentationData(
+              image: image!, 
+              imageSize: i.metadata!.size,
+              format:  PictureFormat.png,
+              quality: SelfieQuality.fast,
+              //backGround: bg
+            )
+          ).then((data){
+            if(j == 15){
+              selfieImage = data;
+              setState(() {
+                
+              });
+              j = -1;
+            }
+            j++;
           });
         }
       });
@@ -83,17 +101,24 @@ class _VisionSelfie extends State<VisionSelfie>{
   Widget build(BuildContext context) {
     deviceWidth = MediaQuery.of(context).size.width;
     deviceHeight = MediaQuery.of(context).size.height;
-    return Stack(
+    return ListView(
       children:<Widget>[
         SizedBox(
-          width: imageSize.width, 
-          height: imageSize.height, 
+          width: 320, 
+          height: 320*9/16, 
           child: loading?Container():CameraSetup(camera: camera, size: imageSize)
         ),
         if(selfieImage?[0] != null) SizedBox(
-          width: imageSize.width, 
-          height: imageSize.height, 
-          child: Image.memory(selfieImage![0]!, fit: BoxFit.fill,)
+          width: 320, 
+          height: 320*9/16,  
+          child: Stack(children: [
+            Image.asset('assets/WaterOnTheMoonFull.jpg'),
+            Image.memory(
+              selfieImage![0]!, 
+              fit: BoxFit.fitHeight,
+            )
+          ],)
+
         )
       ]
     );
