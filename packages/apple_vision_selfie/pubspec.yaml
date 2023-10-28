@@ -20,9 +20,9 @@ dev_dependencies:
 flutter:
   plugin:
     platforms:
-      ios:
-        pluginClass: AppleVisionSelfiePlugin
-        sharedDarwinSource: true
+      # ios:
+      #   pluginClass: AppleVisionSelfiePlugin
+      #   sharedDarwinSource: true
       macos:
         pluginClass: AppleVisionSelfiePlugin
         sharedDarwinSource: true

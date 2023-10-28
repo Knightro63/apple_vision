@@ -109,7 +109,7 @@ class _VisionObject extends State<VisionObject>{
               height: objectData![i].height*imageSize.height,
               decoration: BoxDecoration(
                 color: Colors.transparent,
-                border: Border.all(width: 1, color: Colors.green),
+                border: Border.all(width: 3, color: Colors.green),
                 borderRadius: BorderRadius.circular(5)
               ),
             )

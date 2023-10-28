@@ -51,8 +51,6 @@ class _VisionSelfie extends State<VisionSelfie>{
   late double deviceHeight;
   Uint8List? bg;
 
-  int j = 0;
-
   @override
   void initState() {
     rootBundle.load('assets/WaterOnTheMoonFull.jpg').then((value){
@@ -77,14 +75,10 @@ class _VisionSelfie extends State<VisionSelfie>{
               //backGround: bg
             )
           ).then((data){
-            if(j == 15){
-              selfieImage = data;
-              setState(() {
-                
-              });
-              j = -1;
-            }
-            j++;
+            selfieImage = data;
+            setState(() {
+              
+            });
           });
         }
       });

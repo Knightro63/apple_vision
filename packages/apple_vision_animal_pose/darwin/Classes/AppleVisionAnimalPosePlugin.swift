@@ -59,7 +59,7 @@ public class AppleVisionAnimalPosePlugin: NSObject, FlutterPlugin {
             
             let context =  CIImage(bitmapData: data, bytesPerRow: Int(imageSize.width)*4, size: imageSize, format: format, colorSpace: nil)
             
-            imageRequestHandler = VNImageRequestHandler(ciImage:context)
+            imageRequestHandler = VNImageRequestHandler(ciImage:context, orientation: .downMirrored)
         }
         else{
             imageRequestHandler = VNImageRequestHandler(
@@ -77,7 +77,6 @@ public class AppleVisionAnimalPosePlugin: NSObject, FlutterPlugin {
                         }
                         event = [
                             "name": "pose",
-                            "imageSize": imageSize,
                             "data": poseData
                         ]
                     }

@@ -36,12 +36,12 @@ class AppleVisionPoseController {
   List<PoseData>? _convertData(Map? event) {
     if(event == null) return null;
     final name = event['name'];
-
+    
     switch (name) {
       case 'pose':
         List<PoseData> data = [];
         for(int i = 0; i < event['data'].length;i++){
-          data.add(PoseData(PoseFunctions.getPoseDataFromList(event['data'][i]),Size(event['imageSize']['width'],event['imageSize']['height'])));
+          data.add(PoseData(PoseFunctions.getPoseDataFromList(event['data'][i])));
         }
         return data;
       case 'noData':

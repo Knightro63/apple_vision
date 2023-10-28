@@ -17,10 +17,10 @@ public class AppleVisionObjectPlugin: NSObject, FlutterPlugin {
     public static func register(with registrar: FlutterPluginRegistrar) {
         #if os(iOS)
         let method = FlutterMethodChannel(name:"apple_vision/object", binaryMessenger: registrar.messenger())
-        let instance = AppleVisionFacePlugin(registrar.textures())
+        let instance = AppleVisionObjectPlugin(registrar.textures())
         #elseif os(macOS)
         let method = FlutterMethodChannel(name:"apple_vision/object", binaryMessenger: registrar.messenger)
-        let instance = AppleVisionFacePlugin(registrar.textures)
+        let instance = AppleVisionObjectPlugin(registrar.textures)
         #endif
         registrar.addMethodCallDelegate(instance, channel: method)
     }
@@ -65,7 +65,7 @@ public class AppleVisionObjectPlugin: NSObject, FlutterPlugin {
             // Create a bitmap graphics context with the sample buffer data
             let context =  CIImage(bitmapData: data, bytesPerRow: Int(imageSize.width)*4, size: imageSize, format: format, colorSpace: nil)
             
-            imageRequestHandler = VNImageRequestHandler(ciImage:context)
+            imageRequestHandler = VNImageRequestHandler(ciImage:context, orientation: .downMirrored)
         }
         else{
             imageRequestHandler = VNImageRequestHandler(

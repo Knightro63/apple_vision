@@ -49,5 +49,7 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Please allow camera usage?</string>
 </dict>
 </plist>

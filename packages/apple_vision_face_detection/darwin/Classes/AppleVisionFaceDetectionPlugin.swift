@@ -16,10 +16,10 @@ public class AppleVisionFaceDetectionPlugin: NSObject, FlutterPlugin {
     public static func register(with registrar: FlutterPluginRegistrar) {
         #if os(iOS)
         let method = FlutterMethodChannel(name:"apple_vision/face_detection", binaryMessenger: registrar.messenger())
-        let instance = AppleVisionFacePlugin(registrar.textures())
+        let instance = AppleVisionFaceDetectionPlugin(registrar.textures())
         #elseif os(macOS)
         let method = FlutterMethodChannel(name:"apple_vision/face_detection", binaryMessenger: registrar.messenger)
-        let instance = AppleVisionFacePlugin(registrar.textures)
+        let instance = AppleVisionFaceDetectionPlugin(registrar.textures)
         #endif
         registrar.addMethodCallDelegate(instance, channel: method)
     }
@@ -63,7 +63,7 @@ public class AppleVisionFaceDetectionPlugin: NSObject, FlutterPlugin {
             // Create a bitmap graphics context with the sample buffer data
             let context =  CIImage(bitmapData: data, bytesPerRow: Int(imageSize.width)*4, size: imageSize, format: format, colorSpace: nil)
             
-            imageRequestHandler = VNImageRequestHandler(ciImage:context)
+            imageRequestHandler = VNImageRequestHandler(ciImage:context,orientation: .downMirrored)
         }
         else{
             imageRequestHandler = VNImageRequestHandler(

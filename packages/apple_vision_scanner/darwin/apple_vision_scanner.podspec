@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
   s.osx.dependency 'FlutterMacOS'
   s.ios.dependency 'Flutter'
   s.osx.deployment_target = '10.13'
-  s.ios.deployment_target = '13.0'
+  s.ios.deployment_target = '11.0'
   s.swift_version = '5.0'
   s.ios.xcconfig = {
     'LIBRARY_SEARCH_PATHS' => '$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)/ $(SDKROOT)/usr/lib/swift',

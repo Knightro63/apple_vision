@@ -63,7 +63,7 @@ public class AppleVisionFacePlugin: NSObject, FlutterPlugin {
             // Create a bitmap graphics context with the sample buffer data
             let context =  CIImage(bitmapData: data, bytesPerRow: Int(imageSize.width)*4, size: imageSize, format: format, colorSpace: nil)
             
-            imageRequestHandler = VNImageRequestHandler(ciImage:context)
+            imageRequestHandler = VNImageRequestHandler(ciImage:context,orientation: .downMirrored)
         }
         else{
             imageRequestHandler = VNImageRequestHandler(

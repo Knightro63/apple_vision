@@ -1,16 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:camera/camera.dart';
-import 'package:camera_macos/camera_macos_arguments.dart';
+import 'package:camera_macos/camera_macos.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-
-import 'package:camera_macos/camera_macos_controller.dart';
-import 'package:camera_macos/camera_macos_device.dart';
-import 'package:camera_macos/camera_macos_platform_interface.dart';
-import 'package:camera_macos/camera_macos_view.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'input_image.dart';
@@ -37,7 +32,6 @@ class InsertCamera{
   bool isReady = false;
   //bool isMounted = false;
   Timer? _liveTimerMacos;
-  bool _processingLiveMacos = false;
   bool isLive = false;
   double aspectRatio = 0.75;
   int cameraSides = 0;
@@ -48,7 +42,7 @@ class InsertCamera{
 
   void Function(InputImage image)? _returnImage;
 
-  final _orientations = {
+  final orientations = {
     DeviceOrientation.portraitUp: 0,
     DeviceOrientation.landscapeLeft: 90,
     DeviceOrientation.portraitDown: 180,
@@ -102,7 +96,7 @@ class InsertCamera{
           audioDeviceId: null,
           cameraMacOSMode: CameraMacOSMode.video,
           enableAudio: false,
-          //resolution: PictureResolution.veryHigh,
+          resolution: PictureResolution.medium,
           pictureFormat: PictureFormat.jpg
         );
         controllerMacos = CameraMacOSController(value!);
@@ -142,30 +136,6 @@ class InsertCamera{
     _returnImage = returnImage;
     isLive = true;
     if(Platform.isMacOS){
-      // _liveTimerMacos = Timer.periodic(const Duration(milliseconds: 16),(_){
-      //   if(!_processingLiveMacos){
-      //     _processingLiveMacos = true;
-          
-      //     takePicture().then((data){
-      //       Uint8List send = data.file!;
-      //       imageSize = Size(960,540);
-      //       if(kIsWeb){
-      //         send = data.file!;//img.data!.buffer.asUint8List();
-      //       }
-      //       InputImage i = InputImage.fromBytes(
-      //         bytes: send,
-      //         metadata: InputImageMetadata(
-      //           size: imageSize!,
-      //           rotation: InputImageRotation.rotation0deg,
-      //           format: InputImageFormat.bgra8888,
-      //           bytesPerRow: 0,
-      //         )
-      //       );
-      //       _returnImage!(i);
-      //       _processingLiveMacos = false;
-      //     });
-      //   }
-      // });
       controllerMacos?.startImageStream((p){
         imageSize ??= imageSize = Size(p.width.toDouble(), p.height.toDouble());
         InputImage i = InputImage.fromBytes(

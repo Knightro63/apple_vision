@@ -46,6 +46,6 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>Please allow access to your camera to run apple vision hand?</string>
+	<string>Please allow camera usage?</string>
 </dict>
 </plist>

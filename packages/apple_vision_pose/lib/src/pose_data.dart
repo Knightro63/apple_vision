@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 /// The Joint of the body received from apple vision
 enum Joint {
   rightFoot, // Right Ankle
@@ -49,25 +47,25 @@ class Pose {
 /// A class that has all the information on the body detected
 /// 
 /// [poses] The joint information gathered.
-/// [imageSize] The size of the image sent.
 class PoseData {
-  PoseData(this.poses, this.imageSize);
+  PoseData(this.poses);
   List<Pose> poses;
-  Size imageSize;
 }
 
 /// A class that converts the information from apple vision to dart
 class PoseFunctions {
   /// Convert pose data from apple vision to usable dart data
-  static List<Pose> getPoseDataFromList(List<Object?> object) {
+  static List<Pose> getPoseDataFromList(Map object) {
     List<Pose> data = [];
-    for (int i = 0; i < object.length; i++) {
-      Map map = (object[i] as Map);
-      String temp = map.keys.first;
-      data.add(Pose(getJointFromString(temp)!,
-          PosePoint(map[temp]['x'], map[temp]['y']), map[temp]['confidence']));
+    for (String temp in object.keys) {
+      data.add(
+        Pose(
+          getJointFromString(temp)!,
+          PosePoint(object[temp]['x'], object[temp]['y']), object[temp]['confidence']
+        )
+      );
     }
-
+    
     return data;
   }
 

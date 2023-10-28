@@ -44,10 +44,10 @@ packages:
     dependency: transitive
     description:
       name: camera_android
-      sha256: c978373b41a463c9edda3fea0a06966299f55db63232cd0f0d4efc21a59a0006
+      sha256: "58463140f1b39591b8e2155861b436abad4ceb48160058be8374164ff0309ef3"
       url: "https://pub.dev"
     source: hosted
-    version: "0.10.8+12"
+    version: "0.10.8+13"
   camera_avfoundation:
     dependency: transitive
     description:
@@ -61,18 +61,18 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: ccde5a288ac778a42818f01ae8663763e8ce561e
+      resolved-ref: "3df03ebcefcb5a7b0e20b30e33a341703ba050f8"
       url: "https://github.com/Knightro63/camera_macos.git"
     source: git
-    version: "0.0.6+5"
+    version: "0.0.8"
   camera_platform_interface:
     dependency: transitive
     description:
       name: camera_platform_interface
-      sha256: "8734d1c682f034bdb12d0d6ff379b0535a9b8e44266b530025bf8266d6a62f28"
+      sha256: "86fd4fc597c6e455265ddb5884feb352d0171ad14b9cdf3aba30da59b25738c4"
       url: "https://pub.dev"
     source: hosted
-    version: "2.5.2"
+    version: "2.6.0"
   camera_web:
     dependency: transitive
     description:
@@ -117,10 +117,10 @@ packages:
     dependency: "direct main"
     description:
       name: cupertino_icons
-      sha256: e35129dc44c9118cee2a5603506d823bab99c68393879edb440e0090d07586be
+      sha256: d57953e10f9f8327ce64a508a355f0b1ec902193f66288e8cb5070e7c47eeb2d
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.5"
+    version: "1.0.6"
   fake_async:
     dependency: transitive
     description:
@@ -146,10 +146,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_plugin_android_lifecycle
-      sha256: f185ac890306b5779ecbd611f52502d8d4d63d27703ef73161ca0407e815f02c
+      sha256: b068ffc46f82a55844acfa4fdbb61fad72fa2aef0905548419d97f0f95c456da
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.16"
+    version: "2.0.17"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -172,10 +172,10 @@ packages:
     dependency: transitive
     description:
       name: lints
-      sha256: "5e4a9cd06d447758280a8ac2405101e0e2094d2a1dbdd3756aec3fe7775ba593"
+      sha256: "0a217c6c989d21039f1498c3ed9f3ed71b354e69873f13a8dfc3c9fe76f1b452"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.1"
+    version: "2.1.1"
   matcher:
     dependency: transitive
     description:
@@ -253,10 +253,10 @@ packages:
     dependency: transitive
     description:
       name: plugin_platform_interface
-      sha256: dbf0f707c78beedc9200146ad3cb0ab4d5da13c246336987be6940f026500d3a
+      sha256: da3fdfeccc4d4ff2da8f8c556704c08f912542c5fb3cf2233ed75372384a034d
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.3"
+    version: "2.1.6"
   quiver:
     dependency: transitive
     description:
@@ -335,5 +335,5 @@ packages:
     source: hosted
     version: "2.1.4"
 sdks:
-  dart: ">=3.0.0-0 <4.0.0"
+  dart: ">=3.0.0 <4.0.0"
   flutter: ">=3.7.0"

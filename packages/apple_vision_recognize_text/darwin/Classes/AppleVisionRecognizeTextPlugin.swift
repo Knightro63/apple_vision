@@ -16,10 +16,10 @@ public class AppleVisionRecognizeTextPlugin: NSObject, FlutterPlugin {
     public static func register(with registrar: FlutterPluginRegistrar) {
         #if os(iOS)
         let method = FlutterMethodChannel(name:"apple_vision/recognize_text", binaryMessenger: registrar.messenger())
-        let instance = AppleVisionFacePlugin(registrar.textures())
+        let instance = AppleVisionRecognizeTextPlugin(registrar.textures())
         #elseif os(macOS)
         let method = FlutterMethodChannel(name:"apple_vision/recognize_text", binaryMessenger: registrar.messenger)
-        let instance = AppleVisionFacePlugin(registrar.textures)
+        let instance = AppleVisionRecognizeTextPlugin(registrar.textures)
         #endif
         registrar.addMethodCallDelegate(instance, channel: method)
     }
@@ -41,7 +41,7 @@ public class AppleVisionRecognizeTextPlugin: NSObject, FlutterPlugin {
             let height = arguments["height"] as? Double ?? 0
             let candidates = arguments["candidates"] as? Int ?? 1
             #if os(iOS)
-                if #available(iOS 12.0, *) {
+                if #available(iOS 13.0, *) {
                     return result(convertImage(Data(data.data),CGSize(width: width , height: height),candidates,CIFormat.BGRA8))
                 } else {
                     return result(FlutterError(code: "INVALID OS", message: "requires version 12.0", details: nil))
@@ -56,7 +56,7 @@ public class AppleVisionRecognizeTextPlugin: NSObject, FlutterPlugin {
     
     // Gets called when a new image is added to the buffer
     #if os(iOS)
-    @available(iOS 12.0, *)
+    @available(iOS 13.0, *)
     #endif
     func convertImage(_ data: Data,_ imageSize: CGSize, _ candidates: Int,_ format: CIFormat) -> [String:Any?]{
         let imageRequestHandler:VNImageRequestHandler
@@ -107,7 +107,7 @@ public class AppleVisionRecognizeTextPlugin: NSObject, FlutterPlugin {
     }
     
     #if os(iOS)
-    @available(iOS 12.0, *)
+    @available(iOS 13.0, *)
     #endif
     func processObservation(_ observation: VNRecognizedTextObservation,_ imageSize: CGSize, _ candidates: Int) -> [String:Any?] {
         // Retrieve all torso points.

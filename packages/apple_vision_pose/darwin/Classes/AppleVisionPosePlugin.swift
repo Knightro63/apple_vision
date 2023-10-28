@@ -58,7 +58,7 @@ public class AppleVisionPosePlugin: NSObject, FlutterPlugin {
             // Create a bitmap graphics context with the sample buffer data
             let context =  CIImage(bitmapData: data, bytesPerRow: Int(imageSize.width)*4, size: imageSize, format: format, colorSpace: nil)
             
-            imageRequestHandler = VNImageRequestHandler(ciImage:context)
+            imageRequestHandler = VNImageRequestHandler(ciImage:context, orientation: .downMirrored)
         }
         else{
             imageRequestHandler = VNImageRequestHandler(
@@ -72,11 +72,10 @@ public class AppleVisionPosePlugin: NSObject, FlutterPlugin {
                     if let results = request.results as? [VNHumanBodyPoseObservation] {
                         var poseData:[[String:Any?]] = []
                         for pose in results {
-                            poseData.append(self.processObservation(pose,imageSize))
+                            poseData.append(contentsOf: self.processObservation(pose,imageSize))
                         }
                         event = [
                             "name": "pose",
-                            "imageSize": imageSize,
                             "data": poseData
                         ]
                     }
@@ -132,7 +131,7 @@ public class AppleVisionPosePlugin: NSObject, FlutterPlugin {
              let coord =  VNImagePointForNormalizedPoint(point.location,
                                                   Int(imageSize.width),
                                                   Int(imageSize.height))
-            return [$0.rawValue.rawValue.description: ["x":coord.x ,"y":coord.y, "confidence": point.confidence]]
+            return [$0.rawValue.rawValue.description: ["x":coord.x ,"y":coord.y, "confidence": point.confidence] as [String : Any]]
         }
         
         return imagePoints
