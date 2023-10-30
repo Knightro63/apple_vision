@@ -44,7 +44,7 @@ class AppleVisionObjectController {
         for(int i = 0 ; i < event['data'].length;i++){
           data.add(
             ObjectFunctions.getObjectDataFromList(
-              event['data'][0]
+              event['data'][i]
             )
           );
         }

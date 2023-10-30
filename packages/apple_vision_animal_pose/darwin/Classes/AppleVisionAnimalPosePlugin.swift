@@ -70,13 +70,13 @@ public class AppleVisionAnimalPosePlugin: NSObject, FlutterPlugin {
         do {
             try imageRequestHandler.perform([VNDetectAnimalBodyPoseRequest { (request, error) in
                 if error == nil {
-                    if let results = request.results as? [VNHumanBodyPoseObservation] {
+                    if let results = request.results as? [VNAnimalBodyPoseObservation] {
                         var poseData:[[String:Any?]] = []
                         for pose in results {
-                            poseData.append(self.processObservation(pose,imageSize))
+                            poseData.append(contentsOf:self.processObservation(pose,imageSize))
                         }
                         event = [
-                            "name": "pose",
+                            "name": "animalPose",
                             "data": poseData
                         ]
                     }
@@ -96,32 +96,41 @@ public class AppleVisionAnimalPosePlugin: NSObject, FlutterPlugin {
     #if os(iOS)
     @available(iOS 17.0, *)
     #endif
-    func processObservation(_ observation: VNHumanBodyPoseObservation,_ imageSize: CGSize) -> [[String:Any?]] {
+    func processObservation(_ observation: VNAnimalBodyPoseObservation,_ imageSize: CGSize) -> [[String:Any?]] {
         // Retrieve all torso points.
         guard let recognizedPoints =
                 try? observation.recognizedPoints(.all) else { return [[:]]}
         
         // Torso joint names in a clockwise ordering.
-        let torsoJointNames: [VNHumanBodyPoseObservation.JointName] = [
-            .rightAnkle,
-            .rightKnee,
-            .rightHip,
-            .rightWrist,
-            .rightElbow,
-            .rightShoulder,
-            .rightEar,
+        let torsoJointNames: [VNAnimalBodyPoseObservation.JointName] = [
+            .rightBackElbow,
+            //.rightFronElbow,
+            .rightBackKnee,
+            .rightFrontKnee,
+            .rightBackPaw,
+            .rightFrontPaw,
+
+            .rightEarTop,
+            .rightEarMiddle,
+            .rightEarBottom,
             .rightEye,
             .nose,
             .neck,
             .leftEye,
-            .leftEar,
-            .leftShoulder,
-            .leftElbow,
-            .leftWrist,
-            .leftHip,
-            .leftKnee,
-            .leftAnkle,
-            .root
+            .leftEarTop,
+            .leftEarMiddle,
+            .leftEarBottom,
+
+            .leftBackElbow,
+            //.leftFronElbow,
+            .leftBackKnee,
+            .leftFrontKnee,
+            .leftBackPaw,
+            .leftFrontPaw,
+
+            .tailTop,
+            .tailMiddle,
+            .tailBottom
         ]
         
         // Retrieve the CGPoints containing the normalized X and Y coordinates.

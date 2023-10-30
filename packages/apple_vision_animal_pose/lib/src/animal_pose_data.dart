@@ -1,9 +1,6 @@
-import 'package:flutter/material.dart';
-
 /// The Joint of the body received from apple vision
 enum AnimalJoint {
   rightBackElbow,
-  rightFronElbow,
   rightBackKnee,
   rightFrontKnee,
   rightBackPaw,
@@ -21,7 +18,6 @@ enum AnimalJoint {
   leftEarBottom,
 
   leftBackElbow,
-  leftFronElbow,
   leftBackKnee,
   leftFrontKnee,
   leftBackPaw,
@@ -59,21 +55,18 @@ class AnimalPose {
 /// [poses] The joint information gathered.
 /// [imageSize] The size of the image sent.
 class AnimalPoseData {
-  AnimalPoseData(this.poses, this.imageSize);
+  AnimalPoseData(this.poses);
   List<AnimalPose> poses;
-  Size imageSize;
 }
 
 /// A class that converts the information from apple vision to dart
 class AnimalPoseFunctions {
   /// Convert pose data from apple vision to usable dart data
-  static List<AnimalPose> getAniamlPoseDataFromList(List<Object?> object) {
+  static List<AnimalPose> getAniamlPoseDataFromList(Map object) {
     List<AnimalPose> data = [];
-    for (int i = 0; i < object.length; i++) {
-      Map map = (object[i] as Map);
-      String temp = map.keys.first;
+    for (String temp in object.keys) {
       data.add(AnimalPose(getAnimalJointFromString(temp)!,
-          AnimalPosePoint(map[temp]['x'], map[temp]['y']), map[temp]['confidence']));
+          AnimalPosePoint(object[temp]['x'], object[temp]['y']), object[temp]['confidence']));
     }
 
     return data;
@@ -81,11 +74,13 @@ class AnimalPoseFunctions {
 
   /// Get the joint information for a string format and convert to an enum Joint
   static AnimalJoint? getAnimalJointFromString(String joint) {
+    String other = joint.replaceAll('_', '');
     for (int i = 0; i < AnimalJoint.values.length; i++) {
-      String other =
-          joint.replaceAll("joint", '').replaceAll('1', '').replaceAll('_', '');
-      if (AnimalJoint.values[i].name.toLowerCase() == other.toLowerCase()) {
+      if ('animaljoint${AnimalJoint.values[i].name.toLowerCase()}' == other.toLowerCase()) {
         return AnimalJoint.values[i];
+      }
+      else if('animaljointheck' == other.toLowerCase()){
+        return AnimalJoint.neck;
       }
     }
     return null;

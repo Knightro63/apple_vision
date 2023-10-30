@@ -1,0 +1,24 @@
+{
+  "Outputs" : {
+    "coordinates" : {
+      "MLFeatureShortDescription" : "Normalised coordiantes (relative to the image size) for each of the bounding boxes (x,y,w,h). "
+    },
+    "confidence" : {
+      "MLFeatureShortDescription" : "Confidence derived for each of the bounding boxes. "
+    }
+  },
+  "Inputs" : {
+    "image" : {
+      "MLFeatureShortDescription" : "416x416 RGB image"
+    },
+    "confidenceThreshold" : {
+      "MLFeatureShortDescription" : "Remove bounding boxes below this threshold (confidences should be nonnegative)."
+    },
+    "iouThreshold" : {
+      "MLFeatureShortDescription" : "This defines the radius of suppression."
+    }
+  },
+  "TrainingInputs" : {
+
+  }
+}

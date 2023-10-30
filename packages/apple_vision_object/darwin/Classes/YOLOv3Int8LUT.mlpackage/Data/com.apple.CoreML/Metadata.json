@@ -1,0 +1,11 @@
+{
+  "MLModelVersionStringKey" : "YOLOv3",
+  "MLModelDescriptionKey" : "A neural network for fast object detection that detects 80 different classes of objects. Given an RGB image, with the dimensions 416x416, the model outputs three arrays (one for each layer) of arbitrary length; each containing confidence scores for each cell and the normalised coordaintes for the bounding box around the detected object(s). Refer to the original paper for more details. YOLOv3: An Incremental Improvement - https:\/\/pjreddie.com\/media\/files\/papers\/YOLOv3.pdf ",
+  "MLModelCreatorDefinedKey" : {
+    "com.apple.developer.machine-learning.models.version" : "2.0",
+    "com.apple.developer.machine-learning.models.name" : "YOLOv3Int8LUT.mlmodel",
+    "com.apple.developer.machine-learning.models.category" : "image"
+  },
+  "MLModelAuthorKey" : "Joseph Redmon, Ali Farhadi ",
+  "MLModelLicenseKey" : "Please see https:\/\/github.com\/pjreddie\/darknet for license information."
+}

@@ -1,4 +1,4 @@
-import 'package:apple_vision_pose/apple_vision_pose.dart';
+import 'package:apple_vision_animal_pose/apple_vision_animal_pose.dart';
 import 'package:flutter/material.dart';
 import '../camera/camera_insert.dart';
 import 'package:flutter/foundation.dart';
@@ -46,7 +46,7 @@ class _VisionAnimalPose extends State<VisionAnimalPose>{
   String? deviceId;
   bool loading = true;
 
-  List<PoseData>? poseData;
+  List<AnimalPoseData>? poseData;
   late double deviceWidth;
   late double deviceHeight;
 
@@ -62,7 +62,7 @@ class _VisionAnimalPose extends State<VisionAnimalPose>{
         }
         if(mounted) {
           Uint8List? image = i.bytes;
-          visionController.processImage(rgba2bitmap(image!, i.metadata!.size.width.toInt(), i.metadata!.size.height.toInt()) , i.metadata!.size).then((data){
+          visionController.processImage(image!, i.metadata!.size).then((data){
             poseData = data;
             setState(() {
               
@@ -96,34 +96,36 @@ class _VisionAnimalPose extends State<VisionAnimalPose>{
 
   List<Widget> showPoints(){
     if(poseData == null || poseData!.isEmpty) return[];
-    Map<Joint,Color> colors = {
-      Joint.rightFoot: Colors.orange,
-      Joint.rightLeg: Colors.orange,
-      Joint.rightUpLeg: Colors.orange,
+    Map<AnimalJoint,Color> colors = {
+      AnimalJoint.rightBackElbow: Colors.orange,
+      AnimalJoint.rightBackKnee: Colors.orange,
+      AnimalJoint.rightBackPaw: Colors.orange,
 
-      Joint.rightHand: Colors.purple,
-      Joint.rightForearm: Colors.purple,
+      //AnimalJoint.rightFronElbow: Colors.purple,
+      AnimalJoint.rightFrontKnee: Colors.purple,
+      AnimalJoint.rightFrontPaw: Colors.purple,
 
-      Joint.nose: Colors.purple,
+      AnimalJoint.nose: Colors.pink,
+      AnimalJoint.neck: Colors.pink,
 
-      Joint.neck: Colors.pink,
-      Joint.rightShoulder: Colors.pink,
-      Joint.leftShoulder: Colors.pink,
+      AnimalJoint.leftFrontPaw: Colors.indigo,
+      AnimalJoint.leftFrontKnee: Colors.indigo,
+      //AnimalJoint.leftFronElbow: Colors.indigo,
 
-      Joint.leftForearm: Colors.indigo,
-      Joint.leftHand: Colors.indigo,
+      AnimalJoint.leftBackElbow: Colors.grey,
+      AnimalJoint.leftBackKnee: Colors.grey,
+      AnimalJoint.leftBackPaw: Colors.grey,
 
-      Joint.leftUpLeg: Colors.grey,
-      Joint.leftLeg: Colors.grey,
-      Joint.leftFoot: Colors.grey,
+      AnimalJoint.tailTop: Colors.yellow,
+      AnimalJoint.tailMiddle: Colors.yellow,
+      AnimalJoint.tailBottom: Colors.yellow,
 
-      Joint.root: Colors.yellow,
-
-      Joint.leftEye: Colors.cyanAccent,
-      Joint.leftEar: Colors.cyanAccent,
-      Joint.rightEar: Colors.cyanAccent,
-      Joint.rightEye: Colors.cyanAccent,
-      Joint.head: Colors.cyanAccent
+      AnimalJoint.leftEye: Colors.cyanAccent,
+      AnimalJoint.leftEarTop: Colors.cyanAccent,
+      AnimalJoint.leftEarBottom: Colors.cyanAccent,
+      AnimalJoint.rightEarTop: Colors.blue,
+      AnimalJoint.rightEarBottom: Colors.blue,
+      AnimalJoint.rightEye: Colors.blue,
     };
     List<Widget> widgets = [];
     for(int j = 0; j < poseData!.length;j++){

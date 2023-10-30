@@ -36,12 +36,12 @@ class AppleVisionAnimalPoseController {
   List<AnimalPoseData>? _convertData(Map? event) {
     if(event == null) return null;
     final name = event['name'];
-
+    
     switch (name) {
-      case 'pose':
+      case 'animalPose':
         List<AnimalPoseData> data = [];
         for(int i = 0; i < event['data'].length;i++){
-          data.add(AnimalPoseData(AnimalPoseFunctions.getAniamlPoseDataFromList(event['data'][i]),Size(event['imageSize']['width'],event['imageSize']['height'])));
+          data.add(AnimalPoseData(AnimalPoseFunctions.getAniamlPoseDataFromList(event['data'][i])));
         }
         return data;
       case 'noData':
