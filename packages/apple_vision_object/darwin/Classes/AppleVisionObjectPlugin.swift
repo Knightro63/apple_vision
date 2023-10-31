@@ -41,7 +41,7 @@ public class AppleVisionObjectPlugin: NSObject, FlutterPlugin {
             let width = arguments["width"] as? Double ?? 0
             let height = arguments["height"] as? Double ?? 0
             #if os(iOS)
-                if #available(iOS 12.0, *) {
+                if #available(iOS 14.0, *) {
                     return result(convertImage(Data(data.data),CGSize(width: width , height: height),CIFormat.BGRA8))
                 } else {
                     return result(FlutterError(code: "INVALID OS", message: "requires version 12.0", details: nil))
@@ -57,7 +57,7 @@ public class AppleVisionObjectPlugin: NSObject, FlutterPlugin {
     // Gets called when a new image is added to the buffer
     // Gets called when a new image is added to the buffer
     #if os(iOS)
-    @available(iOS 12.0, *)
+    @available(iOS 14.0, *)
     #endif
     func convertImage(_ data: Data,_ imageSize: CGSize,_ format: CIFormat) -> [String:Any?]{
         let imageRequestHandler:VNImageRequestHandler
@@ -110,7 +110,7 @@ public class AppleVisionObjectPlugin: NSObject, FlutterPlugin {
     /// - Tag: name
     // Gets called when a new image is added to the buffer
     #if os(iOS)
-    @available(iOS 12.0, *)
+    @available(iOS 14.0, *)
     #endif
     static func createImageClassifier() -> VNCoreMLModel {
         // Use a default model configuration.

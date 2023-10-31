@@ -106,7 +106,7 @@ class _VisionSelfie extends State<VisionSelfie>{
           width: 320, 
           height: 320*9/16,  
           child: Stack(children: [
-            Image.asset('assets/WaterOnTheMoonFull.jpg'),
+            Image.asset( 'assets/WaterOnTheMoonFull.jpg'),
             Image.memory(
               selfieImage![0]!, 
               fit: BoxFit.fitHeight,

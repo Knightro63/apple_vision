@@ -36,38 +36,20 @@ public class AppleVisionSelfiePlugin: NSObject, FlutterPlugin {
                 result("Couldn't find image data")
                 return
             }
-            var pictureFormat = NSBitmapImageRep.FileType.tiff
-            switch arguments["format"] as! String{
-                case "jpg":
-                    pictureFormat = NSBitmapImageRep.FileType.jpeg
-                    break
-                case "jepg":
-                    pictureFormat = NSBitmapImageRep.FileType.jpeg2000
-                    break
-                case "bmp":
-                    pictureFormat = NSBitmapImageRep.FileType.bmp
-                    break
-                case "png":
-                    pictureFormat = NSBitmapImageRep.FileType.png
-                    break
-                default:
-                    pictureFormat = NSBitmapImageRep.FileType.tiff
-                    break
-            }
             
             let width = arguments["width"] as? Double ?? 0
             let height = arguments["height"] as? Double ?? 0
             let quality = arguments["quality"] as? Int ?? 0
             let background:FlutterStandardTypedData? = arguments["background"] as? FlutterStandardTypedData ?? nil
-            
+            let pf = arguments["format"] as! String
             #if os(iOS)
                 if #available(iOS 15.0, *) {
-                    return result(convertImage(Data(data.data),CGSize(width: width , height: height),pictureFormat,CIFormat.BGRA8,quality,background?.data))
+                    return result(convertImage(Data(data.data),CGSize(width: width , height: height),pf,CIFormat.BGRA8,quality,background?.data))
                 } else {
                     return result(FlutterError(code: "INVALID OS", message: "requires version 15.0", details: nil))
                 }
             #elseif os(macOS)
-            return result(convertImage(Data(data.data),CGSize(width: width , height: height), pictureFormat,CIFormat.ARGB8,quality,background?.data))
+                return result(convertImage(Data(data.data),CGSize(width: width , height: height), pf,CIFormat.ARGB8,quality,background?.data))
             #endif
         default:
             result(FlutterMethodNotImplemented)
@@ -78,14 +60,15 @@ public class AppleVisionSelfiePlugin: NSObject, FlutterPlugin {
     #if os(iOS)
     @available(iOS 15.0, *)
     #endif
-    func convertImage(_ data: Data,_ imageSize: CGSize,_ fileType: NSBitmapImageRep.FileType,_ format: CIFormat,_ quality:Int,_ background: Data? ) -> [String:Any?]{
+    func convertImage(_ data: Data,_ imageSize: CGSize,_ fileType: String,_ format: CIFormat,_ quality:Int,_ background: Data? ) -> [String:Any?]{
         let imageRequestHandler:VNImageRequestHandler
         var originalImage:CIImage?
         if data.count == (Int(imageSize.height)*Int(imageSize.width)*4){
             // Create a bitmap graphics context with the sample buffer data
             originalImage =  CIImage(bitmapData: data, bytesPerRow: Int(imageSize.width)*4, size: imageSize, format: format, colorSpace: nil)
             
-            imageRequestHandler = VNImageRequestHandler(ciImage:originalImage!)
+            imageRequestHandler = VNImageRequestHandler(ciImage:originalImage!,
+                orientation: .up)
         }
         else{
             imageRequestHandler = VNImageRequestHandler(
@@ -121,14 +104,12 @@ public class AppleVisionSelfiePlugin: NSObject, FlutterPlugin {
                             "inputAVector": CIVector(x: 0, y: 0, z: 0, w: 0),
                         ]
 
-
                         // Create a colored background image.
                         var backgroundImage:CIImage = maskImage.applyingFilter("CIColorMatrix",parameters: vectors2)
                         
                         if background != nil{
                             backgroundImage = CIImage(data:background!)!
                         }
-                            
 
                         let blendFilter = CIFilter.blendWithMask()
                         blendFilter.inputImage = originalImage
@@ -138,18 +119,36 @@ public class AppleVisionSelfiePlugin: NSObject, FlutterPlugin {
                         // Set the new, blended image as current.
                         let ciImage = blendFilter.outputImage
                         
-//                        var cgImage: CGImage?
-//                        VTCreateCGImageFromCVPixelBuffer(selfie.pixelBuffer, options: nil, imageOut: &cgImage)
+                        #if os(iOS)
+                            selfieData.append(ciImage?.cgImage?.dataProvider?.data as Data?)
+                        #elseif os(macOS)
+                            var format = NSBitmapImageRep.FileType.tiff
+                            switch fileType {
+                                case "jpg":
+                                    format = NSBitmapImageRep.FileType.jpeg
+                                    break
+                                case "jepg":
+                                    format = NSBitmapImageRep.FileType.jpeg2000
+                                    break
+                                case "bmp":
+                                    format = NSBitmapImageRep.FileType.bmp
+                                    break
+                                case "png":
+                                    format = NSBitmapImageRep.FileType.png
+                                    break
+                                default:
+                                    format = NSBitmapImageRep.FileType.tiff
+                                    break
+                            }
 
-                        let nsImage = NSBitmapImageRep(ciImage:ciImage!).representation(
-                            using: fileType,
-                            properties: [
-                                NSBitmapImageRep.PropertyKey.currentFrame: NSBitmapImageRep.PropertyKey.currentFrame.self
-                            ]
-                        )
-                        
-                        selfieData.append(nsImage)
-
+                            let nsImage = NSBitmapImageRep(ciImage:ciImage!).representation(
+                                using: format,
+                                properties: [
+                                    NSBitmapImageRep.PropertyKey.currentFrame: NSBitmapImageRep.PropertyKey.currentFrame.self
+                                ]
+                            )
+                            selfieData.append(nsImage)
+                        #endif
                     }
                     event = [
                         "name": "selfie",
