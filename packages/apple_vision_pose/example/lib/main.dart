@@ -64,6 +64,7 @@ class _VisionPose extends State<VisionPose>{
           Uint8List? image = i.bytes;
           visionController.processImage(image!, i.metadata!.size).then((data){
             poseData = data;
+            print(poseData);
             setState(() {
               
             });

@@ -122,7 +122,7 @@ public class AppleVisionSelfiePlugin: NSObject, FlutterPlugin {
                         #if os(iOS)
                             selfieData.append(ciImage?.cgImage?.dataProvider?.data as Data?)
                         #elseif os(macOS)
-                            var format = NSBitmapImageRep.FileType.tiff
+                            var format:NSBitmapImageRep.FileType?
                             switch fileType {
                                 case "jpg":
                                     format = NSBitmapImageRep.FileType.jpeg
@@ -136,18 +136,31 @@ public class AppleVisionSelfiePlugin: NSObject, FlutterPlugin {
                                 case "png":
                                     format = NSBitmapImageRep.FileType.png
                                     break
-                                default:
+                                case "tiff":
                                     format = NSBitmapImageRep.FileType.tiff
                                     break
+                                default:
+                                    format = nil
                             }
-
-                            let nsImage = NSBitmapImageRep(ciImage:ciImage!).representation(
-                                using: format,
-                                properties: [
-                                    NSBitmapImageRep.PropertyKey.currentFrame: NSBitmapImageRep.PropertyKey.currentFrame.self
-                                ]
-                            )
-                            selfieData.append(nsImage)
+                            var nsImage:Data?
+                            if format != nil{
+                                nsImage = NSBitmapImageRep(ciImage:ciImage!).representation(
+                                    using: format!,
+                                    properties: [
+                                        NSBitmapImageRep.PropertyKey.currentFrame: NSBitmapImageRep.PropertyKey.currentFrame.self
+                                    ]
+                                )
+                                selfieData.append(nsImage)
+                            }
+                            else{
+                                let u = NSBitmapImageRep(ciImage:ciImage!)
+                                let bytesPerRow = u.bytesPerRow
+                                let width = Int(u.size.width)
+                                let height = Int(u.size.height)
+                                
+                                nsImage = Data(bytes: u.bitmapData!, count: Int(bytesPerRow*height))
+                            }
+                            selfieData.append(nsImage!)
                         #endif
                     }
                     event = [
