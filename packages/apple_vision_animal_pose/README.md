@@ -13,13 +13,13 @@ Apple Vision Animal Pose Detection is a Flutter plugin that enables Flutter apps
 
 **MacOS**
  - Minimum osx Deployment Target: 14.0
- - Xcode 13 or newer
+ - Xcode 15 or newer
  - Swift 5
  - ML Kit only supports 64-bit architectures (x86_64 and arm64).
 
 **iOS**
  - Minimum ios Deployment Target: 17.0
- - Xcode 13 or newer
+ - Xcode 15 or newer
  - Swift 5
  - ML Kit only supports 64-bit architectures (x86_64 and arm64).
 
@@ -29,39 +29,43 @@ You need to first import 'package:apple_vision/apple_vision.dart';
 
 ```dart
   final GlobalKey cameraKey = GlobalKey(debugLabel: "cameraKey");
-  late AppleVisionPoseController cameraController;
-  late List<CameraMacOSDevice> _cameras;
-  CameraMacOSController? controller;
+  late AppleVisionAnimalPoseController visionController = AppleVisionAnimalPoseController();
+  InsertCamera camera = InsertCamera();
+  Size imageSize = const Size(640,640*9/16);
   String? deviceId;
+  bool loading = true;
 
-  PoseData? poseData;
+  List<AnimalPoseData>? poseData;
   late double deviceWidth;
   late double deviceHeight;
+
   @override
   void initState() {
-    cameraController = AppleVisionPoseController();
-    CameraMacOS.instance.listDevices(deviceType: CameraMacOSDeviceType.video).then((value){
-      _cameras = value;
-      deviceId = _cameras.first.deviceId;
+    camera.setupCameras().then((value){
+      setState(() {
+        loading = false;
+      });
+      camera.startLiveFeed((InputImage i){
+        if(i.metadata?.size != null){
+          imageSize = i.metadata!.size;
+        }
+        if(mounted) {
+          Uint8List? image = i.bytes;
+          visionController.processImage(image!, i.metadata!.size).then((data){
+            poseData = data;
+            setState(() {
+              
+            });
+          });
+        }
+      });
     });
     super.initState();
   }
   @override
   void dispose() {
-    controller?.destroy();
+    camera.dispose();
     super.dispose();
-  }
-  void onTakePictureButtonPressed() async{
-    CameraMacOSFile? file = await controller?.takePicture();
-    if(file != null && mounted) {
-      Uint8List? image = file.bytes;
-      cameraController.process(image!, const Size(640,480)).then((data){
-        poseData = data;
-        setState(() {
-          
-        });
-      });
-    }
   }
 
   @override
@@ -71,90 +75,78 @@ You need to first import 'package:apple_vision/apple_vision.dart';
     return Stack(
       children:<Widget>[
         SizedBox(
-          width: 640, 
-          height: 480, 
-          child: _getScanWidgetByPlatform()
-        )
+          width: imageSize.width, 
+          height: imageSize.height, 
+          child: loading?Container():CameraSetup(camera: camera, size: imageSize)
+      ),
       ]+showPoints()
     );
   }
 
   List<Widget> showPoints(){
-    if(poseData == null || poseData!.poses.isEmpty) return[];
-    Map<Joint,Color> colors = {
-      Joint.rightFoot: Colors.orange,
-      Joint.rightLeg: Colors.orange,
-      Joint.rightUpLeg: Colors.orange,
+    if(poseData == null || poseData!.isEmpty) return[];
+    Map<AnimalJoint,Color> colors = {
+      AnimalJoint.rightBackElbow: Colors.orange,
+      AnimalJoint.rightBackKnee: Colors.orange,
+      AnimalJoint.rightBackPaw: Colors.orange,
 
-      Joint.rightHand: Colors.purple,
-      Joint.rightForearm: Colors.purple,\
+      //AnimalJoint.rightFronElbow: Colors.purple,
+      AnimalJoint.rightFrontKnee: Colors.purple,
+      AnimalJoint.rightFrontPaw: Colors.purple,
 
-      Joint.nose: Colors.purple,
+      AnimalJoint.nose: Colors.pink,
+      AnimalJoint.neck: Colors.pink,
 
-      Joint.neck: Colors.pink,
-      Joint.rightShoulder: Colors.pink,
-      Joint.leftShoulder: Colors.pink,
+      AnimalJoint.leftFrontPaw: Colors.indigo,
+      AnimalJoint.leftFrontKnee: Colors.indigo,
+      //AnimalJoint.leftFronElbow: Colors.indigo,
 
-      Joint.leftForearm: Colors.indigo,
-      Joint.leftHand: Colors.indigo,
+      AnimalJoint.leftBackElbow: Colors.grey,
+      AnimalJoint.leftBackKnee: Colors.grey,
+      AnimalJoint.leftBackPaw: Colors.grey,
 
-      Joint.leftUpLeg: Colors.grey,
-      Joint.leftLeg: Colors.grey,
-      Joint.leftFoot: Colors.grey,
+      AnimalJoint.tailTop: Colors.yellow,
+      AnimalJoint.tailMiddle: Colors.yellow,
+      AnimalJoint.tailBottom: Colors.yellow,
 
-      Joint.root: Colors.yellow,
-
-      Joint.leftEye: Colors.cyanAccent,
-      Joint.leftEar: Colors.cyanAccent,
-      Joint.rightEar: Colors.cyanAccent,
-      Joint.rightEye: Colors.cyanAccent,
-      Joint.head: Colors.cyanAccent
+      AnimalJoint.leftEye: Colors.cyanAccent,
+      AnimalJoint.leftEarTop: Colors.cyanAccent,
+      AnimalJoint.leftEarBottom: Colors.cyanAccent,
+      AnimalJoint.rightEarTop: Colors.blue,
+      AnimalJoint.rightEarBottom: Colors.blue,
+      AnimalJoint.rightEye: Colors.blue,
     };
     List<Widget> widgets = [];
-    for(int i = 0; i < poseData!.poses.length; i++){
-      if(poseData!.poses[i].confidence > 0.5){
-        widgets.add(
-          Positioned(
-            bottom: poseData!.poses[i].location.y,
-            left: poseData!.poses[i].location.x,
-            child: Container(
-              width: 10,
-              height: 10,
-              decoration: BoxDecoration(
-                color: colors[poseData!.poses[i].joint],
-                borderRadius: BorderRadius.circular(5)
-              ),
+    for(int j = 0; j < poseData!.length;j++){
+      for(int i = 0; i < poseData![j].poses.length; i++){
+        if(poseData![j].poses[i].confidence > 0.5){
+          widgets.add(
+            Positioned(
+              top: poseData![j].poses[i].location.y,
+              left: poseData![j].poses[i].location.x,
+              child: Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(
+                  color: colors[poseData![j].poses[i].joint],
+                  borderRadius: BorderRadius.circular(5)
+                ),
+              )
             )
-          )
-        );
+          );
+        }
       }
     }
     return widgets;
   }
 
-  Widget _getScanWidgetByPlatform() {
-    return CameraMacOSView(
-      key: cameraKey,
-      fit: BoxFit.fill,
-      cameraMode: CameraMacOSMode.photo,
-      enableAudio: false,
-      onCameraLoading: (ob){
-        return Container(
-          width: deviceWidth,
-          height: deviceHeight,
-          color: Theme.of(context).canvasColor,
-          alignment: Alignment.center,
-          child: const CircularProgressIndicator(color: Colors.blue)
-        );
-      },
-      onCameraInizialized: (CameraMacOSController controller) {
-        setState(() {
-          this.controller = controller;
-          Timer.periodic(const Duration(milliseconds: 128),(_){
-            onTakePictureButtonPressed();
-          });
-        });
-      },
+  Widget loadingWidget(){
+    return Container(
+      width: deviceWidth,
+      height: deviceHeight,
+      color: Theme.of(context).canvasColor,
+      alignment: Alignment.center,
+      child: const CircularProgressIndicator(color: Colors.blue)
     );
   }
 ```
