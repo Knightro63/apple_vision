@@ -62,11 +62,20 @@ class AnimalPoseData {
 /// A class that converts the information from apple vision to dart
 class AnimalPoseFunctions {
   /// Convert pose data from apple vision to usable dart data
-  static List<AnimalPose> getAniamlPoseDataFromList(Map object) {
+  static List<AnimalPose> getAniamlPoseDataFromList(List<Object?> object) {
     List<AnimalPose> data = [];
-    for (String temp in object.keys) {
-      data.add(AnimalPose(getAnimalJointFromString(temp)!,
-          AnimalPosePoint(object[temp]['x'], object[temp]['y']), object[temp]['confidence']));
+    for (int i = 0; i < object.length;i++) {
+      Map map = object[i] as Map;
+      data.add(
+        AnimalPose(
+          getAnimalJointFromString(map['description'])!,
+          AnimalPosePoint(
+            map['x'], 
+            map['y']
+          ), 
+          map['confidence']
+        )
+      );
     }
 
     return data;

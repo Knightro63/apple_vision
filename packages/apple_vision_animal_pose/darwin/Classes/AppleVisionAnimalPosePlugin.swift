@@ -71,9 +71,9 @@ public class AppleVisionAnimalPosePlugin: NSObject, FlutterPlugin {
             try imageRequestHandler.perform([VNDetectAnimalBodyPoseRequest { (request, error) in
                 if error == nil {
                     if let results = request.results as? [VNAnimalBodyPoseObservation] {
-                        var poseData:[[String:Any?]] = []
+                        var poseData:[[[String:Any?]]] = []
                         for pose in results {
-                            poseData.append(contentsOf:self.processObservation(pose,imageSize))
+                            poseData.append(self.processObservation(pose,imageSize))
                         }
                         event = [
                             "name": "animalPose",
@@ -132,18 +132,21 @@ public class AppleVisionAnimalPosePlugin: NSObject, FlutterPlugin {
             .tailMiddle,
             .tailBottom
         ]
-        
+
+        var pointData:[[String:Any?]] = []
         // Retrieve the CGPoints containing the normalized X and Y coordinates.
-        let imagePoints: [[String:Any?]] = torsoJointNames.compactMap {
+        let _: [[String:Any?]] = torsoJointNames.compactMap {
             guard let point = recognizedPoints[$0], point.confidence > 0 else { return nil }
             
             // Translate the point from normalized-coordinates to image coordinates.
              let coord =  VNImagePointForNormalizedPoint(point.location,
                                                   Int(imageSize.width),
                                                   Int(imageSize.height))
+
+            pointData.append(["description": $0.rawValue.rawValue.description,"x":coord.x ,"y":coord.y, "confidence": point.confidence])
             return [$0.rawValue.rawValue.description: ["x":coord.x ,"y":coord.y, "confidence": point.confidence]]
         }
         
-        return imagePoints
+        return pointData
     }
 }
