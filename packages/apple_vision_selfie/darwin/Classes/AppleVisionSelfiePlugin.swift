@@ -155,7 +155,6 @@ public class AppleVisionSelfiePlugin: NSObject, FlutterPlugin {
                             else{
                                 let u = NSBitmapImageRep(ciImage:ciImage!)
                                 let bytesPerRow = u.bytesPerRow
-                                let width = Int(u.size.width)
                                 let height = Int(u.size.height)
                                 
                                 nsImage = Data(bytes: u.bitmapData!, count: Int(bytesPerRow*height))
