@@ -4,10 +4,11 @@ packages:
   apple_vision_commons:
     dependency: "direct main"
     description:
-      path: "../apple_vision_commons"
-      relative: true
-    source: path
-    version: "0.0.2"
+      name: apple_vision_commons
+      sha256: c75376bb049c59d7da1dedf0334bab5162a0f72973d93e644e637944d5e10e71
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.1"
   async:
     dependency: transitive
     description:
