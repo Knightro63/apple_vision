@@ -64,7 +64,6 @@ class _VisionPose extends State<VisionPose>{
           Uint8List? image = i.bytes;
           visionController.processImage(image!, i.metadata!.size).then((data){
             poseData = data;
-            print(poseData);
             setState(() {
               
             });
@@ -129,7 +128,7 @@ class _VisionPose extends State<VisionPose>{
     List<Widget> widgets = [];
     for(int j = 0; j < poseData!.length;j++){
       for(int i = 0; i < poseData![j].poses.length; i++){
-        if(poseData![j].poses[i].confidence > 0.5){
+        if(poseData![j].poses[i].confidence > 0.3){
           widgets.add(
             Positioned(
               top: poseData![j].poses[i].location.y,

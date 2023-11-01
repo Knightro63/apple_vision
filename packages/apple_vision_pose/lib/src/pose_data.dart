@@ -55,13 +55,14 @@ class PoseData {
 /// A class that converts the information from apple vision to dart
 class PoseFunctions {
   /// Convert pose data from apple vision to usable dart data
-  static List<Pose> getPoseDataFromList(Map object) {
+  static List<Pose> getPoseDataFromList(List<Object?> object) {
     List<Pose> data = [];
-    for (String temp in object.keys) {
+    for (int i = 0; i < object.length;i++) {
+      Map map = object[i] as Map;
       data.add(
         Pose(
-          getJointFromString(temp)!,
-          PosePoint(object[temp]['x'], object[temp]['y']), object[temp]['confidence']
+          getJointFromString(map['description'])!,
+          PosePoint(map['x'], map['y']), map['confidence']
         )
       );
     }
@@ -72,8 +73,7 @@ class PoseFunctions {
   /// Get the joint information for a string format and convert to an enum Joint
   static Joint? getJointFromString(String joint) {
     for (int i = 0; i < Joint.values.length; i++) {
-      String other =
-          joint.replaceAll("joint", '').replaceAll('1', '').replaceAll('_', '');
+      String other = joint.replaceAll("joint", '').replaceAll('1', '').replaceAll('_', '');
       if (Joint.values[i].name.toLowerCase() == other.toLowerCase()) {
         return Joint.values[i];
       }

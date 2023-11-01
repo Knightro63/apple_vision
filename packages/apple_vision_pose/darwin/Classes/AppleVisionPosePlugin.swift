@@ -28,7 +28,7 @@ public class AppleVisionPosePlugin: NSObject, FlutterPlugin {
         switch call.method {
         case "process":
             guard let arguments = call.arguments as? [String:Any],
-            let data:FlutterStandardTypedData = arguments["image"] as? FlutterStandardTypedData else {
+                  let data:FlutterStandardTypedData = arguments["image"] as? FlutterStandardTypedData else {
                 result("Couldn't find image data")
                 return
             }
@@ -46,6 +46,7 @@ public class AppleVisionPosePlugin: NSObject, FlutterPlugin {
         default:
             result(FlutterMethodNotImplemented)
         }
+        
     }
     
     // Gets called when a new image is added to the buffer
@@ -70,9 +71,9 @@ public class AppleVisionPosePlugin: NSObject, FlutterPlugin {
             try imageRequestHandler.perform([VNDetectHumanBodyPoseRequest { (request, error) in
                 if error == nil {
                     if let results = request.results as? [VNHumanBodyPoseObservation] {
-                        var poseData:[[String:Any?]] = []
+                        var poseData:[[[String:Any?]]] = []
                         for pose in results {
-                            poseData.append(contentsOf: self.processObservation(pose,imageSize))
+                            poseData.append(self.processObservation(pose,imageSize))
                         }
                         event = [
                             "name": "pose",
@@ -122,18 +123,20 @@ public class AppleVisionPosePlugin: NSObject, FlutterPlugin {
             .leftAnkle,
             .root
         ]
-        
+
+        var pointData:[[String:Any?]] = []
         // Retrieve the CGPoints containing the normalized X and Y coordinates.
-        let imagePoints: [[String:Any?]] = torsoJointNames.compactMap {
+        let _: [[String:Any?]] = torsoJointNames.compactMap {
             guard let point = recognizedPoints[$0], point.confidence > 0 else { return nil }
             
             // Translate the point from normalized-coordinates to image coordinates.
              let coord =  VNImagePointForNormalizedPoint(point.location,
                                                   Int(imageSize.width),
                                                   Int(imageSize.height))
+            pointData.append(["description": $0.rawValue.rawValue.description,"x":coord.x ,"y":coord.y, "confidence": point.confidence])
             return [$0.rawValue.rawValue.description: ["x":coord.x ,"y":coord.y, "confidence": point.confidence] as [String : Any]]
         }
         
-        return imagePoints
+        return pointData
     }
 }
