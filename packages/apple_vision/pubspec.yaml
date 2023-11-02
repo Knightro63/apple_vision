@@ -12,7 +12,7 @@ dependencies:
     sdk: flutter
 
   apple_vision_animal_pose: ^0.0.1
-  apple_vision_commons: ^0.0.2
+  apple_vision_commons: ^0.0.1
   apple_vision_face: ^0.0.2
   apple_vision_face_detection: ^0.0.1
   apple_vision_hand: ^0.0.2
