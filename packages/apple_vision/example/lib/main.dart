@@ -1,13 +1,9 @@
-import 'dart:async';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:apple_vision/apple_vision.dart';
-import 'package:camera_macos/camera_macos_controller.dart';
-import 'package:camera_macos/camera_macos_device.dart';
-import 'package:camera_macos/camera_macos_file.dart';
-import 'package:camera_macos/camera_macos_platform_interface.dart';
-import 'package:camera_macos/camera_macos_view.dart';
-
+import 'package:flutter/material.dart';
+import '../camera/camera_insert.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'camera/input_image.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,15 +18,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blue,
       ),
       home: const VisionFace(),
@@ -41,53 +28,54 @@ class MyApp extends StatelessWidget {
 class VisionFace extends StatefulWidget {
   const VisionFace({
     Key? key,
-    this.size = const Size(750,750),
     this.onScanned
   }):super(key: key);
 
-  final Size size;
   final Function(dynamic data)? onScanned; 
 
   @override
   _VisionFace createState() => _VisionFace();
 }
 
-class _VisionFace extends State<VisionFace>{
+class _VisionFace extends State<VisionFace> {
   final GlobalKey cameraKey = GlobalKey(debugLabel: "cameraKey");
-  late AppleVisionFaceController cameraController;
-  late List<CameraMacOSDevice> _cameras;
-  CameraMacOSController? controller;
+  AppleVisionFaceController visionController = AppleVisionFaceController();
+  InsertCamera camera = InsertCamera();
   String? deviceId;
+  bool loading = true;
+  Size imageSize = const Size(640,640*9/16);
 
-  FaceData? faceData;
+  List<FaceData>? faceData;
   late double deviceWidth;
   late double deviceHeight;
 
   @override
   void initState() {
-    cameraController = AppleVisionFaceController();
-    CameraMacOS.instance.listDevices(deviceType: CameraMacOSDeviceType.video).then((value){
-      _cameras = value;
-      deviceId = _cameras.first.deviceId;
+    camera.setupCameras().then((value){
+      setState(() {
+        loading = false;
+      });
+      camera.startLiveFeed((InputImage i){
+        if(i.metadata?.size != null){
+          imageSize = i.metadata!.size;
+        }
+        if(mounted) {
+          Uint8List? image = i.bytes;
+          visionController.processImage(image!, i.metadata!.size).then((data){
+            faceData = data;
+            setState(() {
+              
+            });
+          });
+        }
+      });
     });
     super.initState();
   }
   @override
   void dispose() {
-    controller?.destroy();
+    camera.dispose();
     super.dispose();
-  }
-  void onTakePictureButtonPressed() async{
-    CameraMacOSFile? file = await controller?.takePicture();
-    if(file != null && mounted) {
-      Uint8List? image = file.bytes;
-      cameraController.process(image!, const Size(640,480)).then((data){
-        faceData = data;
-        setState(() {
-          
-        });
-      });
-    }
   }
 
   @override
@@ -97,16 +85,17 @@ class _VisionFace extends State<VisionFace>{
     return Stack(
       children:<Widget>[
         SizedBox(
-          width: 640, 
-          height: 480, 
-          child: _getScanWidgetByPlatform()
+          width: imageSize.width, 
+          height: imageSize.height, 
+          child: loading?Container():CameraSetup(camera: camera,size: imageSize,)
       ),
       ]+showPoints()
     );
   }
 
   List<Widget> showPoints(){
-    if(faceData == null || faceData!.marks.isEmpty) return[];
+    if(faceData == null || faceData!.isEmpty) return[];
+    List<Widget> widgets = [];
     Map<LandMark,Color> colors = {
       LandMark.faceContour: Colors.amber,
       LandMark.outerLips: Colors.red,
@@ -118,54 +107,40 @@ class _VisionFace extends State<VisionFace>{
       LandMark.leftEyebrow: Colors.lime,
       LandMark.rightEyebrow: Colors.lime,
     };
-    List<Widget> widgets = [];
 
-    for(int i = 0; i < faceData!.marks.length; i++){
-      List<FacePoint> points = faceData!.marks[i].location;
-      for(int j = 0; j < points.length;j++){
-        widgets.add(
-          Positioned(
-            left: points[j].x,
-            top: points[j].y,
-            child: Container(
-              width: 10,
-              height: 10,
-              decoration: BoxDecoration(
-                color: colors[faceData!.marks[i].landmark],
-                borderRadius: BorderRadius.circular(5)
-              ),
-            )
-          )
-        );
+    for(int k = 0; k < faceData!.length;k++){
+      if(faceData![k].marks.isNotEmpty){
+        for(int i = 0; i < faceData![k].marks.length; i++){
+          List<FacePoint> points = faceData![k].marks[i].location;
+          for(int j = 0; j < points.length;j++){
+            widgets.add(
+              Positioned(
+                left: points[j].x,
+                top: points[j].y,
+                child: Container(
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    color: colors[faceData![k].marks[i].landmark],
+                    borderRadius: BorderRadius.circular(5)
+                  ),
+                )
+              )
+            );
+          }
+        }
       }
     }
     return widgets;
   }
 
-  Widget _getScanWidgetByPlatform() {
-    return CameraMacOSView(
-      key: cameraKey,
-      fit: BoxFit.fill,
-      cameraMode: CameraMacOSMode.photo,
-      enableAudio: false,
-      onCameraLoading: (ob){
-        return Container(
-          width: deviceWidth,
-          height: deviceHeight,
-          color: Theme.of(context).canvasColor,
-          alignment: Alignment.center,
-          child: const CircularProgressIndicator(color: Colors.blue)
-        );
-      },
-      onCameraInizialized: (CameraMacOSController controller) {
-        setState(() {
-          this.controller = controller;
-          Timer.periodic(const Duration(milliseconds: 32),(_){
-            onTakePictureButtonPressed();
-          });
-        });
-      },
+  Widget loadingWidget(){
+    return Container(
+      width: deviceWidth,
+      height: deviceHeight,
+      color: Theme.of(context).canvasColor,
+      alignment: Alignment.center,
+      child: const CircularProgressIndicator(color: Colors.blue)
     );
   }
 }
-

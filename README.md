@@ -20,16 +20,16 @@ Apple Vision is a Flutter plugin that enables Flutter apps to use [Apple Vision]
 | Feature                                                                                       | Plugin | Source Code| MacOS | iOS |
 |-----------------------------------------------------------------------------------------------|--------|------------|---------|-----|
 |[Face Mesh](https://developer.apple.com/documentation/vision/tracking_the_user_s_face_in_real_time)                   | [apple\_vision\_face](https://pub.dev/packages/apple_vision_face) [![Pub Version](https://img.shields.io/pub/v/apple_vision_face)](https://pub.dev/packages/apple_vision_face)                                        | [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Knightro63/apple_vision/tree/master/packages/apple_vision_face)             | ✅ | ✅ |
-|[Face Detection](https://developer.apple.com/documentation/vision/tracking_the_user_s_face_in_real_time)                   | [apple\_vision\_face\_detection](https://pub.dev/packages/apple_vision_face_detection) [![Pub Version](https://img.shields.io/pub/v/apple_vision_face_detection)](https://pub.dev/packages/apple_vision_face_detection)                                        | [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Knightro63/apple_vision/tree/master/packages/apple_vision_face_detection)             | ✅ | ❌ |
+|[Face Detection](https://developer.apple.com/documentation/vision/tracking_the_user_s_face_in_real_time)                   | [apple\_vision\_face\_detection](https://pub.dev/packages/apple_vision_face_detection) [![Pub Version](https://img.shields.io/pub/v/apple_vision_face_detection)](https://pub.dev/packages/apple_vision_face_detection)                                        | [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Knightro63/apple_vision/tree/master/packages/apple_vision_face_detection)             | ✅ | ✅ |
 |[Pose Detection](https://developer.apple.com/documentation/vision/detecting_human_body_poses_in_images)                   | [apple\_vision\_pose](https://pub.dev/packages/apple_vision_pose) [![Pub Version](https://img.shields.io/pub/v/apple_vision_pose)](https://pub.dev/packages/apple_vision_pose)                                        | [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Knightro63/apple_vision/tree/master/packages/apple_vision_pose)             | ✅ | ✅ |
-|[Animal Pose Detection](https://developer.apple.com/documentation/vision/vndetectanimalbodyposerequest)                   | [apple\_vision\_animal\_pose](https://pub.dev/packages/apple_vision_animal_pose) [![Pub Version](https://img.shields.io/pub/v/apple_vision_animal_pose)](https://pub.dev/packages/apple_vision_animal_pose)                                        | [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Knightro63/apple_vision/tree/master/packages/apple_vision_animal_pose)             | ❌ | ❌ |
+|[Animal Pose Detection](https://developer.apple.com/documentation/vision/vndetectanimalbodyposerequest)                   | [apple\_vision\_animal\_pose](https://pub.dev/packages/apple_vision_animal_pose) [![Pub Version](https://img.shields.io/pub/v/apple_vision_animal_pose)](https://pub.dev/packages/apple_vision_animal_pose)                                        | [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Knightro63/apple_vision/tree/master/packages/apple_vision_animal_pose)             | ✅ | ✅ |
 |[Hand Detection](https://developer.apple.com/documentation/vision/detecting_hand_poses_with_vision)                   | [apple\_vision\_hand](https://pub.dev/packages/apple_vision_hand) [![Pub Version](https://img.shields.io/pub/v/apple_vision_hand)](https://pub.dev/packages/apple_vision_hand)                                        | [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Knightro63/apple_vision/tree/master/packages/apple_vision_hand)             | ✅ | ✅ |
-|[Object Classification](https://developer.apple.com/documentation/vision/recognizing_objects_in_live_capture)                   | [apple\_vision\_object](https://pub.dev/packages/apple_vision_object) [![Pub Version](https://img.shields.io/pub/v/apple_vision_object)](https://pub.dev/packages/apple_vision_object)                                        | [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Knightro63/apple_vision/tree/master/packages/apple_vision_object)             | ✅ | ❌ |
-|[Object Tracking](https://developer.apple.com/documentation/vision/vntrackobjectrequest)                   | [apple\_vision\_object\_tracking](https://pub.dev/packages/apple_vision_object_tracking) [![Pub Version](https://img.shields.io/pub/v/apple_vision_object_tracking)](https://pub.dev/packages/apple_vision_object_tracking)                                        | [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Knightro63/apple_vision/tree/master/packages/apple_vision_object_tracking)             | ✅ | ❌ |
+|[Object Classification](https://developer.apple.com/documentation/vision/recognizing_objects_in_live_capture)                   | [apple\_vision\_object](https://pub.dev/packages/apple_vision_object) [![Pub Version](https://img.shields.io/pub/v/apple_vision_object)](https://pub.dev/packages/apple_vision_object)                                        | [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Knightro63/apple_vision/tree/master/packages/apple_vision_object)             | ✅ | ✅ |
+|[Object Tracking](https://developer.apple.com/documentation/vision/vntrackobjectrequest)                   | [apple\_vision\_object\_tracking](https://pub.dev/packages/apple_vision_object_tracking) [![Pub Version](https://img.shields.io/pub/v/apple_vision_object_tracking)](https://pub.dev/packages/apple_vision_object_tracking)                                        | [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Knightro63/apple_vision/tree/master/packages/apple_vision_object_tracking)             | ✅ | ✅ |
 |[Selfie Segmentation](https://developer.apple.com/documentation/vision/applying_matte_effects_to_people_in_images_and_video)                   | [apple\_vision\_selfie](https://pub.dev/packages/apple_vision_selfie) [![Pub Version](https://img.shields.io/pub/v/apple_vision_selfie)](https://pub.dev/packages/apple_vision_selfie)                                        | [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Knightro63/apple_vision/tree/master/packages/apple_vision_selfie)             | ✅ | ❌ |
-|[Text Recognition](https://developer.apple.com/documentation/vision/applying_matte_effects_to_people_in_images_and_video)                   | [apple\_vision\_text\_recognition](https://pub.dev/packages/apple_vision_selfie) [![Pub Version](https://img.shields.io/pub/v/apple_vision_selfie)](https://pub.dev/packages/apple_vision_selfie)                                        | [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Knightro63/apple_vision/tree/master/packages/apple_vision_selfie)             | ✅ | ❌ |
-|[Image Classification](https://developer.apple.com/documentation/vision/classifying_images_with_vision_and_core_ml)                   | [apple\_vision\_image\_classification](https://pub.dev/packages/apple_vision_image_classification) [![Pub Version](https://img.shields.io/pub/v/apple_vision_image_classification)](https://pub.dev/packages/apple_vision_image_classification)                                        | [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Knightro63/apple_vision/tree/master/packages/apple_vision_image_classification)             | ✅ | ❌ |
-|[Barcode Scanner](https://developer.apple.com/documentation/vision/vnbarcodeobservation)                   | [apple\_vision\_scanner](https://pub.dev/packages/apple_vision_scanner) [![Pub Version](https://img.shields.io/pub/v/apple_vision_scanner)](https://pub.dev/packages/apple_vision_scanner)                                        | [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Knightro63/apple_vision/tree/master/packages/apple_vision_scanner)             | ✅ | ❌ |
+|[Text Recognition](https://developer.apple.com/documentation/vision/applying_matte_effects_to_people_in_images_and_video)                   | [apple\_vision\_text\_recognition](https://pub.dev/packages/apple_vision_selfie) [![Pub Version](https://img.shields.io/pub/v/apple_vision_selfie)](https://pub.dev/packages/apple_vision_selfie)                                        | [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Knightro63/apple_vision/tree/master/packages/apple_vision_selfie)             | ✅ | ✅ |
+|[Image Classification](https://developer.apple.com/documentation/vision/classifying_images_with_vision_and_core_ml)                   | [apple\_vision\_image\_classification](https://pub.dev/packages/apple_vision_image_classification) [![Pub Version](https://img.shields.io/pub/v/apple_vision_image_classification)](https://pub.dev/packages/apple_vision_image_classification)                                        | [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Knightro63/apple_vision/tree/master/packages/apple_vision_image_classification)             | ✅ | ✅ |
+|[Barcode Scanner](https://developer.apple.com/documentation/vision/vnbarcodeobservation)                   | [apple\_vision\_scanner](https://pub.dev/packages/apple_vision_scanner) [![Pub Version](https://img.shields.io/pub/v/apple_vision_scanner)](https://pub.dev/packages/apple_vision_scanner)                                        | [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Knightro63/apple_vision/tree/master/packages/apple_vision_scanner)             | ✅ | ✅ |
 
 ## Requirements
 
@@ -65,38 +65,43 @@ You need to first import 'package:apple_vision/apple_vision.dart';
 
 ```dart
   final GlobalKey cameraKey = GlobalKey(debugLabel: "cameraKey");
-  late AppleVisionFaceController cameraController;
-  late List<CameraMacOSDevice> _cameras;
-  CameraMacOSController? controller;
+  AppleVisionFaceController visionController = AppleVisionFaceController();
+  InsertCamera camera = InsertCamera();
   String? deviceId;
+  bool loading = true;
+  Size imageSize = const Size(640,640*9/16);
 
-  FaceData? faceData;
+  List<FaceData>? faceData;
+  late double deviceWidth;
+  late double deviceHeight;
 
   @override
   void initState() {
-    cameraController = AppleVisionFaceController();
-    CameraMacOS.instance.listDevices(deviceType: CameraMacOSDeviceType.video).then((value){
-      _cameras = value;
-      deviceId = _cameras.first.deviceId;
+    camera.setupCameras().then((value){
+      setState(() {
+        loading = false;
+      });
+      camera.startLiveFeed((InputImage i){
+        if(i.metadata?.size != null){
+          imageSize = i.metadata!.size;
+        }
+        if(mounted) {
+          Uint8List? image = i.bytes;
+          visionController.processImage(image!, i.metadata!.size).then((data){
+            faceData = data;
+            setState(() {
+              
+            });
+          });
+        }
+      });
     });
     super.initState();
   }
   @override
   void dispose() {
-    controller?.destroy();
+    camera.dispose();
     super.dispose();
-  }
-  void onTakePictureButtonPressed() async{
-    CameraMacOSFile? file = await controller?.takePicture();
-    if(file != null && mounted) {
-      Uint8List? image = file.bytes;
-      cameraController.process(image!, const Size(640,480)).then((data){
-        faceData = data;
-        setState(() {
-          
-        });
-      });
-    }
   }
 
   @override
@@ -106,16 +111,17 @@ You need to first import 'package:apple_vision/apple_vision.dart';
     return Stack(
       children:<Widget>[
         SizedBox(
-          width: 640, 
-          height: 480, 
-          child: _getScanWidgetByPlatform()
+          width: imageSize.width, 
+          height: imageSize.height, 
+          child: loading?Container():CameraSetup(camera: camera,size: imageSize,)
       ),
       ]+showPoints()
     );
   }
 
   List<Widget> showPoints(){
-    if(faceData == null || faceData!.marks.isEmpty) return[];
+    if(faceData == null || faceData!.isEmpty) return[];
+    List<Widget> widgets = [];
     Map<LandMark,Color> colors = {
       LandMark.faceContour: Colors.amber,
       LandMark.outerLips: Colors.red,
@@ -127,53 +133,40 @@ You need to first import 'package:apple_vision/apple_vision.dart';
       LandMark.leftEyebrow: Colors.lime,
       LandMark.rightEyebrow: Colors.lime,
     };
-    List<Widget> widgets = [];
 
-    for(int i = 0; i < faceData!.marks.length; i++){
-      List<Point> points = faceData!.marks[i].location;
-      for(int j = 0; j < points.length;j++){
-        widgets.add(
-          Positioned(
-            left: points[j].x,
-            bottom: points[j].y,
-            child: Container(
-              width: 10,
-              height: 10,
-              decoration: BoxDecoration(
-                color: colors[faceData!.marks[i].landmark],
-                borderRadius: BorderRadius.circular(5)
-              ),
-            )
-          )
-        );
+    for(int k = 0; k < faceData!.length;k++){
+      if(faceData![k].marks.isNotEmpty){
+        for(int i = 0; i < faceData![k].marks.length; i++){
+          List<FacePoint> points = faceData![k].marks[i].location;
+          for(int j = 0; j < points.length;j++){
+            widgets.add(
+              Positioned(
+                left: points[j].x,
+                top: points[j].y,
+                child: Container(
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    color: colors[faceData![k].marks[i].landmark],
+                    borderRadius: BorderRadius.circular(5)
+                  ),
+                )
+              )
+            );
+          }
+        }
       }
     }
     return widgets;
   }
 
-  Widget _getScanWidgetByPlatform() {
-    return CameraMacOSView(
-      key: cameraKey,
-      fit: BoxFit.fill,
-      cameraMode: CameraMacOSMode.photo,
-      enableAudio: false,
-      onCameraLoading: (ob){
-        return Container(
-          width: deviceWidth,
-          height: deviceHeight,
-          color: Theme.of(context).canvasColor,
-          alignment: Alignment.center,
-          child: const CircularProgressIndicator(color: Colors.blue)
-        );
-      },
-      onCameraInizialized: (CameraMacOSController controller) {
-        setState(() {
-          this.controller = controller;
-          Timer.periodic(const Duration(milliseconds: 32),(_){
-            onTakePictureButtonPressed();
-          });
-        });
-      },
+  Widget loadingWidget(){
+    return Container(
+      width: deviceWidth,
+      height: deviceHeight,
+      color: Theme.of(context).canvasColor,
+      alignment: Alignment.center,
+      child: const CircularProgressIndicator(color: Colors.blue)
     );
   }
 ```

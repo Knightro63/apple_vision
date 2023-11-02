@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  apple_vision_animal_pose: ^0.0.1
+  #apple_vision_animal_pose: ^0.0.1
   apple_vision_commons: ^0.0.1
   apple_vision_face: ^0.0.2
   apple_vision_face_detection: ^0.0.1
@@ -22,20 +22,7 @@ dependencies:
   apple_vision_pose: ^0.0.2
   apple_vision_recognize_text: ^0.0.1
   apple_vision_selfie: ^0.0.1
-
-# dependency_overrides:
-#   apple_vision_commons:
-#     path: ../apple_vision_commons
-#   apple_vision_face:
-#     path: ../apple_vision_face
-#   apple_vision_pose:
-#     path: ../apple_vision_pose
-#   apple_vision_hand:
-#     path: ../apple_vision_hand
-#   apple_vision_object:
-#     path: ../apple_vision_object
-#   apple_vision_scanner:
-#     path: ../apple_vision_scanner
+  apple_vision_scanner: ^0.0.1
 
 dev_dependencies:
   flutter_test:

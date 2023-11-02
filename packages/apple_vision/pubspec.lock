@@ -13,7 +13,15 @@ packages:
     dependency: "direct main"
     description:
       name: apple_vision_face
-      sha256: "398629fcc74a5bdebbc839dc485dff27221cc8983a9a021462ff01c6ead36ab4"
+      sha256: "97936d615a4d3e6eb8cfa92b2b3dc5c8a19957ff7d8602e9ac150ae98b1e9143"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2"
+  apple_vision_face_detection:
+    dependency: "direct main"
+    description:
+      name: apple_vision_face_detection
+      sha256: "2c1a73a3277f5123e298216887eac9dc069d1a3a9516a8df8969b2d176e991d4"
       url: "https://pub.dev"
     source: hosted
     version: "0.0.1"
@@ -21,7 +29,31 @@ packages:
     dependency: "direct main"
     description:
       name: apple_vision_hand
-      sha256: "4537ca9e6dd89203ca875c1a04e02364aebea552342b5dac045358571da5901a"
+      sha256: d6000cb48ee70bd4bb414ff3dfee886ffa940b10b46469933beaf832e9728fce
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2"
+  apple_vision_image_classification:
+    dependency: "direct main"
+    description:
+      name: apple_vision_image_classification
+      sha256: "43b4c32e1a9acbbf6f99ed223ef3b91450a97f0acc8cf69148db41844c30ac78"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.1"
+  apple_vision_object:
+    dependency: "direct main"
+    description:
+      name: apple_vision_object
+      sha256: e10dcd3e065d093b8db98cd49aefd28217dd20c75b4d2f3b61a8593fdda71143
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.1"
+  apple_vision_object_tracking:
+    dependency: "direct main"
+    description:
+      name: apple_vision_object_tracking
+      sha256: aa4b4514e5a656ea37f5353474a3d85ae0a1ec12e1678c44e33df78f11019d3b
       url: "https://pub.dev"
     source: hosted
     version: "0.0.1"
@@ -29,7 +61,31 @@ packages:
     dependency: "direct main"
     description:
       name: apple_vision_pose
-      sha256: fa31cdcbe864fc165cc12711dce8adc375e264a00d868817d068118074701909
+      sha256: f8372b3ec0de048f7fd799da57fd9152512058c0f02cddd9d5963917c3b05dde
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2"
+  apple_vision_recognize_text:
+    dependency: "direct main"
+    description:
+      name: apple_vision_recognize_text
+      sha256: "7dbf6995e148531396c66da765f96ef6aba9b189065b3f4c4db093a426c2556d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.1"
+  apple_vision_scanner:
+    dependency: "direct main"
+    description:
+      name: apple_vision_scanner
+      sha256: d0d0a5029c8516d7e1c69f838995ef17be52f517ab49561444b2637a6df2d8ca
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.1"
+  apple_vision_selfie:
+    dependency: "direct main"
+    description:
+      name: apple_vision_selfie
+      sha256: "1dc568035dab9273e766684da54c85c44c26c605eb201eee5efa06602dd730b8"
       url: "https://pub.dev"
     source: hosted
     version: "0.0.1"
@@ -37,10 +93,10 @@ packages:
     dependency: transitive
     description:
       name: async
-      sha256: bfe67ef28df125b7dddcea62755991f807aa39a2492a23e1550161692950bbe0
+      sha256: "947bfcf187f74dbc5e146c9eb9c0f10c9f8b30743e341481c1e2ed3ecc18c20c"
       url: "https://pub.dev"
     source: hosted
-    version: "2.10.0"
+    version: "2.11.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -53,10 +109,10 @@ packages:
     dependency: transitive
     description:
       name: characters
-      sha256: e6a326c8af69605aec75ed6c187d06b349707a27fbff8222ca9cc2cff167975c
+      sha256: "04a925763edad70e8443c99234dc3328f442e811f1d8fd1a72f1c8ad0f69a605"
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.1"
+    version: "1.3.0"
   clock:
     dependency: transitive
     description:
@@ -69,10 +125,10 @@ packages:
     dependency: transitive
     description:
       name: collection
-      sha256: cfc915e6923fe5ce6e153b0723c753045de46de1b4d63771530504004a45fae0
+      sha256: "4a07be6cb69c84d677a6c3096fcf960cc3285a8330b4603e0d463d15d9bd934c"
       url: "https://pub.dev"
     source: hosted
-    version: "1.17.0"
+    version: "1.17.1"
   fake_async:
     dependency: transitive
     description:
@@ -90,10 +146,10 @@ packages:
     dependency: "direct dev"
     description:
       name: flutter_lints
-      sha256: aeb0b80a8b3709709c9cc496cdc027c5b3216796bc0af0ce1007eaf24464fd4c
+      sha256: a25a15ebbdfc33ab1cd26c63a6ee519df92338a9c10f122adda92938253bef04
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.1"
+    version: "2.0.3"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -103,10 +159,10 @@ packages:
     dependency: transitive
     description:
       name: js
-      sha256: "5528c2f391ededb7775ec1daa69e65a2d61276f7552de2b5f7b8d34ee9fd4ab7"
+      sha256: f2c445dce49627136094980615a031419f7f3eb393237e4ecd97ac15dea343f3
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.5"
+    version: "0.6.7"
   lints:
     dependency: transitive
     description:
@@ -119,10 +175,10 @@ packages:
     dependency: transitive
     description:
       name: matcher
-      sha256: "16db949ceee371e9b99d22f88fa3a73c4e59fd0afed0bd25fc336eb76c198b72"
+      sha256: "6501fbd55da300384b768785b83e5ce66991266cec21af89ab9ae7f5ce1c4cbb"
       url: "https://pub.dev"
     source: hosted
-    version: "0.12.13"
+    version: "0.12.15"
   material_color_utilities:
     dependency: transitive
     description:
@@ -135,18 +191,18 @@ packages:
     dependency: transitive
     description:
       name: meta
-      sha256: "6c268b42ed578a53088d834796959e4a1814b5e9e164f147f580a386e5decf42"
+      sha256: "3c74dbf8763d36539f114c799d8a2d87343b5067e9d796ca22b5eb8437090ee3"
       url: "https://pub.dev"
     source: hosted
-    version: "1.8.0"
+    version: "1.9.1"
   path:
     dependency: transitive
     description:
       name: path
-      sha256: db9d4f58c908a4ba5953fcee2ae317c94889433e5024c27ce74a37f94267945b
+      sha256: "8829d8a55c13fc0e37127c29fedf290c102f4e40ae94ada574091fe0ff96c917"
       url: "https://pub.dev"
     source: hosted
-    version: "1.8.2"
+    version: "1.8.3"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -196,10 +252,10 @@ packages:
     dependency: transitive
     description:
       name: test_api
-      sha256: ad540f65f92caa91bf21dfc8ffb8c589d6e4dc0c2267818b4cc2792857706206
+      sha256: eb6ac1540b26de412b3403a163d919ba86f6a973fe6cc50ae3541b80092fdcfb
       url: "https://pub.dev"
     source: hosted
-    version: "0.4.16"
+    version: "0.5.1"
   vector_math:
     dependency: transitive
     description:
@@ -209,5 +265,5 @@ packages:
     source: hosted
     version: "2.1.4"
 sdks:
-  dart: ">=2.18.6 <3.0.0"
+  dart: ">=3.0.0-0 <4.0.0"
   flutter: ">=1.20.0"
