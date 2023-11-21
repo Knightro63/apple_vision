@@ -29,34 +29,39 @@ public class AppleVisionRecognizeTextPlugin: NSObject, FlutterPlugin {
         super.init()
     }
 
-    public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+  public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
         case "process":
-            guard let arguments = call.arguments as? [String:Any],
-                let data:FlutterStandardTypedData = arguments["image"] as? FlutterStandardTypedData else {
-                    result("Couldn't find image data")
-                    return
+            guard let arguments = call.arguments as? [String: Any],
+                  let data: FlutterStandardTypedData = arguments["image"] as? FlutterStandardTypedData else {
+                result("Couldn't find image data")
+                return
             }
             let width = arguments["width"] as? Double ?? 0
             let height = arguments["height"] as? Double ?? 0
             let candidates = arguments["candidates"] as? Int ?? 1
-  #if os(iOS)
-                if #available(iOS 13.0, *) {
-                    convertImage(Data(data.data), CGSize(width: width, height: height), candidates, CIFormat.ARGB8) { event in
-                result(event)
-            }
-                } else {
-                    return result(FlutterError(code: "INVALID OS", message: "requires version 12.0", details: nil))
+
+            #if os(iOS)
+            if #available(iOS 13.0, *) {
+                convertImage(Data(data.data), CGSize(width: width, height: height), candidates, CIFormat.ARGB8) { [weak self] event in
+                    self?.handleConversionResult(event, result: result)
                 }
+            } else {
+                result(FlutterError(code: "INVALID OS", message: "requires version 12.0", details: nil))
+            }
             #elseif os(macOS)
-               convertImage(Data(data.data), CGSize(width: width, height: height), candidates, CIFormat.ARGB8) { event in
-                result(event)
+            convertImage(Data(data.data), CGSize(width: width, height: height), candidates, CIFormat.ARGB8) { [weak self] event in
+                self?.handleConversionResult(event, result: result)
             }
             #endif
-           
+
         default:
             result(FlutterMethodNotImplemented)
         }
+    }
+
+    func handleConversionResult(_ event: [String: Any?], result: @escaping FlutterResult) {
+        result(event)
     }
  #if os(iOS)
     @available(iOS 13.0, *)
