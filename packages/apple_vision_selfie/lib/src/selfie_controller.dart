@@ -25,7 +25,7 @@ class SelfieSegmentationData{
     this.format = PictureFormat.tiff,
     this.quality = SelfieQuality.fast,
     this.backGround,
-    this.orientation = ImageOrientation.downMirrored
+    this.orientation = ImageOrientation.up
   });
   /// Image to be processed
   Uint8List image;

@@ -98,7 +98,7 @@ public class AppleVisionPose3DPlugin: NSObject, FlutterPlugin {
         do {
             try imageRequestHandler.perform([VNDetectHumanBodyPose3DRequest { (request, error) in
                 if error == nil {
-                    if let results = request.results as? [VNHumanBodyPoseObservation] {
+                    if let results = request.results as? [VNHumanBodyPose3DObservation] {
                         var poseData:[[[String:Any?]]] = []
                         for pose in results {
                             poseData.append(self.processObservation(pose,imageSize))
@@ -124,7 +124,7 @@ public class AppleVisionPose3DPlugin: NSObject, FlutterPlugin {
     #if os(iOS)
     @available(iOS 14.0, *)
     #endif
-    func processObservation(_ observation: VNHumanBodyPoseObservation,_ imageSize: CGSize) -> [[String:Any?]] {
+    func processObservation(_ observation: VNHumanBodyPose3DObservation,_ imageSize: CGSize) -> [[String:Any?]] {
         // Retrieve all torso points.
         guard let recognizedPoints =
                 try? observation.recognizedPoints(.all) else { return [[:]]}

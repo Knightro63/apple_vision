@@ -26,10 +26,12 @@ enum Joint {
 /// 
 /// [x] X location
 /// [y] Y location
+/// [z] Z location
 class PosePoint {
-  PosePoint(this.x, this.y);
+  PosePoint(this.x, this.y, this.z);
   final double x;
   final double y;
+  final double z;
 }
 
 /// A class that gives the type of joint and the location of the joint and the confidence that it is that joint
@@ -62,7 +64,7 @@ class PoseFunctions {
       data.add(
         Pose(
           getJointFromString(map['description'])!,
-          PosePoint(map['x'], map['y']), map['confidence']
+          PosePoint(map['x'], map['y'], map['z']), map['confidence']
         )
       );
     }

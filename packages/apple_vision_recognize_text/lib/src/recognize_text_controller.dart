@@ -25,7 +25,7 @@ class AppleVisionRecognizeTextController {
   /// [imageSize] as Size is the size of the image that is being processed
   /// 
   /// [orientation] The orientation of the image
-  Future<List<RecognizedText>?> processImage(Uint8List image, Size imageSize,[ImageOrientation orientation = ImageOrientation.downMirrored]) async{
+  Future<List<RecognizedText>?> processImage(Uint8List image, Size imageSize,[ImageOrientation orientation = ImageOrientation.down]) async{
     try {
       final data = await _methodChannel.invokeMapMethod<String, dynamic>(  
         'process',
