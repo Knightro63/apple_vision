@@ -6,3 +6,15 @@ enum CameraFacing {
   /// Back facing camera.
   back,
 }
+
+/// The facing of a camera.
+enum ImageOrientation{
+  left,
+  leftMirrored,
+  right,
+  rightMirrored,
+  down,
+  downMirrored,
+  up,
+  upMirrored
+}
