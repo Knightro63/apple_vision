@@ -17,13 +17,22 @@ class AppleVisionScannerController {
   /// Returns a barcode scanner with the given [formats] options.
   AppleVisionScannerController({this.formats = const [BarcodeFormat.all]});
 
-  Future<List<Barcode>?> processImage(Uint8List image, Size imageSize) async{
+  /// Process the image using apple vision and return the requested information or null value
+  /// 
+  /// [image] as Uint8List is the image that needs to be processed
+  /// this needs to be in an image format raw will not work.
+  /// 
+  /// [imageSize] as Size is the size of the image that is being processed
+  /// 
+  /// [orientation] The orientation of the image
+  Future<List<Barcode>?> processImage(Uint8List image, Size imageSize,[ImageOrientation orientation = ImageOrientation.downMirrored]) async{
     try {
       final Map<String, dynamic>? result = await _methodChannel.invokeMapMethod<String, dynamic>(  
         'process',
         {'image':image,
           'width': imageSize.width,
-          'height':imageSize.height
+          'height':imageSize.height,
+          'orientation': orientation.name
         },
       );
       return _convertData(result);

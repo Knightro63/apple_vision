@@ -15,14 +15,17 @@ class AppleVisionImageClassificationController {
   /// this needs to be in an image format raw will not work.
   /// 
   /// [imageSize] as Size is the size of the image that is being processed
-  Future<List<Label>?> processImage(Uint8List image, Size imageSize, [double confidence = 0.75]) async{
+  /// 
+  /// [orientation] The orientation of the image
+  Future<List<Label>?> processImage(Uint8List image, Size imageSize, [double confidence = 0.75,ImageOrientation orientation = ImageOrientation.downMirrored]) async{
     try {
       final data = await _methodChannel.invokeMapMethod<String, dynamic>(  
         'process',
         {'image':image,
           'width': imageSize.width,
           'height':imageSize.height,
-          'confidence': confidence
+          'confidence': confidence,
+          'orientation': orientation.name
         }
       );
       return _convertData(data);

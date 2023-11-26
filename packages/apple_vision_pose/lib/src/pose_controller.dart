@@ -15,13 +15,16 @@ class AppleVisionPoseController {
   /// this needs to be in an image format raw will not work.
   /// 
   /// [imageSize] as Size is the size of the image that is being processed
-  Future<List<PoseData>?> processImage(Uint8List image, Size imageSize) async{
+  /// 
+  /// [orientation] The orientation of the image
+  Future<List<PoseData>?> processImage(Uint8List image, Size imageSize,[ImageOrientation orientation = ImageOrientation.downMirrored]) async{
     try {
       final Map<String, dynamic>? result = await _methodChannel.invokeMapMethod<String, dynamic>(  
         'process',
         {'image':image,
           'width': imageSize.width,
-          'height':imageSize.height
+          'height':imageSize.height,
+          'orientation': orientation.name
         },
       );
       return _convertData(result);

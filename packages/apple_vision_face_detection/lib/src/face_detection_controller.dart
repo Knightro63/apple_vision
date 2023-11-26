@@ -15,13 +15,16 @@ class AppleVisionFaceDetectionController {
   /// this needs to be in an image format raw will not work.
   /// 
   /// [imageSize] as Size is the size of the image that is being processed
-  Future<List<Rect>?> processImage(Uint8List image, Size imageSize) async{
+  /// 
+  /// [orientation] The orientation of the image
+  Future<List<Rect>?> processImage(Uint8List image, Size imageSize,[ImageOrientation orientation = ImageOrientation.downMirrored]) async{
     try {
       final data = await _methodChannel.invokeMapMethod<String, dynamic>(  
         'process',
         {'image':image,
           'width': imageSize.width,
-          'height':imageSize.height
+          'height':imageSize.height,
+          'orientation': orientation.name
         },
       );
       return _convertData(data);

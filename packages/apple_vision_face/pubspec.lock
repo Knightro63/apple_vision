@@ -5,10 +5,10 @@ packages:
     dependency: "direct main"
     description:
       name: apple_vision_commons
-      sha256: c75376bb049c59d7da1dedf0334bab5162a0f72973d93e644e637944d5e10e71
+      sha256: "1e97476418a9dd297afbb2a0abc61176fec7eceaa1e892eee6ea21caddf3309a"
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.1"
+    version: "0.0.2"
   async:
     dependency: transitive
     description:

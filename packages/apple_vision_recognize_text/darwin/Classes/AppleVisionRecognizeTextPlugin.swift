@@ -40,14 +40,16 @@ public class AppleVisionRecognizeTextPlugin: NSObject, FlutterPlugin {
             let width = arguments["width"] as? Double ?? 0
             let height = arguments["height"] as? Double ?? 0
             let candidates = arguments["candidates"] as? Int ?? 1
+            let orientation = arguments["orientation"] as? String ?? "downMirrored"
+
             #if os(iOS)
                 if #available(iOS 13.0, *) {
-                    return result(convertImage(Data(data.data),CGSize(width: width , height: height),candidates,CIFormat.BGRA8))
+                    return result(convertImage(Data(data.data),CGSize(width: width , height: height),candidates,CIFormat.BGRA8,orientation))
                 } else {
                     return result(FlutterError(code: "INVALID OS", message: "requires version 12.0", details: nil))
                 }
             #elseif os(macOS)
-                return result(convertImage(Data(data.data),CGSize(width: width , height: height),candidates,CIFormat.ARGB8))
+                return result(convertImage(Data(data.data),CGSize(width: width , height: height),candidates,CIFormat.ARGB8,orientation))
             #endif
         default:
             result(FlutterMethodNotImplemented)
@@ -58,18 +60,45 @@ public class AppleVisionRecognizeTextPlugin: NSObject, FlutterPlugin {
     #if os(iOS)
     @available(iOS 13.0, *)
     #endif
-    func convertImage(_ data: Data,_ imageSize: CGSize, _ candidates: Int,_ format: CIFormat) -> [String:Any?]{
+    func convertImage(_ data: Data,_ imageSize: CGSize, _ candidates: Int,_ format: CIFormat,_ oriString: String) -> [String:Any?]{
         let imageRequestHandler:VNImageRequestHandler
+
+        var orientation:CGImagePropertyOrientation = CGImagePropertyOrientation.downMirrored
+        switch oriString{
+            case "down":
+                orientation = CGImagePropertyOrientation.down
+                break
+            case "right":
+                orientation = CGImagePropertyOrientation.right
+                break
+            case "rightMirrored":
+                orientation = CGImagePropertyOrientation.rightMirrored
+                break
+            case "left":
+                orientation = CGImagePropertyOrientation.left
+                break
+            case "leftMirrored":
+                orientation = CGImagePropertyOrientation.leftMirrored
+                break
+            case "up":
+                orientation = CGImagePropertyOrientation.up
+                break
+            case "upMirrored":
+                orientation = CGImagePropertyOrientation.upMirrored
+                break
+            default:
+                orientation = CGImagePropertyOrientation.downMirrored
+                break
+        }
+
         if data.count == (Int(imageSize.height)*Int(imageSize.width)*4){
             // Create a bitmap graphics context with the sample buffer data
             let context =  CIImage(bitmapData: data, bytesPerRow: Int(imageSize.width)*4, size: imageSize, format: format, colorSpace: nil)
             
-            imageRequestHandler = VNImageRequestHandler(ciImage:context,orientation: .downMirrored)
+            imageRequestHandler = VNImageRequestHandler(ciImage:context,orientation: orientation)
         }
         else{
-            imageRequestHandler = VNImageRequestHandler(
-                data: data,
-                orientation: .down)
+            imageRequestHandler = VNImageRequestHandler(data: data, orientation: orientation)
         }
             
         var event:[String:Any?] = ["name":"noData"];

@@ -42,14 +42,16 @@ public class AppleVisionSelfiePlugin: NSObject, FlutterPlugin {
             let quality = arguments["quality"] as? Int ?? 0
             let background:FlutterStandardTypedData? = arguments["background"] as? FlutterStandardTypedData ?? nil
             let pf = arguments["format"] as! String
+            let orientation = arguments["orientation"] as? String ?? "downMirrored"
+
             #if os(iOS)
                 if #available(iOS 15.0, *) {
-                    return result(convertImage(Data(data.data),CGSize(width: width , height: height),pf,CIFormat.BGRA8,quality,background?.data))
+                    return result(convertImage(Data(data.data),CGSize(width: width , height: height),pf,CIFormat.BGRA8,quality,background?.data,orientation))
                 } else {
                     return result(FlutterError(code: "INVALID OS", message: "requires version 15.0", details: nil))
                 }
             #elseif os(macOS)
-                return result(convertImage(Data(data.data),CGSize(width: width , height: height), pf,CIFormat.ARGB8,quality,background?.data))
+                return result(convertImage(Data(data.data),CGSize(width: width , height: height), pf,CIFormat.ARGB8,quality,background?.data,orientation))
             #endif
         default:
             result(FlutterMethodNotImplemented)
@@ -60,20 +62,49 @@ public class AppleVisionSelfiePlugin: NSObject, FlutterPlugin {
     #if os(iOS)
     @available(iOS 15.0, *)
     #endif
-    func convertImage(_ data: Data,_ imageSize: CGSize,_ fileType: String,_ format: CIFormat,_ quality:Int,_ background: Data? ) -> [String:Any?]{
+    func convertImage(_ data: Data,_ imageSize: CGSize,_ fileType: String,_ format: CIFormat,_ quality:Int,_ background: Data?,_ oriString: String) -> [String:Any?]{
         let imageRequestHandler:VNImageRequestHandler
+
+        var orientation:CGImagePropertyOrientation = CGImagePropertyOrientation.downMirrored
+        switch oriString{
+            case "down":
+                orientation = CGImagePropertyOrientation.down
+                break
+            case "right":
+                orientation = CGImagePropertyOrientation.right
+                break
+            case "rightMirrored":
+                orientation = CGImagePropertyOrientation.rightMirrored
+                break
+            case "left":
+                orientation = CGImagePropertyOrientation.left
+                break
+            case "leftMirrored":
+                orientation = CGImagePropertyOrientation.leftMirrored
+                break
+            case "up":
+                orientation = CGImagePropertyOrientation.up
+                break
+            case "upMirrored":
+                orientation = CGImagePropertyOrientation.upMirrored
+                break
+            default:
+                orientation = CGImagePropertyOrientation.downMirrored
+                break
+        }
+
         var originalImage:CIImage?
         if data.count == (Int(imageSize.height)*Int(imageSize.width)*4){
             // Create a bitmap graphics context with the sample buffer data
             originalImage =  CIImage(bitmapData: data, bytesPerRow: Int(imageSize.width)*4, size: imageSize, format: format, colorSpace: nil)
             
             imageRequestHandler = VNImageRequestHandler(ciImage:originalImage!,
-                orientation: .up)
+                orientation: orientation)
         }
         else{
             imageRequestHandler = VNImageRequestHandler(
                 data: data,
-                orientation: .up)
+                orientation: orientation)
         }
         var event:[String:Any?] = ["name":"noData"];
         let selfieRequest = VNGeneratePersonSegmentationRequest(completionHandler: { (request, error) in

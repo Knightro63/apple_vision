@@ -24,7 +24,8 @@ class SelfieSegmentationData{
     required this.imageSize,
     this.format = PictureFormat.tiff,
     this.quality = SelfieQuality.fast,
-    this.backGround
+    this.backGround,
+    this.orientation = ImageOrientation.downMirrored
   });
   /// Image to be processed
   Uint8List image;
@@ -32,6 +33,7 @@ class SelfieSegmentationData{
   Size imageSize; 
   PictureFormat format;
   SelfieQuality quality;
+  ImageOrientation orientation;
 }
 
 /// The [AppleVisionSelfieController] holds all the logic of this plugin,
@@ -45,6 +47,8 @@ class AppleVisionSelfieController {
   /// this needs to be in an image format raw will not work.
   /// 
   /// [imageSize] as Size is the size of the image that is being processed
+  /// 
+  /// [orientation] The orientation of the image
   Future<List<Uint8List?>?> processImage(SelfieSegmentationData data) async{
     try {
       final result = await _methodChannel.invokeMapMethod<String, dynamic>(  
@@ -54,7 +58,8 @@ class AppleVisionSelfieController {
           'height':data.imageSize.height,
           'format': data.format.name,
           'quality': data.quality.index,
-          'background': data.backGround
+          'background': data.backGround,
+          'orientation': data.orientation.name
         },
       );
       return _convertData(result);

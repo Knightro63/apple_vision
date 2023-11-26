@@ -1,6 +1,6 @@
 name: apple_vision_object_tracking
 description: A Flutter plugin to use Apple Vision Object Detection and Tracking to detect and track objects in an image or live camera feed.
-version: 0.0.1
+version: 0.0.2
 homepage: https://github.com/Knightro63/apple_vision/tree/main/packages/apple_vision_object
 
 environment:
@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  apple_vision_commons: ^0.0.1
+  apple_vision_commons: ^0.0.2
 
 dev_dependencies:
   flutter_test:
