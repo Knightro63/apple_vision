@@ -16,10 +16,10 @@ public class AppleVisionPose3DPlugin: NSObject, FlutterPlugin {
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         #if os(iOS)
-        let method = FlutterMethodChannel(name:"apple_vision/pose", binaryMessenger: registrar.messenger())
+        let method = FlutterMethodChannel(name:"apple_vision/pose3d", binaryMessenger: registrar.messenger())
         let instance = AppleVisionPose3DPlugin(registrar.textures())
         #elseif os(macOS)
-        let method = FlutterMethodChannel(name:"apple_vision/pose", binaryMessenger: registrar.messenger)
+        let method = FlutterMethodChannel(name:"apple_vision/pose3d", binaryMessenger: registrar.messenger)
         let instance = AppleVisionPose3DPlugin(registrar.textures)
         #endif
         registrar.addMethodCallDelegate(instance, channel: method)
@@ -36,10 +36,10 @@ public class AppleVisionPose3DPlugin: NSObject, FlutterPlugin {
             let height = arguments["height"] as? Double ?? 0
             let orientation = arguments["orientation"] as? String ?? "downMirrored"
             #if os(iOS)
-                if #available(iOS 14.0, *) {
+                if #available(iOS 17.0, *) {
                     return result(convertImage(Data(data.data),CGSize(width: width , height: height),CIFormat.BGRA8,orientation))
                 } else {
-                    return result(FlutterError(code: "INVALID OS", message: "requires version 14.0", details: nil))
+                    return result(FlutterError(code: "INVALID OS", message: "requires version 17.0", details: nil))
                 }
             #elseif os(macOS)
                 return result(convertImage(Data(data.data),CGSize(width: width , height: height),CIFormat.ARGB8,orientation))
@@ -52,7 +52,7 @@ public class AppleVisionPose3DPlugin: NSObject, FlutterPlugin {
     
     // Gets called when a new image is added to the buffer
     #if os(iOS)
-    @available(iOS 14.0, *)
+    @available(iOS 17.0, *)
     #endif
     func convertImage(_ data: Data,_ imageSize: CGSize,_ format: CIFormat,_ oriString:String) -> [String:Any?]{
         let imageRequestHandler:VNImageRequestHandler
@@ -96,6 +96,7 @@ public class AppleVisionPose3DPlugin: NSObject, FlutterPlugin {
         }
         var event:[String:Any?] = ["name":"noData"];
         do {
+
             try imageRequestHandler.perform([VNDetectHumanBodyPose3DRequest { (request, error) in
                 if error == nil {
                     if let results = request.results as? [VNHumanBodyPose3DObservation] {
@@ -104,7 +105,7 @@ public class AppleVisionPose3DPlugin: NSObject, FlutterPlugin {
                             poseData.append(self.processObservation(pose,imageSize))
                         }
                         event = [
-                            "name": "pose",
+                            "name": "pose3d",
                             "data": poseData
                         ]
                     }
@@ -122,7 +123,7 @@ public class AppleVisionPose3DPlugin: NSObject, FlutterPlugin {
     }
     
     #if os(iOS)
-    @available(iOS 14.0, *)
+    @available(iOS 17.0, *)
     #endif
     func processObservation(_ observation: VNHumanBodyPose3DObservation,_ imageSize: CGSize) -> [[String:Any?]] {
         // Retrieve all torso points.
@@ -130,41 +131,51 @@ public class AppleVisionPose3DPlugin: NSObject, FlutterPlugin {
                 try? observation.recognizedPoints(.all) else { return [[:]]}
         
         // Torso joint names in a clockwise ordering.
-        let torsoJointNames: [VNHumanBodyPoseObservation.JointName] = [
+        let torsoJointNames: [VNHumanBodyPose3DObservation.JointName] = [
             .rightAnkle,
             .rightKnee,
             .rightHip,
             .rightWrist,
             .rightElbow,
             .rightShoulder,
-            .rightEar,
-            .rightEye,
-            .nose,
-            .neck,
-            .leftEye,
-            .leftEar,
             .leftShoulder,
             .leftElbow,
             .leftWrist,
             .leftHip,
             .leftKnee,
             .leftAnkle,
+            .centerHead,
+            .centerShoulder,
+            .spine,
+            .topHead,
             .root
         ]
 
         var pointData:[[String:Any?]] = []
         // Retrieve the CGPoints containing the normalized X and Y coordinates.
         let _: [[String:Any?]] = torsoJointNames.compactMap {
-            guard let point = recognizedPoints[$0], point.confidence > 0 else { return nil }
+            let point = recognizedPoints[$0]
             
-            // Translate the point from normalized-coordinates to image coordinates.
-             let coord =  VNImagePointForNormalizedPoint(point.location,
-                                                  Int(imageSize.width),
-                                                  Int(imageSize.height))
-            pointData.append(["description": $0.rawValue.rawValue.description,"x":coord.x ,"y":coord.y, "confidence": point.confidence])
-            return [$0.rawValue.rawValue.description: ["x":coord.x ,"y":coord.y, "confidence": point.confidence] as [String : Any]]
+            // Get the position relative to the parent shoulder joint.
+            let childPosition = point?.localPosition
+
+            if childPosition != nil{
+                let coord = simd_make_float3(childPosition!.columns.3[0],
+                                             childPosition!.columns.3[1],
+                                             childPosition!.columns.3[2])
+                
+                pointData.append([
+                    "description": $0.rawValue.rawValue.description,
+                    "x":coord.x,
+                    "y":coord.y,
+                    "z":coord.z,
+                    "pitch": (Float.pi / 2),
+                    "yaw": acos(coord.z / simd_length(coord)),
+                    "roll": atan2((coord.y), (coord.x)),
+                ])
+            }
+            return nil
         }
-        
         return pointData
     }
 }

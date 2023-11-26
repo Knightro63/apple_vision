@@ -28,8 +28,5 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
-	<key>NSCameraUsageDescription</key>
-	<string>Please allow access to your camera to run apple vision hand?</string>
-
 </dict>
 </plist>

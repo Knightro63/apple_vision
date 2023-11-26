@@ -1,4 +1,4 @@
-import 'package:apple_vision_pose/apple_vision_pose.dart';
+import 'package:apple_vision_pose_3d/apple_vision_pose_3d.dart';
 import 'package:flutter/material.dart';
 import '../camera/camera_insert.dart';
 import 'package:flutter/foundation.dart';
@@ -40,13 +40,13 @@ class VisionPose extends StatefulWidget {
 
 class _VisionPose extends State<VisionPose>{
   final GlobalKey cameraKey = GlobalKey(debugLabel: "cameraKey");
-  late AppleVisionPoseController visionController = AppleVisionPoseController();
+  late AppleVisionPose3DController visionController = AppleVisionPose3DController();
   InsertCamera camera = InsertCamera();
   Size imageSize = const Size(640,640*9/16);
   String? deviceId;
   bool loading = true;
 
-  List<PoseData>? poseData;
+  List<PoseData3D>? poseData;
   late double deviceWidth;
   late double deviceHeight;
 
@@ -96,54 +96,48 @@ class _VisionPose extends State<VisionPose>{
 
   List<Widget> showPoints(){
     if(poseData == null || poseData!.isEmpty) return[];
-    Map<Joint,Color> colors = {
-      Joint.rightFoot: Colors.orange,
-      Joint.rightLeg: Colors.orange,
-      Joint.rightUpLeg: Colors.orange,
+    Map<Joint3D,Color> colors = {
+      Joint3D.rightAnkle: Colors.orange,
+      Joint3D.rightKnee: Colors.orange,
+      Joint3D.rightHip: Colors.orange,
 
-      Joint.rightHand: Colors.purple,
-      Joint.rightForearm: Colors.purple,
+      Joint3D.rightWrist: Colors.purple,
+      Joint3D.rightElbow: Colors.purple,
 
-      Joint.nose: Colors.purple,
+      Joint3D.rightShoulder: Colors.pink,
+      Joint3D.leftShoulder: Colors.pink,
 
-      Joint.neck: Colors.pink,
-      Joint.rightShoulder: Colors.pink,
-      Joint.leftShoulder: Colors.pink,
+      Joint3D.leftElbow: Colors.indigo,
+      Joint3D.leftWrist: Colors.indigo,
 
-      Joint.leftForearm: Colors.indigo,
-      Joint.leftHand: Colors.indigo,
+      Joint3D.leftHip: Colors.grey,
+      Joint3D.leftKnee: Colors.grey,
+      Joint3D.leftAnkle: Colors.grey,
 
-      Joint.leftUpLeg: Colors.grey,
-      Joint.leftLeg: Colors.grey,
-      Joint.leftFoot: Colors.grey,
+      Joint3D.root: Colors.yellow,
+      Joint3D.centerShoulder: Colors.yellow,
+      Joint3D.spine: Colors.yellow,
 
-      Joint.root: Colors.yellow,
-
-      Joint.leftEye: Colors.cyanAccent,
-      Joint.leftEar: Colors.cyanAccent,
-      Joint.rightEar: Colors.cyanAccent,
-      Joint.rightEye: Colors.cyanAccent,
-      Joint.head: Colors.cyanAccent
+      Joint3D.centerHead: Colors.cyanAccent,
+      Joint3D.topHead: Colors.cyanAccent
     };
     List<Widget> widgets = [];
     for(int j = 0; j < poseData!.length;j++){
       for(int i = 0; i < poseData![j].poses.length; i++){
-        if(poseData![j].poses[i].confidence > 0.3){
-          widgets.add(
-            Positioned(
-              top: poseData![j].poses[i].location.y,
-              left: poseData![j].poses[i].location.x,
-              child: Container(
-                width: 10,
-                height: 10,
-                decoration: BoxDecoration(
-                  color: colors[poseData![j].poses[i].joint],
-                  borderRadius: BorderRadius.circular(5)
-                ),
-              )
+        widgets.add(
+          Positioned(
+            top: poseData![j].poses[i].location.y * imageSize.height,
+            left: poseData![j].poses[i].location.x * imageSize.width,
+            child: Container(
+              width: 10,
+              height: 10,
+              decoration: BoxDecoration(
+                color: colors[poseData![j].poses[i].joint],
+                borderRadius: BorderRadius.circular(5)
+              ),
             )
-          );
-        }
+          )
+        );
       }
     }
     return widgets;
