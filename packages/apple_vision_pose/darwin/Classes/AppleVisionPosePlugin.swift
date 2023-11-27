@@ -162,8 +162,13 @@ public class AppleVisionPosePlugin: NSObject, FlutterPlugin {
              let coord =  VNImagePointForNormalizedPoint(point.location,
                                                   Int(imageSize.width),
                                                   Int(imageSize.height))
-            pointData.append(["description": $0.rawValue.rawValue.description,"x":coord.x ,"y":coord.y, "confidence": point.confidence])
-            return [$0.rawValue.rawValue.description: ["x":coord.x ,"y":coord.y, "confidence": point.confidence] as [String : Any]]
+            pointData.append([
+                "description": $0.rawValue.rawValue.description,
+                "x":coord.x ,
+                "y":coord.y, 
+                "confidence": point.confidence
+            ])
+            return nil
         }
         
         return pointData

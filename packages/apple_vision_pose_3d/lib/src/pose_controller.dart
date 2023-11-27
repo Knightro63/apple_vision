@@ -17,7 +17,7 @@ class AppleVisionPose3DController {
   /// [imageSize] as Size is the size of the image that is being processed
   /// 
   /// [orientation] The orientation of the image
-  Future<List<PoseData3D>?> processImage(Uint8List image, Size imageSize,[ImageOrientation orientation = ImageOrientation.down]) async{
+  Future<List<PoseData3D>?> processImage(Uint8List image, Size imageSize,[ImageOrientation orientation = ImageOrientation.up]) async{
     try {
       final Map<String, dynamic>? result = await _methodChannel.invokeMapMethod<String, dynamic>(  
         'process',
@@ -44,7 +44,7 @@ class AppleVisionPose3DController {
       case 'pose3d':
         List<PoseData3D> data = [];
         for(int i = 0; i < event['data'].length;i++){
-          data.add(PoseData3D(PoseFunctions.getPoseDataFromList(event['data'][i])));
+          data.add(PoseData3D(PoseFunction3D.getPoseDataFromList(event['data'][i])));
         }
         return data;
       case 'noData':

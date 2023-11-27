@@ -132,6 +132,7 @@ public class AppleVisionPose3DPlugin: NSObject, FlutterPlugin {
         
         // Torso joint names in a clockwise ordering.
         let torsoJointNames: [VNHumanBodyPose3DObservation.JointName] = [
+            .root,
             .rightAnkle,
             .rightKnee,
             .rightHip,
@@ -148,7 +149,6 @@ public class AppleVisionPose3DPlugin: NSObject, FlutterPlugin {
             .centerShoulder,
             .spine,
             .topHead,
-            .root
         ]
 
         var pointData:[[String:Any?]] = []
@@ -157,18 +157,29 @@ public class AppleVisionPose3DPlugin: NSObject, FlutterPlugin {
             let point = recognizedPoints[$0]
             
             // Get the position relative to the parent shoulder joint.
-            let childPosition = point?.localPosition
+            let relativePosition = point?.position
+            let childPosition = point?.position
 
             if childPosition != nil{
+                let relCoord = simd_make_float3(relativePosition!.columns.3[0],
+                                                relativePosition!.columns.3[1],
+                                                relativePosition!.columns.3[2])
+                
                 let coord = simd_make_float3(childPosition!.columns.3[0],
                                              childPosition!.columns.3[1],
                                              childPosition!.columns.3[2])
                 
+                guard let point2D = try? observation.pointInImage($0) else { return nil}
+                let height:Float = observation.bodyHeight
+                
                 pointData.append([
                     "description": $0.rawValue.rawValue.description,
-                    "x":coord.x,
-                    "y":coord.y,
-                    "z":coord.z,
+                    "X": relCoord.x,
+                    "Y": relCoord.y,
+                    "Z": relCoord.z,
+                    "x": point2D.x,
+                    "y": point2D.y,
+                    "height": height,
                     "pitch": (Float.pi / 2),
                     "yaw": acos(coord.z / simd_length(coord)),
                     "roll": atan2((coord.y), (coord.x)),

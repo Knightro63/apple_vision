@@ -153,7 +153,7 @@ You need to first import 'package:apple_vision/apple_vision.dart';
 
 ## Example
 
-Find the example for this API [here](https://github.com/Knightro63/apple_vision/tree/main/packages/apple_vision_animal_pose/example/lib/main.dart).
+Find the example for this API [here](https://github.com/Knightro63/apple_vision/tree/main/packages/apple_vision/example/lib/main.dart).
 
 ## Contributing
 

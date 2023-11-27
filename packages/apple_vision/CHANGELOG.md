@@ -1,3 +1,8 @@
+## 0.0.3
+
+* Added Human Pose 3D
+* Added Animal Pose
+
 ## 0.0.2
 
 * Added ios compatibility, and updated comments.

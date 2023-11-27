@@ -1,6 +1,6 @@
 name: apple_vision
 description: A Flutter plugin to use all API's from Apple vision made for osx and ios.
-version: 0.0.2
+version: 0.0.3
 homepage: https://github.com/Knightro63/apple_vision/tree/main/packages/apple_vision
 
 environment:
@@ -11,18 +11,19 @@ dependencies:
   flutter:
     sdk: flutter
 
-  #apple_vision_animal_pose: ^0.0.1
-  apple_vision_commons: ^0.0.1
-  apple_vision_face: ^0.0.2
-  apple_vision_face_detection: ^0.0.1
-  apple_vision_hand: ^0.0.2
-  apple_vision_image_classification: ^0.0.1
-  apple_vision_object: ^0.0.1
-  apple_vision_object_tracking: ^0.0.1
-  apple_vision_pose: ^0.0.2
-  apple_vision_recognize_text: ^0.0.1
-  apple_vision_selfie: ^0.0.1
-  apple_vision_scanner: ^0.0.1
+  apple_vision_animal_pose: ^0.0.2
+  apple_vision_pose_3d: ^0.0.1
+  apple_vision_commons: ^0.0.2
+  apple_vision_face: ^0.0.3
+  apple_vision_face_detection: ^0.0.2
+  apple_vision_hand: ^0.0.3
+  apple_vision_image_classification: ^0.0.2
+  apple_vision_object: ^0.0.2
+  apple_vision_object_tracking: ^0.0.2
+  apple_vision_pose: ^0.0.3
+  apple_vision_recognize_text: ^0.0.2
+  apple_vision_selfie: ^0.0.2
+  apple_vision_scanner: ^0.0.2
 
 dev_dependencies:
   flutter_test:

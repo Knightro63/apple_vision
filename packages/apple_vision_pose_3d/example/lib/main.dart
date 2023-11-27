@@ -25,7 +25,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
 class VisionPose extends StatefulWidget {
   const VisionPose({
     Key? key,
@@ -126,7 +125,7 @@ class _VisionPose extends State<VisionPose>{
       for(int i = 0; i < poseData![j].poses.length; i++){
         widgets.add(
           Positioned(
-            top: poseData![j].poses[i].location.y * imageSize.height,
+            top: imageSize.height-poseData![j].poses[i].location.y * imageSize.height,
             left: poseData![j].poses[i].location.x * imageSize.width,
             child: Container(
               width: 10,
@@ -136,20 +135,26 @@ class _VisionPose extends State<VisionPose>{
                 borderRadius: BorderRadius.circular(5)
               ),
             )
-          )
+          ),
         );
+        if(poseData![j].poses[i].joint != Joint3D.root){
+          widgets.add(
+            Positioned(
+              top: 100-poseData![j].poses[i].location3D.y*100,
+              left: 100+poseData![j].poses[i].location3D.x*100,
+              child: Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(
+                  color: colors[poseData![j].poses[i].joint],
+                  borderRadius: BorderRadius.circular(5)
+                ),
+              )
+            ),
+          );
+        }
       }
     }
     return widgets;
-  }
-
-  Widget loadingWidget(){
-    return Container(
-      width: deviceWidth,
-      height: deviceHeight,
-      color: Theme.of(context).canvasColor,
-      alignment: Alignment.center,
-      child: const CircularProgressIndicator(color: Colors.blue)
-    );
   }
 }

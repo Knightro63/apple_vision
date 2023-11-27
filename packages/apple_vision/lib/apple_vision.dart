@@ -25,3 +25,5 @@ export 'package:apple_vision_object_tracking/apple_vision_object_tracking.dart' 
 export 'package:apple_vision_image_classification/apple_vision_image_classification.dart' hide ObjectFunctions;
 export 'package:apple_vision_recognize_text/apple_vision_recognize_text.dart';
 export 'package:apple_vision_selfie/apple_vision_selfie.dart';
+export 'package:apple_vision_animal_pose/apple_vision_animal_pose.dart';
+export 'package:apple_vision_pose_3d/apple_vision_pose_3d.dart';

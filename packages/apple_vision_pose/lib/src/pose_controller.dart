@@ -17,7 +17,7 @@ class AppleVisionPoseController {
   /// [imageSize] as Size is the size of the image that is being processed
   /// 
   /// [orientation] The orientation of the image
-  Future<List<PoseData>?> processImage(Uint8List image, Size imageSize,[ImageOrientation orientation = ImageOrientation.downMirrored]) async{
+  Future<List<PoseData>?> processImage(Uint8List image, Size imageSize,[ImageOrientation orientation = ImageOrientation.up]) async{
     try {
       final Map<String, dynamic>? result = await _methodChannel.invokeMapMethod<String, dynamic>(  
         'process',

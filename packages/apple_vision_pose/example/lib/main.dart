@@ -131,7 +131,7 @@ class _VisionPose extends State<VisionPose>{
         if(poseData![j].poses[i].confidence > 0.3){
           widgets.add(
             Positioned(
-              top: poseData![j].poses[i].location.y,
+              top: imageSize.height-poseData![j].poses[i].location.y,
               left: poseData![j].poses[i].location.x,
               child: Container(
                 width: 10,
