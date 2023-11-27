@@ -148,14 +148,4 @@ class _VisionPose extends State<VisionPose>{
     }
     return widgets;
   }
-
-  Widget loadingWidget(){
-    return Container(
-      width: deviceWidth,
-      height: deviceHeight,
-      color: Theme.of(context).canvasColor,
-      alignment: Alignment.center,
-      child: const CircularProgressIndicator(color: Colors.blue)
-    );
-  }
 }

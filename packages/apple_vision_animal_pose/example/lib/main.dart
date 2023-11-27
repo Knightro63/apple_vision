@@ -101,7 +101,6 @@ class _VisionAnimalPose extends State<VisionAnimalPose>{
       AnimalJoint.rightBackKnee: Colors.orange,
       AnimalJoint.rightBackPaw: Colors.orange,
 
-      //AnimalJoint.rightFronElbow: Colors.purple,
       AnimalJoint.rightFrontKnee: Colors.purple,
       AnimalJoint.rightFrontPaw: Colors.purple,
 
@@ -110,7 +109,6 @@ class _VisionAnimalPose extends State<VisionAnimalPose>{
 
       AnimalJoint.leftFrontPaw: Colors.indigo,
       AnimalJoint.leftFrontKnee: Colors.indigo,
-      //AnimalJoint.leftFronElbow: Colors.indigo,
 
       AnimalJoint.leftBackElbow: Colors.grey,
       AnimalJoint.leftBackKnee: Colors.grey,
@@ -133,7 +131,7 @@ class _VisionAnimalPose extends State<VisionAnimalPose>{
         if(poseData![j].poses[i].confidence > 0.5){
           widgets.add(
             Positioned(
-              top: poseData![j].poses[i].location.y,
+              top: imageSize.height-poseData![j].poses[i].location.y,
               left: poseData![j].poses[i].location.x,
               child: Container(
                 width: 10,
@@ -149,15 +147,5 @@ class _VisionAnimalPose extends State<VisionAnimalPose>{
       }
     }
     return widgets;
-  }
-
-  Widget loadingWidget(){
-    return Container(
-      width: deviceWidth,
-      height: deviceHeight,
-      color: Theme.of(context).canvasColor,
-      alignment: Alignment.center,
-      child: const CircularProgressIndicator(color: Colors.blue)
-    );
   }
 }

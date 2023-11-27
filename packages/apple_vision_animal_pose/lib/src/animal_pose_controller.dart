@@ -17,7 +17,7 @@ class AppleVisionAnimalPoseController {
   /// [imageSize] as Size is the size of the image that is being processed
   /// 
   /// [orientation] The orientation of the image
-  Future<List<AnimalPoseData>?> processImage(Uint8List image, Size imageSize,[ImageOrientation orientation = ImageOrientation.downMirrored]) async{
+  Future<List<AnimalPoseData>?> processImage(Uint8List image, Size imageSize,[ImageOrientation orientation = ImageOrientation.up]) async{
     try {
       final Map<String, dynamic>? result = await _methodChannel.invokeMapMethod<String, dynamic>(  
         'process',
