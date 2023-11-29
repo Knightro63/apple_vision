@@ -44,12 +44,24 @@ public class AppleVisionRecognizeTextPlugin: NSObject, FlutterPlugin {
 
             #if os(iOS)
                 if #available(iOS 13.0, *) {
-                    return result(convertImage(Data(data.data),CGSize(width: width , height: height),candidates,CIFormat.BGRA8,orientation))
+                      DispatchQueue.global(qos: .background).async {
+                    let event = self.convertImage(Data(data.data), CGSize(width: width , height: height), candidates, CIFormat.BGRA8, orientation)
+                    DispatchQueue.main.async {
+                        // Return the result on the main queue
+                        result(event)
+                    }
+                }
                 } else {
                     return result(FlutterError(code: "INVALID OS", message: "requires version 12.0", details: nil))
                 }
             #elseif os(macOS)
-                return result(convertImage(Data(data.data),CGSize(width: width , height: height),candidates,CIFormat.ARGB8,orientation))
+                    DispatchQueue.global(qos: .background).async {
+                    let event = self.convertImage(Data(data.data), CGSize(width: width , height: height), candidates, CIFormat.BGRA8, orientation)
+                    DispatchQueue.main.async {
+                        // Return the result on the main queue
+                        result(event)
+                    }
+                }
             #endif
         default:
             result(FlutterMethodNotImplemented)
