@@ -28,5 +28,7 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Please allow Limbitless to access your camera to update your measurement pictures?</string>
 </dict>
 </plist>
