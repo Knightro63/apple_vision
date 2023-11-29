@@ -52,7 +52,6 @@ class AppleVisionPose3DController {
       case 'done':
         break;
       case 'error':
-      print(event['code']);
         throw AppleVisionException(
           errorCode: AppleVisionErrorCode.genericError,
           errorDetails: AppleVisionErrorDetails(message: event['message'] as String?),
