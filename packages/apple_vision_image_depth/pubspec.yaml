@@ -1,0 +1,30 @@
+name: apple_vision_image_depth
+description: A Flutter plugin to use Apple Vision Image Depth to find the depth in images.
+version: 0.0.1
+homepage: https://github.com/Knightro63/apple_vision/tree/main/packages/apple_vision_image_depth
+
+environment:
+  sdk: '>=2.18.6 <4.0.0'
+  flutter: ">=1.20.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  apple_vision_commons: ^0.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.3
+
+flutter:
+  plugin:
+    platforms:
+      macos:
+        pluginClass: AppleVisionImageDepthPlugin
+        sharedDarwinSource: true
+      ios:
+        pluginClass: AppleVisionImageDepthPlugin
+        sharedDarwinSource: true
+
+  
