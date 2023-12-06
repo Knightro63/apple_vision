@@ -42,8 +42,7 @@ class AppleVisionImageDepthController {
     final name = event['name'];
     switch (name) {
       case 'imageDepth':
-      print(event['data']);
-        return event['data'];
+        return event['data'] == null && event['data'].isEmpty()?null:event['data']?.first;
       case 'error':
         throw AppleVisionException(
           errorCode: AppleVisionErrorCode.genericError,

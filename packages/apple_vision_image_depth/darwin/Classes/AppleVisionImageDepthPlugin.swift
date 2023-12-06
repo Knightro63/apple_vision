@@ -109,7 +109,6 @@ public class AppleVisionImageDepthPlugin: NSObject, FlutterPlugin {
 
         if model == nil{
             model = AppleVisionImageDepthPlugin.createImageDepth()
-            //event = ["name":"error","code": "Data Corropted", "message": "Error model did not load"]
         }
         else{
             let imageRecognition = VNCoreMLRequest(model: model!, completionHandler: { (request, error) in
@@ -117,10 +116,6 @@ public class AppleVisionImageDepthPlugin: NSObject, FlutterPlugin {
                     var depthData:[Data?] = []
                     for observation in results {
                         let depthmap = observation.featureValue.multiArrayValue
-                        
-                        let convertedHeatmap = convertTo2DArray(from: depthmap!)
-
-                        let average = Float32(convertedHeatmapInt.joined().reduce(0, +))/Float32(20480)
 
                         var originalImageOr:CIImage
                         if originalImage == nil{
@@ -131,7 +126,8 @@ public class AppleVisionImageDepthPlugin: NSObject, FlutterPlugin {
                         }
                         
                         if depthmap != nil{
-                            var ciImage = CIImage(cgImage: depthmap!.postProcessImage()!)
+                            let (min, max) = self.getMinMax(from: depthmap!)
+                            var ciImage = CIImage(cgImage: depthmap!.cgImage(min: 0,max: 4)!)
                             
                             // Scale the mask image to fit the bounds of the video frame.
                             let scaleX = originalImageOr.extent.width / ciImage.extent.width
@@ -221,11 +217,10 @@ public class AppleVisionImageDepthPlugin: NSObject, FlutterPlugin {
         }
         return imageDepthVisionModel
     }
-    
-    func convertTo2DArray(from heatmaps: MLMultiArray) -> Array<Array<Double>> {
+    func getMinMax(from heatmaps: MLMultiArray) -> (Double, Double) {
         guard heatmaps.shape.count >= 3 else {
             print("heatmap's shape is invalid. \(heatmaps.shape)")
-            return []
+            return (0, 0)
         }
         let _/*keypoint_number*/ = heatmaps.shape[0].intValue
         let heatmap_w = heatmaps.shape[1].intValue
@@ -252,43 +247,6 @@ public class AppleVisionImageDepthPlugin: NSObject, FlutterPlugin {
             }
         }
         
-        let minmaxGap = maximumValue - minimumValue
-        
-        for i in 0..<heatmap_w {
-            for j in 0..<heatmap_h {
-                convertedHeatmap[j][i] = (convertedHeatmap[j][i] - minimumValue) / minmaxGap
-            }
-        }
-        
-        return convertedHeatmap
+        return (minimumValue,maximumValue)
     }
-}
-
-extension MLMultiArray {
-
-func postProcessImage(size: Int = 256) -> CGImage? {
-    let rawPointer = malloc(size*size*3)!
-    let bytes = rawPointer.bindMemory(to: UInt8.self, capacity: size*size*3)
-    
-    let mlArray = self.dataPointer.bindMemory(to: Float32.self, capacity: size*size*3)
-    for index in 0..<self.count/(3) {
-        bytes[index*3 + 0] = UInt8(max(min(mlArray[index]*255, 255), 0))
-        bytes[index*3 + 1] = UInt8(max(min(mlArray[index + size*size]*255, 255), 0))
-        bytes[index*3 + 2] = UInt8(max(min(mlArray[index + size*size*2]*255, 255), 0))
-    }
-    
-    let selftureSize = size*size*3
-    
-    let provider = CGDataProvider(dataInfo: nil, data: rawPointer, size: selftureSize, releaseData: { (_, data, size) in
-        data.deallocate()
-    })!
-   
-    let rawBitmapInfo = CGImageAlphaInfo.none.rawValue
-    let bitmapInfo = CGBitmapInfo(rawValue: rawBitmapInfo)
-    let pColorSpace = CGColorSpaceCreateDeviceRGB()
-
-    let rowBytesCount = size*3
-    return CGImage(width: size, height: size, bitsPerComponent: 8, bitsPerPixel: 24, bytesPerRow: rowBytesCount, space: pColorSpace, bitmapInfo: bitmapInfo, provider: provider, decode: nil, shouldInterpolate: true, intent: CGColorRenderingIntent.defaultIntent)!
-}
-
 }

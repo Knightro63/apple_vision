@@ -49,6 +49,8 @@ class _VisionDepth extends State<VisionDepth>{
   late double deviceWidth;
   late double deviceHeight;
 
+  int intr = 0;
+
   @override
   void initState() {
     camera.setupCameras().then((value){
@@ -62,8 +64,11 @@ class _VisionDepth extends State<VisionDepth>{
         if(mounted) {
           Uint8List? image = i.bytes;
           visionController.processImage(image!, imageSize).then((data){
-            //print(data);
-            image = data;
+            this.image = data;
+            if(intr == 0){
+              print(data);
+              intr++;
+            }
             setState(() {
               
             });
@@ -90,9 +95,9 @@ class _VisionDepth extends State<VisionDepth>{
           height: 320*9/16, 
           child: loading?Container():CameraSetup(camera: camera, size: imageSize)
         ),
-        if(image?[0] != null) SizedBox(
+        if(image != null) SizedBox(
           width: 320, 
-          height: 320*9/16,  
+          height: 320*9/16,
           child: Image.memory(
             rgba2bitmap(image!,imageSize.width.toInt(),imageSize.height.toInt()), 
             fit: BoxFit.fitHeight,
