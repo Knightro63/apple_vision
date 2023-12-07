@@ -219,7 +219,7 @@ extension MLMultiArray {
           let value = ptr[c*cStride + y*yStride + x*xStride]
           let scaled = (value - min) * T(255) / (max - min)
           let pixel = clamp(scaled, min: T(0), max: T(255)).toUInt8
-          pixels[(y*width + x)*bytesPerPixel + c] = pixel
+          pixels[(y*width + x)*bytesPerPixel + c] = 255-pixel
         }
       }
     }

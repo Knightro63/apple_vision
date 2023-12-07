@@ -95,6 +95,8 @@ public class AppleVisionImageDepthPlugin: NSObject, FlutterPlugin {
         }
 
         var originalImage:CIImage?
+        var min:Double = 0
+        var max:Double = 4
         if data.count == (Int(imageSize.height)*Int(imageSize.width)*4){
             // Create a bitmap graphics context with the sample buffer data
             originalImage =  CIImage(bitmapData: data, bytesPerRow: Int(imageSize.width)*4, size: imageSize, format: format, colorSpace: nil)
@@ -126,8 +128,8 @@ public class AppleVisionImageDepthPlugin: NSObject, FlutterPlugin {
                         }
                         
                         if depthmap != nil{
-                            let (min, max) = self.getMinMax(from: depthmap!)
-                            var ciImage = CIImage(cgImage: depthmap!.cgImage(min: 0,max: 4)!)
+                            (min, max) = self.getMinMax(from: depthmap!)
+                            var ciImage = CIImage(cgImage: depthmap!.cgImage(min: min,max: max)!)
                             
                             // Scale the mask image to fit the bounds of the video frame.
                             let scaleX = originalImageOr.extent.width / ciImage.extent.width
@@ -135,9 +137,9 @@ public class AppleVisionImageDepthPlugin: NSObject, FlutterPlugin {
                             ciImage = ciImage.transformed(by: .init(scaleX: scaleX, y: scaleY))
                             
                             let fileType = "raw"
-#if os(iOS)
+                        #if os(iOS)
                             selfieData.append(ciImage?.cgImage?.dataProvider?.data as Data?)
-#elseif os(macOS)
+                        #elseif os(macOS)
                             var format:NSBitmapImageRep.FileType?
                             switch fileType {
                             case "jpg":
@@ -176,12 +178,14 @@ public class AppleVisionImageDepthPlugin: NSObject, FlutterPlugin {
                                 nsImage = Data(bytes: u.bitmapData!, count: Int(bytesPerRow*height))
                             }
                             depthData.append(nsImage!)
-#endif
+                        #endif
                         }
                     }
                     event = [
                         "name": "imageDepth",
                         "data": depthData,
+                        "max": max,
+                        "min":min,
                         "imageSize": [
                             "width": imageSize.width,
                             "height": imageSize.height
