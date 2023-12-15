@@ -161,7 +161,7 @@ public class AppleVisionImageClassificationPlugin: NSObject, FlutterPlugin {
     }
     func processObservation(_ observation: VNClassificationObservation,_ imageSize: CGSize) -> [String:Any?]? {
         
-        if observation.confidence > 0.75{
+        if observation.confidence > 0.0{
             return [
                 "label":observation.identifier,
                 "confidence": observation.confidence
