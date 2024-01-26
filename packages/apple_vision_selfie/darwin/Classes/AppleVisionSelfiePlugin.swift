@@ -28,11 +28,12 @@ public class AppleVisionSelfiePlugin: NSObject, FlutterPlugin {
         #endif
         registrar.addMethodCallDelegate(instance, channel: method)
     }
+    
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
         case "process":
             guard let arguments = call.arguments as? [String:Any?],
-            let data:FlutterStandardTypedData = arguments["image"] as? FlutterStandardTypedData else {
+                  let data: FlutterStandardTypedData = arguments["image"] as? FlutterStandardTypedData else {
                 result("Couldn't find image data")
                 return
             }
@@ -40,18 +41,18 @@ public class AppleVisionSelfiePlugin: NSObject, FlutterPlugin {
             let width = arguments["width"] as? Double ?? 0
             let height = arguments["height"] as? Double ?? 0
             let quality = arguments["quality"] as? Int ?? 0
-            let background:FlutterStandardTypedData? = arguments["background"] as? FlutterStandardTypedData ?? nil
+            let background: FlutterStandardTypedData? = arguments["background"] as? FlutterStandardTypedData ?? nil
             let pf = arguments["format"] as! String
             let orientation = arguments["orientation"] as? String ?? "downMirrored"
 
             #if os(iOS)
-                if #available(iOS 15.0, *) {
-                    return result(convertImage(Data(data.data),CGSize(width: width , height: height),pf,CIFormat.BGRA8,quality,background?.data,orientation))
-                } else {
-                    return result(FlutterError(code: "INVALID OS", message: "requires version 15.0", details: nil))
-                }
+            if #available(iOS 15.0, *) {
+                return result(convertImage(data.data, CGSize(width: width, height: height), pf, CIFormat.BGRA8, quality, background?.data, orientation))
+            } else {
+                return result(FlutterError(code: "INVALID OS", message: "requires version 15.0", details: nil))
+            }
             #elseif os(macOS)
-                return result(convertImage(Data(data.data),CGSize(width: width , height: height), pf,CIFormat.ARGB8,quality,background?.data,orientation))
+            return result(convertImage(data.data, CGSize(width: width, height: height), pf, CIFormat.BGRA8, quality, background?.data, orientation))
             #endif
         default:
             result(FlutterMethodNotImplemented)
@@ -62,62 +63,51 @@ public class AppleVisionSelfiePlugin: NSObject, FlutterPlugin {
     #if os(iOS)
     @available(iOS 15.0, *)
     #endif
-    func convertImage(_ data: Data,_ imageSize: CGSize,_ fileType: String,_ format: CIFormat,_ quality:Int,_ background: Data?,_ oriString: String) -> [String:Any?]{
-        let imageRequestHandler:VNImageRequestHandler
+    func convertImage(_ data: Data, _ imageSize: CGSize, _ fileType: String, _ format: CIFormat, _ quality: Int, _ background: Data?, _ oriString: String) -> [String:Any?] {
+        let imageRequestHandler: VNImageRequestHandler
 
-        var orientation:CGImagePropertyOrientation = CGImagePropertyOrientation.downMirrored
-        switch oriString{
-            case "down":
-                orientation = CGImagePropertyOrientation.down
-                break
-            case "right":
-                orientation = CGImagePropertyOrientation.right
-                break
-            case "rightMirrored":
-                orientation = CGImagePropertyOrientation.rightMirrored
-                break
-            case "left":
-                orientation = CGImagePropertyOrientation.left
-                break
-            case "leftMirrored":
-                orientation = CGImagePropertyOrientation.leftMirrored
-                break
-            case "up":
-                orientation = CGImagePropertyOrientation.up
-                break
-            case "upMirrored":
-                orientation = CGImagePropertyOrientation.upMirrored
-                break
-            default:
-                orientation = CGImagePropertyOrientation.downMirrored
-                break
+        var orientation: CGImagePropertyOrientation = CGImagePropertyOrientation.downMirrored
+        switch oriString {
+        case "down":
+            orientation = CGImagePropertyOrientation.down
+        case "right":
+            orientation = CGImagePropertyOrientation.right
+        case "rightMirrored":
+            orientation = CGImagePropertyOrientation.rightMirrored
+        case "left":
+            orientation = CGImagePropertyOrientation.left
+        case "leftMirrored":
+            orientation = CGImagePropertyOrientation.leftMirrored
+        case "up":
+            orientation = CGImagePropertyOrientation.up
+        case "upMirrored":
+            orientation = CGImagePropertyOrientation.upMirrored
+        default:
+            orientation = CGImagePropertyOrientation.downMirrored
         }
 
-        var originalImage:CIImage?
-        if data.count == (Int(imageSize.height)*Int(imageSize.width)*4){
+        var originalImage: CIImage?
+        if data.count == (Int(imageSize.height) * Int(imageSize.width) * 4) {
             // Create a bitmap graphics context with the sample buffer data
-            originalImage =  CIImage(bitmapData: data, bytesPerRow: Int(imageSize.width)*4, size: imageSize, format: format, colorSpace: nil)
-            
-            imageRequestHandler = VNImageRequestHandler(ciImage:originalImage!,
-                orientation: orientation)
+            originalImage = CIImage(bitmapData: data, bytesPerRow: Int(imageSize.width) * 4, size: imageSize, format: format, colorSpace: nil)
+            imageRequestHandler = VNImageRequestHandler(ciImage: originalImage!, orientation: orientation)
+        } else {
+            // Create CIImage from data
+            originalImage = CIImage(data: data)
+            imageRequestHandler = VNImageRequestHandler(data: data, orientation: orientation)
         }
-        else{
-            imageRequestHandler = VNImageRequestHandler(
-                data: data,
-                orientation: orientation)
-        }
-        var event:[String:Any?] = ["name":"noData"];
+
+        var event: [String:Any?] = ["name": "noData"]
         let selfieRequest = VNGeneratePersonSegmentationRequest(completionHandler: { (request, error) in
             if error == nil {
                 if let results = request.results as? [VNPixelBufferObservation] {
-                    var selfieData:[Data?] = []
+                    var selfieData: [Data?] = []
                     for selfie in results {
                         // Create CIImage objects for the video frame and the segmentation mask.
-                        var originalImageOr:CIImage
-                        if originalImage == nil{
-                            originalImageOr = CIImage(data:data)!
-                        }
-                        else{
+                        var originalImageOr: CIImage
+                        if originalImage == nil {
+                            originalImageOr = CIImage(data: data)!
+                        } else {
                             originalImageOr = originalImage!
                         }
                         var maskImage = CIImage(cvPixelBuffer: selfie.pixelBuffer)
@@ -136,62 +126,52 @@ public class AppleVisionSelfiePlugin: NSObject, FlutterPlugin {
                         ]
 
                         // Create a colored background image.
-                        var backgroundImage:CIImage = maskImage.applyingFilter("CIColorMatrix",parameters: vectors2)
-                        
-                        if background != nil{
-                            backgroundImage = CIImage(data:background!)!
+                        var backgroundImage: CIImage = maskImage.applyingFilter("CIColorMatrix", parameters: vectors2)
+
+                        if background != nil {
+                            if let bgImage = CIImage(data: background!) {
+                                backgroundImage = bgImage
+                            } else {
+                                return
+                            }
                         }
 
                         let blendFilter = CIFilter.blendWithMask()
                         blendFilter.inputImage = originalImage
                         blendFilter.backgroundImage = backgroundImage
                         blendFilter.maskImage = maskImage
-                        
+
                         // Set the new, blended image as current.
-                        let ciImage = blendFilter.outputImage
-                        
-                        #if os(iOS)
-                            selfieData.append(ciImage?.cgImage?.dataProvider?.data as Data?)
-                        #elseif os(macOS)
-                            var format:NSBitmapImageRep.FileType?
+                        if let ciImage = blendFilter.outputImage {
+                            #if os(iOS)
+                            selfieData.append(ciImage.cgImage?.dataProvider?.data as Data?)
+                            #elseif os(macOS)
+                            var nsImage: Data?
                             switch fileType {
-                                case "jpg":
-                                    format = NSBitmapImageRep.FileType.jpeg
-                                    break
-                                case "jepg":
-                                    format = NSBitmapImageRep.FileType.jpeg2000
-                                    break
-                                case "bmp":
-                                    format = NSBitmapImageRep.FileType.bmp
-                                    break
-                                case "png":
-                                    format = NSBitmapImageRep.FileType.png
-                                    break
-                                case "tiff":
-                                    format = NSBitmapImageRep.FileType.tiff
-                                    break
-                                default:
-                                    format = nil
+                            case "jpg":
+                                nsImage = NSBitmapImageRep(ciImage: ciImage).representation(using: .jpeg, properties: [:])
+                            case "jpeg":
+                                nsImage = NSBitmapImageRep(ciImage: ciImage).representation(using: .jpeg2000, properties: [:])
+                            case "bmp":
+                                nsImage = NSBitmapImageRep(ciImage: ciImage).representation(using: .bmp, properties: [:])
+                            case "png":
+                                nsImage = NSBitmapImageRep(ciImage: ciImage).representation(using: .png, properties: [:])
+                            case "tiff":
+                                nsImage = NSBitmapImageRep(ciImage: ciImage).representation(using: .tiff, properties: [:])
+                            default:
+                                nsImage = nil
                             }
-                            var nsImage:Data?
-                            if format != nil{
-                                nsImage = NSBitmapImageRep(ciImage:ciImage!).representation(
-                                    using: format!,
-                                    properties: [
-                                        NSBitmapImageRep.PropertyKey.currentFrame: NSBitmapImageRep.PropertyKey.currentFrame.self
-                                    ]
-                                )
+                            if let nsImage = nsImage {
                                 selfieData.append(nsImage)
-                            }
-                            else{
-                                let u = NSBitmapImageRep(ciImage:ciImage!)
+                            } else {
+                                let u = NSBitmapImageRep(ciImage: ciImage)
                                 let bytesPerRow = u.bytesPerRow
                                 let height = Int(u.size.height)
-                                
-                                nsImage = Data(bytes: u.bitmapData!, count: Int(bytesPerRow*height))
+                                nsImage = Data(bytes: u.bitmapData!, count: Int(bytesPerRow * height))
+                                selfieData.append(nsImage)
                             }
-                            selfieData.append(nsImage!)
-                        #endif
+                            #endif
+                        }
                     }
                     event = [
                         "name": "selfie",
@@ -204,14 +184,14 @@ public class AppleVisionSelfiePlugin: NSObject, FlutterPlugin {
                 print(error!.localizedDescription)
             }
         })
-        
+
         selfieRequest.qualityLevel = quality == 0 ? .fast : quality == 1 ? .balanced : .accurate
-        
+
         do {
             let requests: [VNRequest] = [selfieRequest]
             try imageRequestHandler.perform(requests)
         } catch {
-            event = ["name":"error","code": "Data Corropted", "message": error.localizedDescription]
+            event = ["name":"error","code": "Data Corrupted", "message": error.localizedDescription]
             print(error)
         }
 
