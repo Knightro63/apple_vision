@@ -1,5 +1,5 @@
 name: apple_vision_image_classification
-description: A Flutter plugin to use Apple Vision Image Classification the classifies an image.
+description: A Flutter plugin to use Apple Vision Image Classification to classifies an image.
 version: 0.0.2
 homepage: https://github.com/Knightro63/apple_vision/tree/main/packages/apple_vision_image_classification
 

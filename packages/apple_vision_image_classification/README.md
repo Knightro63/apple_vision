@@ -5,7 +5,7 @@
 [![Star on Github](https://img.shields.io/github/stars/Knightro63/apple_vision.svg?style=flat&logo=github&colorB=deeppink&label=stars)](https://github.com/Knightro63/apple_vision)
 [![License: MIT](https://img.shields.io/badge/license-MIT-purple.svg)](https://opensource.org/licenses/MIT)
 
-Apple Vision Selfie Detection is a Flutter plugin that enables Flutter apps to use [Apple Vision Image Classification](https://developer.apple.com/documentation/vision/classifying_images_with_vision_and_core_ml).
+Apple Vision Image Classification is a Flutter plugin that enables Flutter apps to use [Apple Vision Image Classification](https://developer.apple.com/documentation/vision/classifying_images_with_vision_and_core_ml).
 
 - This plugin is not sponsor or maintained by Apple. The [authors](https://github.com/Knightro63/apple_vision/blob/main/AUTHORS) are developers who wanted to make a similar plugin to Google's ml kit for macos.
 
