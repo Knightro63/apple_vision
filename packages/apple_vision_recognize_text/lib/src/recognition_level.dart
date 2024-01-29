@@ -1,4 +1,4 @@
-/// Constants that identify the performance and accuracy of the text recognition.
+/// A value that determines whether the request prioritizes accuracy or speed in text recognition.
 enum RecognitionLevel {
   /// Fast text recognition returns results more quickly at the expense of accuracy.
   fast,

@@ -26,6 +26,8 @@ class AppleVisionRecognizeTextController {
   /// [imageSize] as Size is the size of the image that is being processed
   /// 
   /// [orientation] The orientation of the image
+  /// 
+  /// [recognitionLevel] A value that determines whether the request prioritizes accuracy or speed in text recognition.
   Future<List<RecognizedText>?> processImage({
     required Uint8List image,
     required Size imageSize,
