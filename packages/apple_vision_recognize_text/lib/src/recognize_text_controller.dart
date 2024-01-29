@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:apple_vision_recognize_text/apple_vision_recognize_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:apple_vision_commons/apple_vision_commons.dart';
@@ -25,7 +26,12 @@ class AppleVisionRecognizeTextController {
   /// [imageSize] as Size is the size of the image that is being processed
   /// 
   /// [orientation] The orientation of the image
-  Future<List<RecognizedText>?> processImage(Uint8List image, Size imageSize,[ImageOrientation orientation = ImageOrientation.down]) async{
+  Future<List<RecognizedText>?> processImage({
+    required Uint8List image,
+    required Size imageSize,
+    ImageOrientation orientation = ImageOrientation.down,
+    RecognitionLevel recognitionLevel = RecognitionLevel.accurate,
+  }) async{
     try {
       final data = await _methodChannel.invokeMapMethod<String, dynamic>(  
         'process',
@@ -33,7 +39,8 @@ class AppleVisionRecognizeTextController {
           'width': imageSize.width,
           'height':imageSize.height,
           'candidates': numberOfCandidates,
-          'orientation': orientation.name
+          'orientation': orientation.name,
+          'recognitionLevel': recognitionLevel.name,
           //'languages': languages
         },
       );

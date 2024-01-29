@@ -41,15 +41,16 @@ public class AppleVisionRecognizeTextPlugin: NSObject, FlutterPlugin {
             let height = arguments["height"] as? Double ?? 0
             let candidates = arguments["candidates"] as? Int ?? 1
             let orientation = arguments["orientation"] as? String ?? "downMirrored"
+            let recognitionLevel = arguments["recognitionLevel"] as? String ?? "accurate"
 
             #if os(iOS)
                 if #available(iOS 13.0, *) {
-                    return result(convertImage(Data(data.data),CGSize(width: width , height: height),candidates,CIFormat.BGRA8,orientation))
+                    return result(convertImage(Data(data.data),CGSize(width: width , height: height),candidates,CIFormat.BGRA8,orientation,recognitionLevel))
                 } else {
                     return result(FlutterError(code: "INVALID OS", message: "requires version 12.0", details: nil))
                 }
             #elseif os(macOS)
-                return result(convertImage(Data(data.data),CGSize(width: width , height: height),candidates,CIFormat.ARGB8,orientation))
+                return result(convertImage(Data(data.data),CGSize(width: width , height: height),candidates,CIFormat.ARGB8,orientation,recognitionLevel))
             #endif
         default:
             result(FlutterMethodNotImplemented)
@@ -60,7 +61,7 @@ public class AppleVisionRecognizeTextPlugin: NSObject, FlutterPlugin {
     #if os(iOS)
     @available(iOS 13.0, *)
     #endif
-    func convertImage(_ data: Data,_ imageSize: CGSize, _ candidates: Int,_ format: CIFormat,_ oriString: String) -> [String:Any?]{
+    func convertImage(_ data: Data,_ imageSize: CGSize, _ candidates: Int,_ format: CIFormat,_ oriString: String,_ recognitionLevelString: String) -> [String:Any?]{
         let imageRequestHandler:VNImageRequestHandler
 
         var orientation:CGImagePropertyOrientation = CGImagePropertyOrientation.downMirrored
@@ -91,6 +92,19 @@ public class AppleVisionRecognizeTextPlugin: NSObject, FlutterPlugin {
                 break
         }
 
+        var recognitionLevel:VNRequestTextRecognitionLevel = VNRequestTextRecognitionLevel.accurate
+        switch recognitionLevelString{
+            case "fast":
+                recognitionLevel = VNRequestTextRecognitionLevel.fast
+                break
+            case "accurate":
+                recognitionLevel = VNRequestTextRecognitionLevel.accurate
+                break
+            default:
+                recognitionLevel = VNRequestTextRecognitionLevel.accurate
+                break
+        }
+
         if data.count == (Int(imageSize.height)*Int(imageSize.width)*4){
             // Create a bitmap graphics context with the sample buffer data
             let context =  CIImage(bitmapData: data, bytesPerRow: Int(imageSize.width)*4, size: imageSize, format: format, colorSpace: nil)
@@ -104,8 +118,7 @@ public class AppleVisionRecognizeTextPlugin: NSObject, FlutterPlugin {
         var event:[String:Any?] = ["name":"noData"];
 
         do {
-            try
-            imageRequestHandler.perform([VNRecognizeTextRequest { (request, error)in
+            let request = VNRecognizeTextRequest { (request, error)in
                 if error == nil {
                     
                     if let results = request.results as? [VNRecognizedTextObservation] {
@@ -126,7 +139,9 @@ public class AppleVisionRecognizeTextPlugin: NSObject, FlutterPlugin {
                     event = ["name":"error","code": "No Text Detected", "message": error!.localizedDescription]
                     print(error!.localizedDescription)
                 }
-            }])
+            }
+            request.recognitionLevel = recognitionLevel
+            try imageRequestHandler.perform([request])
         } catch {
             event = ["name":"error","code": "Data Corropted", "message": error.localizedDescription]
             print(error)
