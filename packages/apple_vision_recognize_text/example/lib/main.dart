@@ -61,7 +61,11 @@ class _VisionRT extends State<VisionRT>{
         }
         if(mounted) {
           Uint8List? image = i.bytes;
-          visionController.processImage(image!, imageSize).then((data){
+          visionController.processImage(
+            image: image!,
+            imageSize: imageSize,
+            locales: [const Locale('en-US')],
+          ).then((data){
             textData = data;
             setState(() {
               

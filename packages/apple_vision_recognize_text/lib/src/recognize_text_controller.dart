@@ -25,7 +25,14 @@ class AppleVisionRecognizeTextController {
   /// [imageSize] as Size is the size of the image that is being processed
   /// 
   /// [orientation] The orientation of the image
-  Future<List<RecognizedText>?> processImage(Uint8List image, Size imageSize,[ImageOrientation orientation = ImageOrientation.down]) async{
+  /// 
+  /// [locales] An array of locale to detect, in priority order.
+  Future<List<RecognizedText>?> processImage({
+    required Uint8List image,
+    required Size imageSize,
+    ImageOrientation orientation = ImageOrientation.down,
+    List<Locale>? locales,
+  }) async{
     try {
       final data = await _methodChannel.invokeMapMethod<String, dynamic>(  
         'process',
@@ -33,8 +40,11 @@ class AppleVisionRecognizeTextController {
           'width': imageSize.width,
           'height':imageSize.height,
           'candidates': numberOfCandidates,
-          'orientation': orientation.name
-          //'languages': languages
+          'orientation': orientation.name,
+          'languages': [
+            for (final locale in locales ?? <Locale>[])
+              locale.toLanguageTag(),
+          ],
         },
       );
       return _convertData(data);
