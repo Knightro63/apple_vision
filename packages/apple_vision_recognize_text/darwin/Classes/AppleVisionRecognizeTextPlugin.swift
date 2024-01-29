@@ -42,15 +42,16 @@ public class AppleVisionRecognizeTextPlugin: NSObject, FlutterPlugin {
             let candidates = arguments["candidates"] as? Int ?? 1
             let orientation = arguments["orientation"] as? String ?? "downMirrored"
             let languages = arguments["languages"] as? [String] ?? nil
+            let automaticallyDetectsLanguage = arguments["automaticallyDetectsLanguage"] as? Bool ?? false
 
             #if os(iOS)
                 if #available(iOS 13.0, *) {
-                    return result(convertImage(Data(data.data),CGSize(width: width , height: height),candidates,CIFormat.BGRA8,orientation,languages))
+                    return result(convertImage(Data(data.data),CGSize(width: width , height: height),candidates,CIFormat.BGRA8,orientation,languages,automaticallyDetectsLanguage))
                 } else {
                     return result(FlutterError(code: "INVALID OS", message: "requires version 12.0", details: nil))
                 }
             #elseif os(macOS)
-                return result(convertImage(Data(data.data),CGSize(width: width , height: height),candidates,CIFormat.ARGB8,orientation,languages))
+                return result(convertImage(Data(data.data),CGSize(width: width , height: height),candidates,CIFormat.ARGB8,orientation,languages,automaticallyDetectsLanguage))
             #endif
         default:
             result(FlutterMethodNotImplemented)
@@ -61,7 +62,7 @@ public class AppleVisionRecognizeTextPlugin: NSObject, FlutterPlugin {
     #if os(iOS)
     @available(iOS 13.0, *)
     #endif
-    func convertImage(_ data: Data,_ imageSize: CGSize, _ candidates: Int,_ format: CIFormat,_ oriString: String,_ languages: [String]?) -> [String:Any?]{
+    func convertImage(_ data: Data,_ imageSize: CGSize, _ candidates: Int,_ format: CIFormat,_ oriString: String,_ languages: [String]?,_ automaticallyDetectsLanguage: Bool) -> [String:Any?]{
         let imageRequestHandler:VNImageRequestHandler
 
         var orientation:CGImagePropertyOrientation = CGImagePropertyOrientation.downMirrored
@@ -129,6 +130,9 @@ public class AppleVisionRecognizeTextPlugin: NSObject, FlutterPlugin {
             }
             if languages != nil {
                 request.recognitionLanguages = languages!
+            }
+            if #available(iOS 16.0, *) {
+                request.automaticallyDetectsLanguage = automaticallyDetectsLanguage
             }
             try imageRequestHandler.perform([request])
         } catch {

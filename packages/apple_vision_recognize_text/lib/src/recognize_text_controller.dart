@@ -27,11 +27,14 @@ class AppleVisionRecognizeTextController {
   /// [orientation] The orientation of the image
   /// 
   /// [locales] An array of locale to detect, in priority order.
+  /// 
+  /// [automaticallyDetectsLanguage] A Boolean value that indicates whether to attempt detecting the language to use the appropriate model for recognition and language correction. (Only available in iOS 16.0 or newer.)
   Future<List<RecognizedText>?> processImage({
     required Uint8List image,
     required Size imageSize,
     ImageOrientation orientation = ImageOrientation.down,
     List<Locale>? locales,
+    bool automaticallyDetectsLanguage = false,
   }) async{
     try {
       final data = await _methodChannel.invokeMapMethod<String, dynamic>(  
@@ -45,6 +48,7 @@ class AppleVisionRecognizeTextController {
             for (final locale in locales ?? <Locale>[])
               locale.toLanguageTag(),
           ],
+          'automaticallyDetectsLanguage': automaticallyDetectsLanguage,
         },
       );
       return _convertData(data);
