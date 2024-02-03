@@ -41,15 +41,71 @@ public class AppleVisionRecognizeTextPlugin: NSObject, FlutterPlugin {
             let height = arguments["height"] as? Double ?? 0
             let candidates = arguments["candidates"] as? Int ?? 1
             let orientation = arguments["orientation"] as? String ?? "downMirrored"
+            let recognitionLevel = arguments["recognitionLevel"] as? String ?? "accurate"
+            let queueString = arguments["dispatch"] as? String ?? "defaultQueue"
+            let languages = arguments["languages"] as? [String] ?? nil
+            let automaticallyDetectsLanguage = arguments["automaticallyDetectsLanguage"] as? Bool ?? false
 
+            var dq:DispatchQoS.QoSClass = DispatchQoS.QoSClass.default
+            switch queueString{
+                case "background":
+                    dq = DispatchQoS.QoSClass.background
+                case "unspecified":
+                    dq = DispatchQoS.QoSClass.unspecified
+                case "userInitiated":
+                    dq = DispatchQoS.QoSClass.userInitiated
+                case "userInteractive":
+                    dq = DispatchQoS.QoSClass.userInteractive
+                case "utility":
+                    dq = DispatchQoS.QoSClass.utility
+                default:
+                    dq = DispatchQoS.QoSClass.default
+            }
+            
             #if os(iOS)
                 if #available(iOS 13.0, *) {
-                    return result(convertImage(Data(data.data),CGSize(width: width , height: height),candidates,CIFormat.BGRA8,orientation))
+                    let event = self.convertImage(
+                        Data(data.data),
+                        CGSize(width: width , height: height),
+                        candidates,
+                        CIFormat.BGRA8,
+                        orientation,
+                        recognitionLevel,
+                        languages,
+                        automaticallyDetectsLanguage
+                    )                
+                    if dq == DispatchQoS.QoSClass.default{
+                        return result(event)
+                    }
+                    else{
+                        DispatchQueue.global(qos: dq).async {
+                            DispatchQueue.main.async{result(event)}
+                        }
+                    }
                 } else {
                     return result(FlutterError(code: "INVALID OS", message: "requires version 12.0", details: nil))
                 }
             #elseif os(macOS)
-                return result(convertImage(Data(data.data),CGSize(width: width , height: height),candidates,CIFormat.ARGB8,orientation))
+                let event = self.convertImage(
+                    Data(data.data),
+                    CGSize(width: width , height: height),
+                    candidates,
+                    CIFormat.ARGB8,
+                    orientation,
+                    recognitionLevel,
+                    languages,
+                    automaticallyDetectsLanguage
+                )
+                if dq == DispatchQoS.QoSClass.default{
+                    return result(event)
+                }
+                else{
+                    DispatchQueue.global(qos: dq).async {
+                        DispatchQueue.main.async{
+                            result(event)
+                        }
+                    }
+                }
             #endif
         default:
             result(FlutterMethodNotImplemented)
@@ -60,41 +116,51 @@ public class AppleVisionRecognizeTextPlugin: NSObject, FlutterPlugin {
     #if os(iOS)
     @available(iOS 13.0, *)
     #endif
-    func convertImage(_ data: Data,_ imageSize: CGSize, _ candidates: Int,_ format: CIFormat,_ oriString: String) -> [String:Any?]{
+    func convertImage(
+        _ data: Data,
+        _ imageSize: CGSize,
+        _ candidates: Int,
+        _ format: CIFormat,
+        _ oriString: String,
+        _ recognitionLevelString: String,
+        _ languages: [String]?,
+        _ automaticallyDetectsLanguage: Bool
+    ) -> [String:Any?]{
         let imageRequestHandler:VNImageRequestHandler
 
         var orientation:CGImagePropertyOrientation = CGImagePropertyOrientation.downMirrored
         switch oriString{
             case "down":
                 orientation = CGImagePropertyOrientation.down
-                break
             case "right":
                 orientation = CGImagePropertyOrientation.right
-                break
             case "rightMirrored":
                 orientation = CGImagePropertyOrientation.rightMirrored
-                break
             case "left":
                 orientation = CGImagePropertyOrientation.left
-                break
             case "leftMirrored":
                 orientation = CGImagePropertyOrientation.leftMirrored
-                break
             case "up":
                 orientation = CGImagePropertyOrientation.up
-                break
             case "upMirrored":
                 orientation = CGImagePropertyOrientation.upMirrored
-                break
             default:
                 orientation = CGImagePropertyOrientation.downMirrored
+        }
+
+        var recognitionLevel:VNRequestTextRecognitionLevel = VNRequestTextRecognitionLevel.accurate
+        switch recognitionLevelString{
+            case "fast":
+                recognitionLevel = VNRequestTextRecognitionLevel.fast
+                break
+            default:
+                recognitionLevel = VNRequestTextRecognitionLevel.accurate
                 break
         }
 
         if data.count == (Int(imageSize.height)*Int(imageSize.width)*4){
             // Create a bitmap graphics context with the sample buffer data
             let context =  CIImage(bitmapData: data, bytesPerRow: Int(imageSize.width)*4, size: imageSize, format: format, colorSpace: nil)
-            
             imageRequestHandler = VNImageRequestHandler(ciImage:context,orientation: orientation)
         }
         else{
@@ -104,11 +170,9 @@ public class AppleVisionRecognizeTextPlugin: NSObject, FlutterPlugin {
         var event:[String:Any?] = ["name":"noData"];
 
         do {
-            try
-            imageRequestHandler.perform([VNRecognizeTextRequest { (request, error)in
+            let request = VNRecognizeTextRequest {(req, error)in
                 if error == nil {
-                    
-                    if let results = request.results as? [VNRecognizedTextObservation] {
+                    if let results = req.results as? [VNRecognizedTextObservation] {
                         var listText:[[String:Any?]] = []
                         for text in results {
                             listText.append(self.processObservation(text,imageSize,candidates))
@@ -126,7 +190,21 @@ public class AppleVisionRecognizeTextPlugin: NSObject, FlutterPlugin {
                     event = ["name":"error","code": "No Text Detected", "message": error!.localizedDescription]
                     print(error!.localizedDescription)
                 }
-            }])
+            }
+            if languages != nil {
+                request.recognitionLanguages = languages!
+            }
+            #if os(iOS)
+                if #available(iOS 16.0, *) {
+                    request.automaticallyDetectsLanguage = automaticallyDetectsLanguage
+                }
+            #elseif os(macOS)
+                if #available(macOS 13.0, *) {
+                    request.automaticallyDetectsLanguage = automaticallyDetectsLanguage
+                }
+            #endif
+            request.recognitionLevel = recognitionLevel
+            try imageRequestHandler.perform([request])
         } catch {
             event = ["name":"error","code": "Data Corropted", "message": error.localizedDescription]
             print(error)
@@ -141,9 +219,8 @@ public class AppleVisionRecognizeTextPlugin: NSObject, FlutterPlugin {
     func processObservation(_ observation: VNRecognizedTextObservation,_ imageSize: CGSize, _ candidates: Int) -> [String:Any?] {
         // Retrieve all torso points.
         let recognizedPoints = observation.boundingBox
-        let coord =  VNImagePointForNormalizedPoint(recognizedPoints.origin,
-                                             Int(imageSize.width),
-                                             Int(imageSize.height))
+        let coord =  VNImagePointForNormalizedPoint(recognizedPoints.origin,Int(imageSize.width),Int(imageSize.height))
+
         return [
             "minX":Double(recognizedPoints.minX),
             "maxX":Double(recognizedPoints.maxX),

@@ -1,3 +1,8 @@
+## 0.0.4
+
+* Updated Recognize Text
+* Added Sailency
+
 ## 0.0.3
 
 * Added Human Pose 3D

@@ -69,28 +69,20 @@ public class AppleVisionSelfiePlugin: NSObject, FlutterPlugin {
         switch oriString{
             case "down":
                 orientation = CGImagePropertyOrientation.down
-                break
             case "right":
                 orientation = CGImagePropertyOrientation.right
-                break
             case "rightMirrored":
                 orientation = CGImagePropertyOrientation.rightMirrored
-                break
             case "left":
                 orientation = CGImagePropertyOrientation.left
-                break
             case "leftMirrored":
                 orientation = CGImagePropertyOrientation.leftMirrored
-                break
             case "up":
                 orientation = CGImagePropertyOrientation.up
-                break
             case "upMirrored":
                 orientation = CGImagePropertyOrientation.upMirrored
-                break
             default:
                 orientation = CGImagePropertyOrientation.downMirrored
-                break
         }
 
         var originalImage:CIImage?
@@ -154,33 +146,39 @@ public class AppleVisionSelfiePlugin: NSObject, FlutterPlugin {
                             selfieData.append(ciImage?.cgImage?.dataProvider?.data as Data?)
                         #elseif os(macOS)
                             var format:NSBitmapImageRep.FileType?
+
+                            var nsImage:Data?
                             switch fileType {
                                 case "jpg":
-                                    format = NSBitmapImageRep.FileType.jpeg
-                                    break
+                                    nsImage = NSBitmapImageRep(ciImage:ciImage!).representation(
+                                        using: .jpeg,
+                                        properties: [:]
+                                    )
                                 case "jepg":
-                                    format = NSBitmapImageRep.FileType.jpeg2000
-                                    break
+                                    nsImage = NSBitmapImageRep(ciImage:ciImage!).representation(
+                                        using: .jpeg2000,
+                                        properties: [:]
+                                    )
                                 case "bmp":
-                                    format = NSBitmapImageRep.FileType.bmp
-                                    break
+                                    nsImage = NSBitmapImageRep(ciImage:ciImage!).representation(
+                                        using: .bmp,
+                                        properties: [:]
+                                    )
                                 case "png":
-                                    format = NSBitmapImageRep.FileType.png
-                                    break
+                                    nsImage = NSBitmapImageRep(ciImage:ciImage!).representation(
+                                        using: .png,
+                                        properties: [:]
+                                    )
                                 case "tiff":
-                                    format = NSBitmapImageRep.FileType.tiff
-                                    break
+                                    nsImage = NSBitmapImageRep(ciImage:ciImage!).representation(
+                                        using: .tiff,
+                                        properties: [:]
+                                    )
                                 default:
-                                    format = nil
+                                    nsImage = nil
                             }
-                            var nsImage:Data?
-                            if format != nil{
-                                nsImage = NSBitmapImageRep(ciImage:ciImage!).representation(
-                                    using: format!,
-                                    properties: [
-                                        NSBitmapImageRep.PropertyKey.currentFrame: NSBitmapImageRep.PropertyKey.currentFrame.self
-                                    ]
-                                )
+                            
+                            if nsImage != nil{
                                 selfieData.append(nsImage)
                             }
                             else{

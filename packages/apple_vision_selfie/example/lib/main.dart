@@ -68,9 +68,9 @@ class _VisionSelfie extends State<VisionSelfie>{
           Uint8List? image = i.bytes;
           visionController.processImage(
             SelfieSegmentationData(
-              image: rgba2bitmap(image!,imageSize.width.toInt(),imageSize.height.toInt()),//image!, 
+              image: image!, 
               imageSize: i.metadata!.size,
-              format:  PictureFormat.jpg,
+              format:  PictureFormat.tiff,
               quality: SelfieQuality.fast,
               //backGround: bg
             )

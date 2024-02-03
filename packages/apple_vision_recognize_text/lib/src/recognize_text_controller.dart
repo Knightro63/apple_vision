@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:apple_vision_recognize_text/src/recognize_text_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:apple_vision_commons/apple_vision_commons.dart';
@@ -19,25 +20,26 @@ class AppleVisionRecognizeTextController {
 
   /// Process the image using apple vision and return the requested information or null value
   /// 
-  /// [image] as Uint8List is the image that needs to be processed
-  /// this needs to be in an image format raw will not work.
-  /// 
-  /// [imageSize] as Size is the size of the image that is being processed
-  /// 
-  /// [orientation] The orientation of the image
-  Future<List<RecognizedText>?> processImage(Uint8List image, Size imageSize,[ImageOrientation orientation = ImageOrientation.down]) async{
+  /// [data] acontains all the information to send to the method
+  Future<List<RecognizedText>?> processImage(RecognizeTextData data) async{
     try {
-      final data = await _methodChannel.invokeMapMethod<String, dynamic>(  
+      final returnedData = await _methodChannel.invokeMapMethod<String, dynamic>(  
         'process',
-        {'image':image,
-          'width': imageSize.width,
-          'height':imageSize.height,
+        {
+          'image': data.image,
+          'width': data.imageSize.width,
+          'height': data.imageSize.height,
           'candidates': numberOfCandidates,
-          'orientation': orientation.name
-          //'languages': languages
+          'orientation': data.orientation.name,
+          'recognitionLevel': data.recognitionLevel.name,
+          'dispatchQueue': data.dispatch.name,
+          'languages': data.languages == null?null:[
+            for (final locale in data.languages ?? <Locale>[]) locale.toLanguageTag(),
+          ],
+          'automaticallyDetectsLanguage': data.automaticallyDetectsLanguage,
         },
       );
-      return _convertData(data);
+      return _convertData(returnedData);
     } catch (e) {
       debugPrint('$e');
     }

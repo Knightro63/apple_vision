@@ -4,6 +4,7 @@ import '../camera/camera_insert.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'camera/input_image.dart';
+import 'package:apple_vision_commons/apple_vision_commons.dart';
 
 void main() {
   runApp(const MyApp());
@@ -61,7 +62,15 @@ class _VisionRT extends State<VisionRT>{
         }
         if(mounted) {
           Uint8List? image = i.bytes;
-          visionController.processImage(image!, imageSize).then((data){
+          visionController.processImage(
+            RecognizeTextData(
+              image: image!,
+              imageSize: imageSize,
+              recognitionLevel: RecognitionLevel.accurate,
+              languages: [const Locale('en-US')],
+              automaticallyDetectsLanguage: true,
+            )
+          ).then((data){
             textData = data;
             setState(() {
               
