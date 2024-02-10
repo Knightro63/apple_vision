@@ -194,7 +194,6 @@ public class AppleVisionSelfiePlugin: NSObject, FlutterPlugin {
                     event = [
                         "name": "selfie",
                         "data": selfieData,
-                        //"imageSize": imageSize
                     ]
                 }
             } else {

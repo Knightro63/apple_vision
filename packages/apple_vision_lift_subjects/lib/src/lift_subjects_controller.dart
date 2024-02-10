@@ -4,9 +4,23 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
 enum PictureFormat{jpg,jpeg,tiff,bmp,png,raw}
-enum SelfieQuality{fast,balanced,accurate}
 
-class SelfieSegmentationData{
+class Point{
+  Point([
+    this.x = 0,
+    this.y = 0
+  ]);
+  
+  final double x;
+  final double y;
+
+  @override
+  String toString(){
+    return [x,y].toString();
+  }
+}
+
+class LiftedSubjectsData{
   /// Process the image using apple vision and return the requested information or null value
   /// 
   /// [image] as Uint8List is the image that needs to be processed
@@ -16,33 +30,37 @@ class SelfieSegmentationData{
   /// 
   /// [format] the output format of the image
   /// 
-  /// [quality] the quality of the output image
+  /// [crop] crop the image generated
+  /// 
+  /// [touchPoint] point on the image to get the subject
   /// 
   /// [backGround] the background image needs to be an image e.g.(png,jpg,jpeg,bmp,tiff)
-  SelfieSegmentationData({
+  LiftedSubjectsData({
     required this.image,
     required this.imageSize,
     this.format = PictureFormat.tiff,
-    this.quality = SelfieQuality.fast,
     this.backGround,
-    this.orientation = ImageOrientation.up
+    this.orientation = ImageOrientation.up,
+    this.touchPoint,
+    this.crop = false
   });
   /// Image to be processed
   Uint8List image;
-  Uint8List? backGround;
   Size imageSize; 
   PictureFormat format;
-  SelfieQuality quality;
   ImageOrientation orientation;
+  Uint8List? backGround;
+  Point? touchPoint;
+  bool crop;
 }
 
-/// The [AppleVisionSelfieController] holds all the logic of this plugin,
-/// where as the [AppleVisionSelfie] class is the frontend of this plugin.
-class AppleVisionSelfieController {
-  static const MethodChannel _methodChannel = MethodChannel('apple_vision/selfie');
+/// The [AppleVisionliftSubjectsController] holds all the logic of this plugin,
+/// where as the [AppleVisionliftSubjects] class is the frontend of this plugin.
+class AppleVisionliftSubjectsController {
+  static const MethodChannel _methodChannel = MethodChannel('apple_vision/lift_subjects');
 
   /// Process the image using apple vision and return the requested information or null value
-  Future<List<Uint8List?>?> processImage(SelfieSegmentationData data) async{
+  Future<Uint8List?> processImage(LiftedSubjectsData data) async{
     try {
       final result = await _methodChannel.invokeMapMethod<String, dynamic>(  
         'process',
@@ -50,9 +68,11 @@ class AppleVisionSelfieController {
           'width': data.imageSize.width,
           'height':data.imageSize.height,
           'format': data.format.name,
-          'quality': data.quality.index,
           'background': data.backGround,
-          'orientation': data.orientation.name
+          'orientation': data.orientation.name,
+          'x': data.touchPoint?.x,
+          'y': data.touchPoint?.y,
+          'crop': data.crop
         },
       );
       return _convertData(result);
@@ -64,16 +84,12 @@ class AppleVisionSelfieController {
   }
 
   /// Handles a returning event from the platform side
-  List<Uint8List?>? _convertData(Map? event) {
+  Uint8List? _convertData(Map? event) {
     if(event == null) return null;
     final name = event['name'];
     switch (name) {
-      case 'selfie':
-        List<Uint8List?> data = [];
-        for(int i = 0; i < event['data'].length;i++){
-          data.add(event['data'][i]);
-        }
-        return data;
+      case 'lift':
+        return event['data'];
       case 'noData':
         break;
       case 'done':

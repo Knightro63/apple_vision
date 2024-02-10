@@ -26,4 +26,6 @@ export 'package:apple_vision_image_classification/apple_vision_image_classificat
 export 'package:apple_vision_recognize_text/apple_vision_recognize_text.dart';
 export 'package:apple_vision_selfie/apple_vision_selfie.dart';
 export 'package:apple_vision_animal_pose/apple_vision_animal_pose.dart';
+export 'package:apple_vision_saliency/apple_vision_saliency.dart';
 export 'package:apple_vision_pose_3d/apple_vision_pose_3d.dart';
+export 'package:apple_vision_lift_subjects/apple_vision_lift_subjects.dart';

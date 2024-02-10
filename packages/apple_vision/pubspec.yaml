@@ -24,7 +24,8 @@ dependencies:
   apple_vision_recognize_text: ^0.0.3
   apple_vision_scanner: ^0.0.2
   apple_vision_selfie: ^0.0.2
-  apple_vision_sailency: ^0.0.1
+  apple_vision_saliency: ^0.0.1
+  apple_vision_lift_subjects: ^0.0.1
   
 dev_dependencies:
   flutter_test:
