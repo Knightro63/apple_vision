@@ -1,3 +1,7 @@
+## 0.0.4
+
+* Removed PictureFormat
+
 ## 0.0.3
 
 * Added iOS support

@@ -3,7 +3,6 @@ import 'package:apple_vision_commons/apple_vision_commons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
-enum PictureFormat{jpg,jpeg,tiff,bmp,png,raw}
 enum SelfieQuality{fast,balanced,accurate}
 
 class SelfieSegmentationData{

@@ -1,6 +1,6 @@
 name: apple_vision_selfie
 description: A Flutter plugin to use Apple Vision Selfie Segmentation Detection to detect the person in real time from a continuous video or static image.
-version: 0.0.3
+version: 0.0.4
 homepage: https://github.com/Knightro63/apple_vision/tree/main/packages/apple_vision_selfie
 
 environment:
