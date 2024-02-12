@@ -174,18 +174,7 @@ class _VisionLiftSubjects extends State<VisionLiftSubjects>{
         Wrap(
           children: showImages(),
         )
-
       ]
-    );
-  }
-
-  Widget loadingWidget(){
-    return Container(
-      width: deviceWidth,
-      height: deviceHeight,
-      color: Theme.of(context).canvasColor,
-      alignment: Alignment.center,
-      child: const CircularProgressIndicator(color: Colors.blue)
     );
   }
 }
