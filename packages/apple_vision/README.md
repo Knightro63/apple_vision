@@ -36,7 +36,7 @@ Apple Vision is a Flutter plugin that enables Flutter apps to use [Apple Vision]
 ## Requirements
 
 **MacOS**
- - Minimum os Deployment Target: 14.0
+ - Minimum os Deployment Target: 15.0
  - Xcode 15 or newer
  - Swift 5
  - ML Kit only supports 64-bit architectures (x86_64 and arm64).
