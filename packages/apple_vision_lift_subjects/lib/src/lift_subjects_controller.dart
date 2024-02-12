@@ -3,8 +3,6 @@ import 'package:apple_vision_commons/apple_vision_commons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
-enum PictureFormat{jpg,jpeg,tiff,bmp,png,raw}
-
 class Point{
   Point([
     this.x = 0,
@@ -38,7 +36,7 @@ class LiftedSubjectsData{
   LiftedSubjectsData({
     required this.image,
     required this.imageSize,
-    this.format = PictureFormat.tiff,
+    this.format = PictureFormat.png,
     this.backGround,
     this.orientation = ImageOrientation.up,
     this.touchPoint,

@@ -22,7 +22,7 @@ class SelfieSegmentationData{
   SelfieSegmentationData({
     required this.image,
     required this.imageSize,
-    this.format = PictureFormat.tiff,
+    this.format = PictureFormat.png,
     this.quality = SelfieQuality.fast,
     this.backGround,
     this.orientation = ImageOrientation.up

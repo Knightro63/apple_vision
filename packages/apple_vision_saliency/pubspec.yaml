@@ -1,6 +1,6 @@
 name: apple_vision_saliency
 description: A Flutter plugin to use Apple Vision Saliency Segmentation Detection to detect the person in real time from a continuous video or static image.
-version: 0.0.1
+version: 0.0.2
 homepage: https://github.com/Knightro63/apple_vision/tree/main/packages/apple_vision_saliency
 
 environment:
@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  apple_vision_commons: ^0.0.2
+  apple_vision_commons: ^0.0.3
 
 dev_dependencies:
   flutter_test:
@@ -20,9 +20,9 @@ dev_dependencies:
 flutter:
   plugin:
     platforms:
-      # ios:
-      #   pluginClass: AppleVisionSaliencyPlugin
-      #   sharedDarwinSource: true
+      ios:
+        pluginClass: AppleVisionSaliencyPlugin
+        sharedDarwinSource: true
       macos:
         pluginClass: AppleVisionSaliencyPlugin
         sharedDarwinSource: true

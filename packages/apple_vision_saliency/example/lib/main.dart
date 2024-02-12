@@ -66,7 +66,6 @@ class _VisionSaliency extends State<VisionSaliency>{
             SaliencySegmentationData(
               image: rgba2bitmap(image!,imageSize.width.toInt(),imageSize.height.toInt()),//image!, 
               imageSize: i.metadata!.size,
-              format:  PictureFormat.tiff,
               type: SaliencyType.object
             )
           ).then((data){
@@ -102,7 +101,7 @@ class _VisionSaliency extends State<VisionSaliency>{
           height: 320*9/16,  
           child: Stack(children: [
             Image.memory(
-              saliencyImage![1]!,
+              saliencyImage![0]!,
               fit: BoxFit.fitHeight,
             )
           ],)

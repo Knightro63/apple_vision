@@ -181,7 +181,43 @@ public class AppleVisionLiftSubjectsPlugin: NSObject, FlutterPlugin {
             }
             
             #if os(iOS)
-                liftData = ciImage?.cgImage?.dataProvider?.data as Data?
+                var uiImage:Data?
+                switch fileType {
+                    case "jpg":
+                        uiImage = UIImage(ciImage: ciImage!).jpegData(compressionQuality: 1.0)
+                    case "jpeg":
+                        uiImage = UIImage(ciImage: ciImage!).jpegData(compressionQuality: 1.0)
+                    case "bmp":
+                        uiImage = nil
+                    case "png":
+                        uiImage = UIImage(ciImage: ciImage!).pngData()
+                    case "tiff":
+                        uiImage = nil
+                    default:
+                    uiImage = nil
+
+                }
+                
+                if uiImage == nil{
+                    let ciContext = CIContext()
+                    let rowBytes = 4 * Int(ciImage!.extent.width) // 4 channels (RGBA) of 8-bit data
+                    let dataSize = rowBytes * Int(ciImage!.extent.height)
+                    var data = Data(count: dataSize)
+                    data.withUnsafeMutableBytes { data in
+                        ciContext.render(ciImage!, toBitmap: data, rowBytes: rowBytes, bounds: ciImage!.extent, format: .RGBA8, colorSpace: CGColorSpace(name: CGColorSpace.sRGB)!)
+                    }
+                    if fileType == "bmp"{
+                        uiImage = rgba2bitmap(
+                            data,
+                            Int(ciImage!.extent.width),
+                            Int(ciImage!.extent.height)
+                        )
+                    }
+                    else{
+                        uiImage = data
+                    }
+                }
+                liftData = uiImage!
             #elseif os(macOS)
                 var nsImage:Data?
                 switch fileType {
@@ -190,7 +226,7 @@ public class AppleVisionLiftSubjectsPlugin: NSObject, FlutterPlugin {
                             using: .jpeg,
                             properties: [:]
                         )
-                    case "jepg":
+                    case "jpeg":
                         nsImage = NSBitmapImageRep(ciImage:ciImage!).representation(
                             using: .jpeg2000,
                             properties: [:]
@@ -214,10 +250,7 @@ public class AppleVisionLiftSubjectsPlugin: NSObject, FlutterPlugin {
                         nsImage = nil
                 }
                 
-                if nsImage != nil{
-                    liftData = nsImage
-                }
-                else{
+                if nsImage == nil{
                     let u = NSBitmapImageRep(ciImage:ciImage!)
                     let bytesPerRow = u.bytesPerRow
                     let height = Int(u.size.height)
@@ -262,5 +295,38 @@ public class AppleVisionLiftSubjectsPlugin: NSObject, FlutterPlugin {
         CVPixelBufferUnlockBaseAddress(mask,.readOnly)
         
         return instanceLabel == 0 ? observation.allInstances : [Int(instanceLabel)]
+    }
+    func rgba2bitmap(_ content:Data,_ width: Int,_ height: Int)-> Data{
+        let headerSize:Int = 122;
+        let contentSize:Int = content.count;
+        let fileLength:Int =  contentSize + headerSize;
+
+        var bd:[UInt8] = [UInt8](repeating: 0, count: fileLength);
+
+        bd.insert(0x42, at: 0);
+        bd.insert(0x4d, at: 0x1);
+        bd.insert(contentsOf: UInt32(fileLength).toBytes, at: 0x2);
+        bd.insert(contentsOf: UInt32(headerSize).toBytes, at: 0xa);
+        bd.insert(contentsOf: UInt32(108).toBytes, at: 0xe);
+        bd.insert(contentsOf: UInt32(width).toBytes, at: 0x12);
+        bd.insert(contentsOf: UInt32(Int(UInt32.max)+1-height).toBytes, at: 0x16);
+        bd.insert(contentsOf: UInt32(1).toBytes, at: 0x1a);
+        bd.insert(contentsOf: UInt32(32).toBytes, at: 0x1c);
+        bd.insert(contentsOf: UInt32(3).toBytes, at: 0x1e);
+        bd.insert(contentsOf: UInt32(contentSize).toBytes, at: 0x22);
+        bd.insert(contentsOf: UInt32(0x000000ff).toBytes, at: 0x36);
+        bd.insert(contentsOf: UInt32(0x0000ff00).toBytes, at: 0x3a);
+        bd.insert(contentsOf: UInt32(0x00ff0000).toBytes, at: 0x3e);
+        bd.insert(contentsOf: UInt32(0xff000000).toBytes, at: 0x42);
+        
+        bd.replaceSubrange(headerSize...fileLength, with: content)
+        
+        return Data(bytes: bd, count: fileLength)
+    }
+}
+
+extension UInt32{
+    var toBytes: [UInt8] {
+        return withUnsafeBytes(of: self.littleEndian) {Array($0)}
     }
 }

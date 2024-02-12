@@ -79,7 +79,6 @@ class _VisionLiftSubjects extends State<VisionLiftSubjects>{
         LiftedSubjectsData(
           image: value.buffer.asUint8List(),
           imageSize: const Size(512,512),
-          format: PictureFormat.jpg,
           backGround: bg
         )
       ).then((value){

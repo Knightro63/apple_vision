@@ -45,7 +45,7 @@ public class AppleVisionSaliencyPlugin: NSObject, FlutterPlugin {
 
             #if os(iOS)
                 if #available(iOS 15.0, *) {
-                    return result(convertImage(Data(data.data),CGSize(width: width , height: height),pf,CIFormat.BGRA8,orientation))
+                    return result(convertImage(Data(data.data),CGSize(width: width , height: height),pf,type,CIFormat.BGRA8,orientation))
                 } else {
                     return result(FlutterError(code: "INVALID OS", message: "requires version 15.0", details: nil))
                 }
@@ -146,61 +146,129 @@ public class AppleVisionSaliencyPlugin: NSObject, FlutterPlugin {
     }
     
     func process(_ results: [VNSaliencyImageObservation],_ imageSize: CGSize,_ fileType: String) -> [String: Any?]{
-        var SaliencyData:[Data?] = []
-        for Saliency in results {
-            var maskImage = CIImage(cvPixelBuffer: Saliency.pixelBuffer)
+        var saliencyData:[Data?] = []
+        for saliency in results {
+            var ciImage = CIImage(cvPixelBuffer: saliency.pixelBuffer)
 
             // Scale the mask image to fit the bounds of the video frame.
-            let scaleX = imageSize.width / maskImage.extent.width
-            let scaleY = imageSize.height / maskImage.extent.height
-            maskImage = maskImage.transformed(by: .init(scaleX: scaleX, y: scaleY))
+            let scaleX = imageSize.width / ciImage.extent.width
+            let scaleY = imageSize.height / ciImage.extent.height
+            ciImage = ciImage.transformed(by: .init(scaleX: scaleX, y: scaleY))
             
             #if os(iOS)
-                SaliencyData.append(ciImage?.cgImage?.dataProvider?.data as Data?)
-            #elseif os(macOS)
-                var format:NSBitmapImageRep.FileType?
+                var uiImage:Data?
                 switch fileType {
                     case "jpg":
-                        format = NSBitmapImageRep.FileType.jpeg
-                        break
-                    case "jepg":
-                        format = NSBitmapImageRep.FileType.jpeg2000
-                        break
+                        uiImage = UIImage(ciImage: ciImage).jpegData(compressionQuality: 1.0)
+                    case "jpeg":
+                        uiImage = UIImage(ciImage: ciImage).jpegData(compressionQuality: 1.0)
                     case "bmp":
-                        format = NSBitmapImageRep.FileType.bmp
-                        break
+                        uiImage = nil
                     case "png":
-                        format = NSBitmapImageRep.FileType.png
-                        break
+                        uiImage = UIImage(ciImage: ciImage).pngData()
                     case "tiff":
-                        format = NSBitmapImageRep.FileType.tiff
-                        break
+                        uiImage = nil
                     default:
-                        format = nil
+                    uiImage = nil
                 }
+                
+                if uiImage == nil{
+                    let ciContext = CIContext()
+                    let rowBytes = 4 * Int(ciImage.extent.width) // 4 channels (RGBA) of 8-bit data
+                    let dataSize = rowBytes * Int(ciImage.extent.height)
+                    var data = Data(count: dataSize)
+                    data.withUnsafeMutableBytes { data in
+                        ciContext.render(ciImage, toBitmap: data, rowBytes: rowBytes, bounds: ciImage.extent, format: .RGBA8, colorSpace: CGColorSpace(name: CGColorSpace.sRGB)!)
+                    }
+                    if fileType == "bmp"{
+                        uiImage = rgba2bitmap(
+                            data,
+                            Int(ciImage.extent.width),
+                            Int(ciImage.extent.height)
+                        )
+                    }
+                    else{
+                        uiImage = data
+                    }
+                }
+                saliencyData.append(uiImage!)
+            #elseif os(macOS)
                 var nsImage:Data?
-                if format != nil{
-                    nsImage = NSBitmapImageRep(ciImage:maskImage).representation(
-                        using: format!,
-                        properties: [
-                            NSBitmapImageRep.PropertyKey.currentFrame: NSBitmapImageRep.PropertyKey.currentFrame.self
-                        ]
-                    )
-                    SaliencyData.append(nsImage)
+                switch fileType {
+                    case "jpg":
+                        nsImage = NSBitmapImageRep(ciImage:ciImage).representation(
+                            using: .jpeg,
+                            properties: [:]
+                        )
+                    case "jpeg":
+                        nsImage = NSBitmapImageRep(ciImage:ciImage).representation(
+                            using: .jpeg2000,
+                            properties: [:]
+                        )
+                    case "bmp":
+                        nsImage = NSBitmapImageRep(ciImage:ciImage).representation(
+                            using: .bmp,
+                            properties: [:]
+                        )
+                    case "png":
+                        nsImage = NSBitmapImageRep(ciImage:ciImage).representation(
+                            using: .png,
+                            properties: [:]
+                        )
+                    case "tiff":
+                        nsImage = NSBitmapImageRep(ciImage:ciImage).representation(
+                            using: .tiff,
+                            properties: [:]
+                        )
+                    default:
+                        nsImage = nil
                 }
-                else{
-                    let u = NSBitmapImageRep(ciImage:maskImage)
+                if nsImage == nil{
+                    let u = NSBitmapImageRep(ciImage:ciImage)
                     let bytesPerRow = u.bytesPerRow
                     let height = Int(u.size.height)
                     
                     nsImage = Data(bytes: u.bitmapData!, count: Int(bytesPerRow*height))
                 }
-                SaliencyData.append(nsImage!)
+                saliencyData.append(nsImage)
             #endif
         }
         return [
             "name": "saliency",
-            "data": SaliencyData,
+            "data": saliencyData,
         ]
+    }
+    func rgba2bitmap(_ content:Data,_ width: Int,_ height: Int)-> Data{
+        let headerSize:Int = 122;
+        let contentSize:Int = content.count;
+        let fileLength:Int =  contentSize + headerSize;
+
+        var bd:[UInt8] = [UInt8](repeating: 0, count: fileLength);
+
+        bd.insert(0x42, at: 0);
+        bd.insert(0x4d, at: 0x1);
+        bd.insert(contentsOf: UInt32(fileLength).toBytes, at: 0x2);
+        bd.insert(contentsOf: UInt32(headerSize).toBytes, at: 0xa);
+        bd.insert(contentsOf: UInt32(108).toBytes, at: 0xe);
+        bd.insert(contentsOf: UInt32(width).toBytes, at: 0x12);
+        bd.insert(contentsOf: UInt32(Int(UInt32.max)+1-height).toBytes, at: 0x16);
+        bd.insert(contentsOf: UInt32(1).toBytes, at: 0x1a);
+        bd.insert(contentsOf: UInt32(32).toBytes, at: 0x1c);
+        bd.insert(contentsOf: UInt32(3).toBytes, at: 0x1e);
+        bd.insert(contentsOf: UInt32(contentSize).toBytes, at: 0x22);
+        bd.insert(contentsOf: UInt32(0x000000ff).toBytes, at: 0x36);
+        bd.insert(contentsOf: UInt32(0x0000ff00).toBytes, at: 0x3a);
+        bd.insert(contentsOf: UInt32(0x00ff0000).toBytes, at: 0x3e);
+        bd.insert(contentsOf: UInt32(0xff000000).toBytes, at: 0x42);
+        
+        bd.replaceSubrange(headerSize...fileLength, with: content)
+        
+        return Data(bytes: bd, count: fileLength)
+    }
+}
+
+extension UInt32{
+    var toBytes: [UInt8] {
+        return withUnsafeBytes(of: self.littleEndian) {Array($0)}
     }
 }

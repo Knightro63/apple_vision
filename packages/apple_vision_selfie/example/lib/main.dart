@@ -70,9 +70,8 @@ class _VisionSelfie extends State<VisionSelfie>{
             SelfieSegmentationData(
               image: image!, 
               imageSize: i.metadata!.size,
-              format:  PictureFormat.tiff,
               quality: SelfieQuality.fast,
-              //backGround: bg
+              backGround: bg
             )
           ).then((data){
             selfieImage = data;
@@ -106,9 +105,9 @@ class _VisionSelfie extends State<VisionSelfie>{
           width: 320, 
           height: 320*9/16,  
           child: Stack(children: [
-            Image.asset( 'assets/WaterOnTheMoonFull.jpg'),
+            //Image.asset( 'assets/WaterOnTheMoonFull.jpg'),
             Image.memory(
-              selfieImage![0]!,//rgba2bitmap(selfieImage![0]!,imageSize.width.toInt(),imageSize.height.toInt()), 
+              selfieImage![0]!,
               fit: BoxFit.fitHeight,
             )
           ],)
