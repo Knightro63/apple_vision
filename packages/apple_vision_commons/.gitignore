@@ -11,6 +11,7 @@
 .svn/
 
 # IntelliJ related
+*.iml
 *.ipr
 *.iws
 .idea/
@@ -21,6 +22,8 @@
 .settings/
 .vscode/*
 
+/ios
+/macos
 # Flutter repo-specific
 /bin/cache/
 /bin/internal/bootstrap.bat

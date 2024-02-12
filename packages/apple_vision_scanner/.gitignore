@@ -22,6 +22,8 @@
 .settings/
 .vscode/*
 
+/macos
+/ios
 # Flutter repo-specific
 /bin/cache/
 /bin/internal/bootstrap.bat
