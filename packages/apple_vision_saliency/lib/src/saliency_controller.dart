@@ -17,7 +17,7 @@ class SaliencySegmentationData{
   SaliencySegmentationData({
     required this.image,
     required this.imageSize,
-    this.format = PictureFormat.tiff,
+    this.format = PictureFormat.png,
     this.orientation = ImageOrientation.up,
     this.type = SaliencyType.attention
   });

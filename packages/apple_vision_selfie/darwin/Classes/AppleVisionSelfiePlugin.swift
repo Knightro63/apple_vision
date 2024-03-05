@@ -94,6 +94,8 @@ public class AppleVisionSelfiePlugin: NSObject, FlutterPlugin {
                 orientation: orientation)
         }
         else{
+            originalImage = CIImage(data:data)!
+
             imageRequestHandler = VNImageRequestHandler(
                 data: data,
                 orientation: orientation)
@@ -105,18 +107,11 @@ public class AppleVisionSelfiePlugin: NSObject, FlutterPlugin {
                     var selfieData:[Data?] = []
                     for selfie in results {
                         // Create CIImage objects for the video frame and the segmentation mask.
-                        var originalImageOr:CIImage
-                        if originalImage == nil{
-                            originalImageOr = CIImage(data:data)!
-                        }
-                        else{
-                            originalImageOr = originalImage!
-                        }
                         var maskImage = CIImage(cvPixelBuffer: selfie.pixelBuffer)
 
                         // Scale the mask image to fit the bounds of the video frame.
-                        let scaleX = originalImageOr.extent.width / maskImage.extent.width
-                        let scaleY = originalImageOr.extent.height / maskImage.extent.height
+                        let scaleX = originalImage!.extent.width / maskImage.extent.width
+                        let scaleY = originalImage!.extent.height / maskImage.extent.height
                         maskImage = maskImage.transformed(by: .init(scaleX: scaleX, y: scaleY))
 
                         // Define RGB vectors for CIColorMatrix filter.

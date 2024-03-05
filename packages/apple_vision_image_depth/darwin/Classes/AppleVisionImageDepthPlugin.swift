@@ -14,7 +14,12 @@ public class AppleVisionImageDepthPlugin: NSObject, FlutterPlugin {
     let registry: FlutterTextureRegistry
     var model:VNCoreMLModel?
     var confidence:Double = 0.75
-    
+
+    init(_ registry: FlutterTextureRegistry) {
+        self.registry = registry
+        super.init()
+    }
+
     public static func register(with registrar: FlutterPluginRegistrar) {
         #if os(iOS)
         let method = FlutterMethodChannel(name:"apple_vision/image_depth", binaryMessenger: registrar.messenger())
@@ -24,11 +29,6 @@ public class AppleVisionImageDepthPlugin: NSObject, FlutterPlugin {
         let instance = AppleVisionImageDepthPlugin(registrar.textures)
         #endif
         registrar.addMethodCallDelegate(instance, channel: method)
-    }
-    
-    init(_ registry: FlutterTextureRegistry) {
-        self.registry = registry
-        super.init()
     }
     
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -42,16 +42,17 @@ public class AppleVisionImageDepthPlugin: NSObject, FlutterPlugin {
             let width = arguments["width"] as? Double ?? 0
             let height = arguments["height"] as? Double ?? 0
             confidence = arguments["confidence"] as? Double ?? 0.75
+            let format = arguments["format"] as! String
             let orientation = arguments["orientation"] as? String ?? "downMirrored"
             
             #if os(iOS)
                 if #available(iOS 14.0, *) {
-                    return result(convertImage(Data(data.data),CGSize(width: width , height: height),CIFormat.BGRA8,orientation))
+                    return result(convertImage(Data(data.data),CGSize(width: width , height: height),CIFormat.BGRA8,orientation,format))
                 } else {
                     return result(FlutterError(code: "INVALID OS", message: "requires version 14.0", details: nil))
                 }
             #elseif os(macOS)
-                return result(convertImage(Data(data.data),CGSize(width: width , height: height),CIFormat.ARGB8,orientation))
+                return result(convertImage(Data(data.data),CGSize(width: width , height: height),CIFormat.ARGB8,orientation,format))
             #endif        
         default:
             result(FlutterMethodNotImplemented)
@@ -62,7 +63,7 @@ public class AppleVisionImageDepthPlugin: NSObject, FlutterPlugin {
     #if os(iOS)
     @available(iOS 14.0, *)
     #endif
-    func convertImage(_ data: Data,_ imageSize: CGSize,_ format: CIFormat,_ oriString: String) -> [String:Any?]{
+    func convertImage(_ data: Data,_ imageSize: CGSize,_ format: CIFormat,_ oriString: String,_ fileType: String) -> [String:Any?]{
         var event:[String:Any?] = ["name":"noData"];
         let imageRequestHandler:VNImageRequestHandler
 
@@ -96,7 +97,7 @@ public class AppleVisionImageDepthPlugin: NSObject, FlutterPlugin {
 
         var originalImage:CIImage?
         var min:Double = 0
-        var max:Double = 4
+        var max:Double = 1
         if data.count == (Int(imageSize.height)*Int(imageSize.width)*4){
             // Create a bitmap graphics context with the sample buffer data
             originalImage =  CIImage(bitmapData: data, bytesPerRow: Int(imageSize.width)*4, size: imageSize, format: format, colorSpace: nil)
@@ -135,42 +136,76 @@ public class AppleVisionImageDepthPlugin: NSObject, FlutterPlugin {
                             let scaleX = originalImageOr.extent.width / ciImage.extent.width
                             let scaleY = originalImageOr.extent.height / ciImage.extent.height
                             ciImage = ciImage.transformed(by: .init(scaleX: scaleX, y: scaleY))
-                            
-                            let fileType = "raw"
+
                         #if os(iOS)
-                            selfieData.append(ciImage?.cgImage?.dataProvider?.data as Data?)
-                        #elseif os(macOS)
-                            var format:NSBitmapImageRep.FileType?
+                            var uiImage:Data?
                             switch fileType {
-                            case "jpg":
-                                format = NSBitmapImageRep.FileType.jpeg
-                                break
-                            case "jepg":
-                                format = NSBitmapImageRep.FileType.jpeg2000
-                                break
-                            case "bmp":
-                                format = NSBitmapImageRep.FileType.bmp
-                                break
-                            case "png":
-                                format = NSBitmapImageRep.FileType.png
-                                break
-                            case "tiff":
-                                format = NSBitmapImageRep.FileType.tiff
-                                break
-                            default:
-                                format = nil
+                                case "jpg":
+                                    uiImage = UIImage(ciImage: ciImage).jpegData(compressionQuality: 1.0)
+                                case "jpeg":
+                                    uiImage = UIImage(ciImage: ciImage).jpegData(compressionQuality: 1.0)
+                                case "bmp":
+                                    uiImage = nil
+                                case "png":
+                                    uiImage = UIImage(ciImage: ciImage).pngData()
+                                case "tiff":
+                                    uiImage = nil
+                                default:
+                                uiImage = nil
                             }
+                            
+                            if uiImage == nil{
+                                let ciContext = CIContext()
+                                let rowBytes = 4 * Int(ciImage.extent.width) // 4 channels (RGBA) of 8-bit data
+                                let dataSize = rowBytes * Int(ciImage.extent.height)
+                                var data = Data(count: dataSize)
+                                data.withUnsafeMutableBytes { data in
+                                    ciContext.render(ciImage, toBitmap: data, rowBytes: rowBytes, bounds: ciImage.extent, format: .RGBA8, colorSpace: CGColorSpace(name: CGColorSpace.sRGB)!)
+                                }
+                                if fileType == "bmp"{
+                                    uiImage = rgba2bitmap(
+                                        data,
+                                        Int(ciImage.extent.width),
+                                        Int(ciImage.extent.height)
+                                    )
+                                }
+                                else{
+                                    uiImage = data
+                                }
+                            }
+                            depthData.append(ciImage?.cgImage?.dataProvider?.data as Data?)
+                        #elseif os(macOS)
                             var nsImage:Data?
-                            if format != nil{
-                                nsImage = NSBitmapImageRep(ciImage:ciImage).representation(
-                                    using: format!,
-                                    properties: [
-                                        NSBitmapImageRep.PropertyKey.currentFrame: NSBitmapImageRep.PropertyKey.currentFrame.self
-                                    ]
-                                )
-                                depthData.append(nsImage)
+                            switch fileType {
+                                case "jpg":
+                                    nsImage = NSBitmapImageRep(ciImage:ciImage).representation(
+                                        using: .jpeg,
+                                        properties: [:]
+                                    )
+                                case "jpeg":
+                                    nsImage = NSBitmapImageRep(ciImage:ciImage).representation(
+                                        using: .jpeg2000,
+                                        properties: [:]
+                                    )
+                                case "bmp":
+                                    nsImage = NSBitmapImageRep(ciImage:ciImage).representation(
+                                        using: .bmp,
+                                        properties: [:]
+                                    )
+                                case "png":
+                                    nsImage = NSBitmapImageRep(ciImage:ciImage).representation(
+                                        using: .png,
+                                        properties: [:]
+                                    )
+                                case "tiff":
+                                    nsImage = NSBitmapImageRep(ciImage:ciImage).representation(
+                                        using: .tiff,
+                                        properties: [:]
+                                    )
+                                default:
+                                    nsImage = nil
                             }
-                            else{
+                            if nsImage == nil{
                                 let u = NSBitmapImageRep(ciImage:ciImage)
                                 let bytesPerRow = u.bytesPerRow
                                 let height = Int(u.size.height)
@@ -197,7 +232,6 @@ public class AppleVisionImageDepthPlugin: NSObject, FlutterPlugin {
             // Start the image classification request.
             try? imageRequestHandler.perform(requests)
         }
-
 
         return event;
     }

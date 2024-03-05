@@ -1,3 +1,7 @@
+## 0.0.5
+
+* Fiex Segmentation only working on raw image format
+
 ## 0.0.4
 
 * Removed PictureFormat

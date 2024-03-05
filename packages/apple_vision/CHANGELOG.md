@@ -1,5 +1,9 @@
 ## 0.0.5
 
+* Updated Selfie Segmentation
+
+## 0.0.5
+
 * Updated Saliency, Selfie, and Lift Subjects to support iOS
 
 ## 0.0.4
