@@ -98,20 +98,22 @@ class _VisionFace extends State<VisionFace> {
   List<Widget> showPoints(){
     if(faceData == null || faceData!.isEmpty) return[];
     List<Widget> widgets = [];
-
+    
     for(int k = 0; k < faceData!.length;k++){
       List<FacePoint> points = faceData![k].mesh;
+ 
       for(int j = 0; j < points.length;j++){
+        //print(min.width);
         widgets.add(
           Positioned(
             left: points[j].x,
             top: points[j].y,
             child: Container(
-              width: 1,
-              height: 1,
+              width: 2,
+              height: 2,
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(5)
+                borderRadius: BorderRadius.circular(1)
               ),
             )
           )

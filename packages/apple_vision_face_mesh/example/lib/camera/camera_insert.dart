@@ -94,7 +94,7 @@ class InsertCamera{
           audioDeviceId: null,
           cameraMacOSMode: CameraMacOSMode.video,
           enableAudio: false,
-          resolution: PictureResolution.max,
+          resolution: PictureResolution.medium,
           pictureFormat: PictureFormat.jpg
         );
         controllerMacos = CameraMacOSController(value!);

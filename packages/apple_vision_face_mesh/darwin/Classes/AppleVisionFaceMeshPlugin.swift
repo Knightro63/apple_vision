@@ -160,8 +160,22 @@ public class AppleVisionFaceMeshPlugin: NSObject, FlutterPlugin {
 }
 
 public extension CIImage {
-    @available(iOS 11.0, *)
-    func faceCrop(_ imageSize: CGSize, margin: CGFloat = 200) -> CIImage? {
+    func scale(targetSize: NSSize = NSSize(width:192, height:192)) -> CIImage?{
+        let resizeFilter = CIFilter(name:"CILanczosScaleTransform")!
+
+        // Compute scale and corrective aspect ratio
+        let scale = targetSize.height / (self.extent.height)
+        let aspectRatio = targetSize.width/((self.extent.width) * scale)
+
+        // Apply resizing
+        resizeFilter.setValue(self, forKey: kCIInputImageKey)
+        resizeFilter.setValue(scale, forKey: kCIInputScaleKey)
+        resizeFilter.setValue(aspectRatio, forKey: kCIInputAspectRatioKey)
+        return resizeFilter.outputImage
+    }
+    
+    @available(iOS 14.0, *)
+    func faceCrop(_ imageSize: CGSize, margin: NSSize = NSSize(width:192, height:192)) -> CIImage? {
         var ciImage:CIImage?
         let req = VNDetectFaceRectanglesRequest { request, error in
             if let error = error {
@@ -178,13 +192,8 @@ public extension CIImage {
                 faces.append(face)
             }
             
-            // 1
             let croppingRect = self.getCroppingRect(imageSize,for: faces, margin: margin)
-                                                 
-            // 10
-            let faceImage = self.cropped(to: croppingRect)
-            
-            // 12
+            let faceImage = self.cropped(to: croppingRect)//.scale()
             ciImage = faceImage
         }
         
@@ -197,8 +206,8 @@ public extension CIImage {
         return ciImage
     }
     
-    @available(iOS 11.0, *)
-    private func getCroppingRect(_ imageSize: CGSize, for faces: [VNFaceObservation], margin: CGFloat) -> CGRect {
+    @available(iOS 14.0, *)
+    private func getCroppingRect(_ imageSize: CGSize, for faces: [VNFaceObservation], margin: NSSize) -> CGRect {
         
         // 2
         var totalX = CGFloat(0)
@@ -214,9 +223,16 @@ public extension CIImage {
         // 4
         for face in faces {
             
+            let points = face.boundingBox
+            let coord =  VNImagePointForNormalizedPoint(points.origin,
+                                                 Int(imageSize.width),
+                                                 Int(imageSize.height))
+            return CGRect(x:points.minX, y: points.minY, width: points.width+margin.width*imageSize.width, height: points.width+margin.height*imageSize.height)
+            
+            let boxSize = face.boundingBox.width > face.boundingBox.height ? face.boundingBox.width : face.boundingBox.height
             // 5
-            let w = face.boundingBox.width * CGFloat(imageSize.width)
-            let h = face.boundingBox.height * CGFloat(imageSize.height)
+            let w = boxSize * CGFloat(imageSize.width)
+            let h = boxSize * CGFloat(imageSize.height)
             let x = face.boundingBox.origin.x * CGFloat(imageSize.width)
             
             // 6
@@ -237,15 +253,9 @@ public extension CIImage {
         let avgH = totalH / numFaces
         
         // 8
-        let offset = margin + avgX - minX
+        let offset = avgX - minX
         
         // 9
-        return CGRect(x: avgX - offset, y: avgY - offset, width: avgW + (offset * 2), height: avgH + (offset * 2))
+        return CGRect(x: avgX - offset - margin.width/2, y: avgY - offset-margin.height/2, width: avgW + ((offset+margin.width) * 2), height: avgH + ((offset+margin.height) * 2))
     }
-}
-
-public enum FaceCropResult {
-    case success(CIImage)
-    case notFound
-    case failure(Error)
 }

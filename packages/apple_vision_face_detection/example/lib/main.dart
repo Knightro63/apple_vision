@@ -100,11 +100,11 @@ class _VisionFD extends State<VisionFD>{
     for(int i = 0; i < faceData!.length; i++){
       widgets.add(
         Positioned(
-          top: faceData![i].top,
-          left: faceData![i].left,
+          top: faceData![i].top-40,
+          left: faceData![i].left-10,
           child: Container(
-            width: faceData![i].width*imageSize.width,
-            height: faceData![i].height*imageSize.height,
+            width: faceData![i].width*imageSize.width+20,
+            height: faceData![i].height*imageSize.height+80,
             decoration: BoxDecoration(
               color: Colors.transparent,
               border: Border.all(width: 1, color: Colors.green),

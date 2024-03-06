@@ -4,7 +4,6 @@ import '../camera/camera_insert.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'camera/input_image.dart';
-import 'package:apple_vision_commons/apple_vision_commons.dart';
 
 void main() {
   runApp(const MyApp());
