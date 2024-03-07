@@ -90,18 +90,20 @@ public class AppleVisionFaceMeshPlugin: NSObject, FlutterPlugin {
                 orientation = CGImagePropertyOrientation.downMirrored
                 break
         }
-
+        
+        var croppedImage:(CIImage?,CGRect?)
+        
         if data.count == (Int(imageSize.height)*Int(imageSize.width)*4){
             // Create a bitmap graphics context with the sample buffer data
-            let context = CIImage(bitmapData: data, bytesPerRow: Int(imageSize.width)*4, size: imageSize, format: format, colorSpace: nil)//.faceCrop(imageSize)
-            if context != nil{
-                imageRequestHandler = VNImageRequestHandler(ciImage:context,orientation: orientation)
+            croppedImage = CIImage(bitmapData: data, bytesPerRow: Int(imageSize.width)*4, size: imageSize, format: format, colorSpace: nil).faceCrop(imageSize,orientation)
+            if croppedImage.0 != nil{
+                imageRequestHandler = VNImageRequestHandler(ciImage:croppedImage.0!)
             }
         }
         else{
+            croppedImage = CIImage(data: data)!.faceCrop(imageSize,orientation)
             imageRequestHandler = VNImageRequestHandler(
-                data: data,
-                orientation: orientation)
+                ciImage:croppedImage.0!)
         }
 
         if model == nil{
@@ -110,23 +112,27 @@ public class AppleVisionFaceMeshPlugin: NSObject, FlutterPlugin {
         else if imageRequestHandler != nil{
             let imageRecognition = VNCoreMLRequest(model: model!, completionHandler: { (request, error) in
                 if let results = request.results as? [VNCoreMLFeatureValueObservation] {
-                    var meshData:[[String:Any?]] = []
+                    var meshData:Array = []
                     for observation in results {
                         //print(observation)
                         let m:MLMultiArray? = observation.featureValue.multiArrayValue
                         if m != nil{
                             if let b = try? UnsafeBufferPointer<Float>(m!) {
-                                meshData.append([
-                                    "mesh" : Array(b),
-                                    //"confidence": observation.featureValue.,
-                                ])
+                                meshData = Array(b)
                             }
                         }
                     }
+                    var nsImage:Data?
+                    if croppedImage.0 != nil{
+                        nsImage = NSBitmapImageRep(ciImage:croppedImage.0!).representation(using: .png,properties: [:])
+                    }
+                    
                     event = [
                         "name": "faceMesh",
-                        "data": meshData,
-                        "imageSize": ["width":imageSize.width ,"height":imageSize.height]
+                        "mesh": meshData,
+                        "croppedImage": nsImage,
+                        "origin": ["x": croppedImage.1?.origin.x, "y": croppedImage.1?.origin.y],
+                        "imageSize": ["width":192 ,"height":192]
                     ]
                 }
             })
@@ -175,13 +181,10 @@ public extension CIImage {
     }
     
     @available(iOS 14.0, *)
-    func faceCrop(_ imageSize: CGSize, margin: NSSize = NSSize(width:192, height:192)) -> CIImage? {
+    func faceCrop(_ imageSize: CGSize,_ orientation: CGImagePropertyOrientation, margin: NSSize = NSSize(width:40, height:60)) -> (CIImage?,CGRect?) {
         var ciImage:CIImage?
+        var croppingRect:[CGRect]?
         let req = VNDetectFaceRectanglesRequest { request, error in
-            if let error = error {
-                return
-            }
-            
             guard let results = request.results, !results.isEmpty else {
                 return
             }
@@ -192,70 +195,27 @@ public extension CIImage {
                 faces.append(face)
             }
             
-            let croppingRect = self.getCroppingRect(imageSize,for: faces, margin: margin)
-            let faceImage = self.cropped(to: croppingRect)//.scale()
+            croppingRect = self.getCroppingRect(imageSize,for: faces, margin: margin)
+            let faceImage = self.cropped(to: croppingRect![0]).scale()
             ciImage = faceImage
         }
         
-        do {
-            try VNImageRequestHandler(ciImage: self, options: [:]).perform([req])
-        } catch let error {
-
-        }
+        try? VNImageRequestHandler(ciImage: self, orientation: orientation, options: [:]).perform([req])
         
-        return ciImage
+        return (ciImage,croppingRect?[0])
     }
     
     @available(iOS 14.0, *)
-    private func getCroppingRect(_ imageSize: CGSize, for faces: [VNFaceObservation], margin: NSSize) -> CGRect {
-        
-        // 2
-        var totalX = CGFloat(0)
-        var totalY = CGFloat(0)
-        var totalW = CGFloat(0)
-        var totalH = CGFloat(0)
-        
-        // 3
-        var minX = CGFloat.greatestFiniteMagnitude
-        var minY = CGFloat.greatestFiniteMagnitude
-        let numFaces = CGFloat(faces.count)
-        
-        // 4
+    private func getCroppingRect(_ imageSize: CGSize, for faces: [VNFaceObservation], margin: NSSize) -> [CGRect] {
+        var rects:[CGRect] = []
         for face in faces {
-            
             let points = face.boundingBox
             let coord =  VNImagePointForNormalizedPoint(points.origin,
-                                                 Int(imageSize.width),
-                                                 Int(imageSize.height))
-            return CGRect(x:points.minX, y: points.minY, width: points.width+margin.width*imageSize.width, height: points.width+margin.height*imageSize.height)
+                                                        Int(imageSize.width),
+                                                        Int(imageSize.height))
             
-            let boxSize = face.boundingBox.width > face.boundingBox.height ? face.boundingBox.width : face.boundingBox.height
-            // 5
-            let w = boxSize * CGFloat(imageSize.width)
-            let h = boxSize * CGFloat(imageSize.height)
-            let x = face.boundingBox.origin.x * CGFloat(imageSize.width)
-            
-            // 6
-            let y = (1 - face.boundingBox.origin.y) * CGFloat(imageSize.height) - h
-            
-            totalX += x
-            totalY += y
-            totalW += w
-            totalH += h
-            minX = .minimum(minX, x)
-            minY = .minimum(minY, y)
+            rects.append(CGRect(x:coord.x-margin.width/2, y: coord.y-10, width: points.width*imageSize.width+margin.width, height: points.height*imageSize.height+margin.height))
         }
-        
-        // 7
-        let avgX = totalX / numFaces
-        let avgY = totalY / numFaces
-        let avgW = totalW / numFaces
-        let avgH = totalH / numFaces
-        
-        // 8
-        let offset = avgX - minX
-        
-        // 9
-        return CGRect(x: avgX - offset - margin.width/2, y: avgY - offset-margin.height/2, width: avgW + ((offset+margin.width) * 2), height: avgH + ((offset+margin.height) * 2))
+        return rects
     }
 }

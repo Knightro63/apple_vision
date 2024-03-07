@@ -17,7 +17,7 @@ class AppleVisionHandController {
   /// [imageSize] as Size is the size of the image that is being processed
   /// 
   /// [orientation] The orientation of the image
-  Future<List<HandData>?> processImage(Uint8List image, Size imageSize,[ImageOrientation orientation = ImageOrientation.downMirrored]) async{
+  Future<List<HandData>?> processImage(Uint8List image, Size imageSize,[ImageOrientation orientation = ImageOrientation.up]) async{
     try {
       final data = await _methodChannel.invokeMapMethod<String, dynamic>(  
         'process',

@@ -44,11 +44,11 @@ class AppleVisionFaceMeshController {
     switch (name) {
       case 'faceMesh':
         List<FaceMesh> data = [];
-        for(int i = 0; i < event['data'].length;i++){
+        //for(int i = 0; i < event['data'].length;i++){
           data.add(
-            FaceMesh.fromJson(event['data'][i])
+            FaceMesh.fromJson(event)
           );
-        }
+        //}
         return data;
       case 'noData':
         break;
