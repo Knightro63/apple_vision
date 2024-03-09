@@ -73,28 +73,32 @@ class HandMesh{
   HandMesh({
     required this.poses,
     required this.image,
-    this.confidence
+    this.confidence,
+    required this.raw,
   });
   final List<Hand3D> poses;
   final HandImage image;
   final double? confidence;
+  final List<double> raw;
 
   factory HandMesh.fromJson(Map json){
     List<Hand3D> points = [];
     List<double> raw = [];
-    print(json['mesh']);
-    for(int i = 0; i < json['mesh'].length-1;i+=3){
+    int j = 0;
+    for(int i = 0; i < json['mesh'].length;i+=3){
       points.add(
         Hand3D(
-          FingerJoint3D.values[i],
+          FingerJoint3D.values[j],
           HandPoint3D(json['mesh'][i], json['mesh'][i+1], json['mesh'][i+2])
         )
       );
+      j++;
       raw.addAll([json['mesh'][i], json['mesh'][i+1], json['mesh'][i+2]]);
     }
     return HandMesh(
       poses: points,
       confidence: json['confidence'],
+      raw: raw,
       image: HandImage(
         croppedImage: json['croppedImage'],
         origin: HandPoint3D(json['origin']["x"],json['origin']["y"],0),

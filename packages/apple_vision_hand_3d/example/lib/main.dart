@@ -1,4 +1,5 @@
 import 'package:apple_vision_hand_3d/apple_vision_hand_3d.dart';
+import 'package:apple_vision_commons/apple_vision_commons.dart';
 import 'package:flutter/material.dart';
 import '../camera/camera_insert.dart';
 import 'package:flutter/foundation.dart';
@@ -61,7 +62,7 @@ class _VisionHand extends State<VisionHand>{
         }
         if(mounted) {
           Uint8List? image = i.bytes;
-          visionController.processImage(image!, imageSize).then((data){
+          visionController.processImage(image!, imageSize, ImageOrientation.up).then((data){
             handData = data;
             setState(() {
               
@@ -132,16 +133,17 @@ class _VisionHand extends State<VisionHand>{
       FingerJoint3D.littleDIP: Colors.cyanAccent,
       FingerJoint3D.littleMCP: Colors.cyanAccent,
       FingerJoint3D.littlePIP: Colors.cyanAccent,
-      FingerJoint3D.littleTip: Colors.cyanAccent
+      FingerJoint3D.littleTip: Colors.cyanAccent,
+
+      FingerJoint3D.wrist: Colors.black
     };
     for(int j = 0; j < handData!.length; j++){
       //print(handData![j].poses[0].location.y);
       for(int i = 0; i < handData![j].poses.length; i++){
-        print(handData![j].poses[i].location.y);
         widgets.add(
           Positioned(
-            top: handData![j].poses[i].location.y,
-            left: handData![j].poses[i].location.x,
+            top: handData![j].poses[i].location.y*imageSize.height,
+            left: handData![j].poses[i].location.x*imageSize.width,
             child: Container(
               width: 10,
               height: 10,

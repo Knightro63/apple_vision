@@ -109,12 +109,11 @@ public class AppleVisionFaceMeshPlugin: NSObject, FlutterPlugin {
         if model == nil{
             model = AppleVisionFaceMeshPlugin.createFaceMesh()
         }
-        else if imageRequestHandler != nil{
+        if imageRequestHandler != nil{
             let imageRecognition = VNCoreMLRequest(model: model!, completionHandler: { (request, error) in
                 if let results = request.results as? [VNCoreMLFeatureValueObservation] {
                     var meshData:Array = []
                     for observation in results {
-                        //print(observation)
                         let m:MLMultiArray? = observation.featureValue.multiArrayValue
                         if m != nil{
                             if let b = try? UnsafeBufferPointer<Float>(m!) {

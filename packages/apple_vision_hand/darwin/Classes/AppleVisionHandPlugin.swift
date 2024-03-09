@@ -133,8 +133,7 @@ public class AppleVisionHandPlugin: NSObject, FlutterPlugin {
     #endif
     func processObservation(_ observation: VNHumanHandPoseObservation,_ imageSize: CGSize) -> [[String:Any?]]{
         // Retrieve all torso points.
-        guard let recognizedPoints =
-                try? observation.recognizedPoints(.all) else { return [[:]]}
+        guard let recognizedPoints = try? observation.recognizedPoints(.all) else { return [[:]]}
         
         // Torso joint names in a clockwise ordering.
         let handJointNames: [VNHumanHandPoseObservation.JointName] = [

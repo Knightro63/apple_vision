@@ -9,8 +9,6 @@ import FlutterMacOS
 import AppKit
 #endif
 
-var modelDetect:VNCoreMLModel?
-
 public class AppleVisionHand3DPlugin: NSObject, FlutterPlugin {
     let registry: FlutterTextureRegistry
     var modelPoints:VNCoreMLModel?
@@ -110,26 +108,31 @@ public class AppleVisionHand3DPlugin: NSObject, FlutterPlugin {
         }
         else{
             croppedImage = CIImage(data: data)!.handCrop(imageSize,orientation)
-            imageRequestHandler = VNImageRequestHandler(
-                ciImage:croppedImage.0!)
+            imageRequestHandler = VNImageRequestHandler(ciImage:croppedImage.0!)
         }
 
         if modelPoints == nil{
             modelPoints = AppleVisionHand3DPlugin.createHandMesh()
         }
-        else if imageRequestHandler != nil{
+        if imageRequestHandler != nil{
             let imageRecognition = VNCoreMLRequest(model: modelPoints!, completionHandler: { (request, error) in
                 if let results = request.results as? [VNCoreMLFeatureValueObservation] {
                     var meshData:Array = []
+                    var confidence:Float = 0
                     for observation in results {
-                        //print(observation)
                         let m:MLMultiArray? = observation.featureValue.multiArrayValue
                         if m != nil{
                             if let b = try? UnsafeBufferPointer<Float>(m!) {
-                                meshData = Array(b)
+                                if b.count >= 63{
+                                    meshData = Array(b)
+                                }
+                                else if b.count == 1{
+                                    confidence = Array(b)[0]
+                                }
                             }
                         }
                     }
+
                     var nsImage:Data?
                     if croppedImage.0 != nil{
                         nsImage = NSBitmapImageRep(ciImage:croppedImage.0!).representation(using: .png,properties: [:])
@@ -138,6 +141,7 @@ public class AppleVisionHand3DPlugin: NSObject, FlutterPlugin {
                     event = [
                         "name": "handMesh",
                         "mesh": meshData,
+                        "confidence": confidence,
                         "croppedImage": nsImage,
                         "origin": ["x": croppedImage.1?.origin.x, "y": croppedImage.1?.origin.y],
                         "imageSize": ["width":croppedImage.1?.width ,"height":croppedImage.1?.height]
@@ -173,32 +177,10 @@ public class AppleVisionHand3DPlugin: NSObject, FlutterPlugin {
         }
         return handMeshVisionModel
     }
-    
-    #if os(iOS)
-    @available(iOS 14.0, *)
-    #elseif os(macOS)
-    @available(macOS 11.0, *)
-    #endif
-    static func createHandRect() -> VNCoreMLModel {
-        // Use a default model configuration.
-        let defaultConfig = MLModelConfiguration()
-        // Create an instance of the image classifier's wrapper class.
-        let handWrapper = try? BlazePalmScaled(configuration: defaultConfig)
-        guard let handW = handWrapper else {
-            fatalError("App failed to create an image classifier model instance.")
-        }
-        // Get the underlying model instance.
-        let handModel = handW.model
-        // Create a Vision instance using the image classifier's model instance.
-        guard let handVisionModel = try? VNCoreMLModel(for: handModel) else {
-            fatalError("App failed to create a `VNCoreMLModel` instance.")
-        }
-        return handVisionModel
-    }
 }
 
 public extension CIImage {
-    func scale(targetSize: NSSize = NSSize(width:192, height:192)) -> CIImage?{
+    func scale(targetSize: NSSize = NSSize(width:256, height:256)) -> CIImage?{
         let resizeFilter = CIFilter(name:"CILanczosScaleTransform")!
 
         // Compute scale and corrective aspect ratio
@@ -240,33 +222,6 @@ public extension CIImage {
     @available(iOS 14.0, *)
     private func getCroppingRect(_ imageSize: CGSize, for hands: [VNHumanHandPoseObservation], margin: NSSize) -> [CGRect] {
         var rects:[CGRect] = []
-        // Torso joint names in a clockwise ordering.
-        let handJointNames: [VNHumanHandPoseObservation.JointName] = [
-            .thumbIP,
-            .thumbMP,
-            .thumbCMC,
-            .thumbTip,
-            
-            .indexDIP,
-            .indexMCP,
-            .indexPIP,
-            .indexTip,
-            
-            .middleDIP,
-            .middleMCP,
-            .middlePIP,
-            .middleTip,
-            
-            .ringDIP,
-            .ringMCP,
-            .ringPIP,
-            .ringTip,
-            
-            .littleDIP,
-            .littleMCP,
-            .littlePIP,
-            .littleTip
-        ]
         
         var xmin:CGFloat? = nil
         var xmax:CGFloat? = nil
@@ -280,12 +235,7 @@ public extension CIImage {
             }
                 
             recognizedPoints.forEach { (key: VNHumanHandPoseObservation.JointName, value: VNRecognizedPoint) in
-                
-                
-                
-                let coord =  VNImagePointForNormalizedPoint(value.location,
-                                                     Int(imageSize.width),
-                                                     Int(imageSize.height))
+                let coord =  VNImagePointForNormalizedPoint(value.location,Int(imageSize.width),Int(imageSize.height))
                 
                 if xmin == nil || xmin! > coord.x{
                     xmin = coord.x
@@ -293,18 +243,16 @@ public extension CIImage {
                 if xmax == nil || xmax! < coord.x{
                     xmax = coord.x
                 }
-                if ymin == nil || ymin! > coord.x{
-                    ymin = coord.x
+                if ymin == nil || ymin! > coord.y{
+                    ymin = coord.y
                 }
-                if ymax == nil || ymax! < coord.x{
-                    ymax = coord.x
+                if ymax == nil || ymax! < coord.y{
+                    ymax = coord.y
                 }
             }
-            
-            print(CGFloat(xmin!+(xmax!-xmin!)/2))
-            
-            let origin:CGPoint = CGPoint(x: CGFloat(xmin!+(xmax!-xmin!)/2), y: CGFloat(ymin!+(ymax!-ymin!)/2))
-            let size:CGSize = CGSize(width: CGFloat(xmax!-xmin!), height: CGFloat(ymax!-ymin!))
+
+            let origin:CGPoint = CGPoint(x: CGFloat(xmin!-margin.width/2), y: CGFloat(ymin!-margin.height/2))
+            let size:CGSize = CGSize(width: CGFloat(xmax!-xmin!+margin.width), height: CGFloat(ymax!-ymin!+margin.height))
             
             rects.append(CGRect(origin: origin, size: size))
         }
