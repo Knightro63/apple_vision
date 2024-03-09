@@ -46,7 +46,7 @@ public class AppleVisionFaceMeshPlugin: NSObject, FlutterPlugin {
                 if #available(iOS 14.0, *) {
                     return result(convertImage(Data(data.data),CGSize(width: width , height: height),CIFormat.BGRA8,orientation))
                 } else {
-                    return result(FlutterError(code: "INVALID OS", message: "requires version 13.0", details: nil))
+                    return result(FlutterError(code: "INVALID OS", message: "requires version 14.0", details: nil))
                 }
             #elseif os(macOS)
                 return result(convertImage(Data(data.data),CGSize(width: width , height: height),CIFormat.ARGB8,orientation))
@@ -57,7 +57,7 @@ public class AppleVisionFaceMeshPlugin: NSObject, FlutterPlugin {
     }
     
     #if os(iOS)
-    @available(iOS 13.0, *)
+    @available(iOS 14.0, *)
     #endif
     func convertImage(_ data: Data,_ imageSize: CGSize,_ format: CIFormat,_ oriString: String) -> [String:Any?]{
         var event:[String:Any?] = ["name":"noData"];
@@ -132,7 +132,7 @@ public class AppleVisionFaceMeshPlugin: NSObject, FlutterPlugin {
                         "mesh": meshData,
                         "croppedImage": nsImage,
                         "origin": ["x": croppedImage.1?.origin.x, "y": croppedImage.1?.origin.y],
-                        "imageSize": ["width":192 ,"height":192]
+                        "imageSize": ["width":croppedImage.1?.width ,"height":croppedImage.1?.height]
                     ]
                 }
             })

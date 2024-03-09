@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:flutter/cupertino.dart';
+
 /// The coordinate points of the face
 /// 
 /// [x] X location
@@ -11,6 +13,18 @@ class FacePoint{
   final double z;
 }
 
+class FaceImage{
+  FaceImage({
+    required this.croppedImage,
+    required this.size,
+    required this.origin,
+  });
+
+  final Size size;
+  final Uint8List croppedImage;
+  final FacePoint origin; 
+}
+
 /// A class that has all the information on the face detected
 /// 
 /// [mesh] The marks found in the image.
@@ -19,16 +33,15 @@ class FaceMesh{
   FaceMesh({
     required this.mesh,
     this.confidence,
-    this.croppedImage,
-    this.origin,
+    required this.image,
     required this.raw
   });
 
   final List<FacePoint> mesh;
   final List<double> raw;
   final double? confidence;
-  final Uint8List? croppedImage;
-  final FacePoint? origin; 
+  final FaceImage image;
+
 
   factory FaceMesh.fromJson(Map json){
     List<FacePoint> points = [];
@@ -40,8 +53,11 @@ class FaceMesh{
     return FaceMesh(
       mesh: points,
       confidence: json['confidence'],
-      croppedImage: json['croppedImage'],
-      origin: FacePoint(json['origin']["x"],json['origin']["y"],0),
+      image: FaceImage(
+        croppedImage: json['croppedImage'],
+        origin: FacePoint(json['origin']["x"],json['origin']["y"],0),
+        size: Size(json['imageSize']["width"],json['imageSize']["height"])
+      ),
       raw: raw
     );
   }
