@@ -1,6 +1,6 @@
 name: apple_vision_commons
 description: A Flutter plugin with commons files to implement Apple vision made for osx.
-version: 0.0.2
+version: 0.0.3
 homepage: https://github.com/Knightro63/apple_vision/tree/main/packages/apple_vision_commons
 
 environment:

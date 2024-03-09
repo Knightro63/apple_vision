@@ -18,3 +18,5 @@ enum ImageOrientation{
   up,
   upMirrored
 }
+
+enum PictureFormat{jpg,jpeg,tiff,bmp,png,raw}

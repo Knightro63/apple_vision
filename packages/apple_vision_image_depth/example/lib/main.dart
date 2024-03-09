@@ -63,7 +63,7 @@ class _VisionDepth extends State<VisionDepth>{
         }
         if(mounted) {
           Uint8List? image = i.bytes;
-          visionController.processImage(image!, imageSize).then((data){
+          visionController.processImage(ImageDepthData(image:image!, imageSize: imageSize)).then((data){
             this.image = data;
             if(intr == 0){
               print(data);
