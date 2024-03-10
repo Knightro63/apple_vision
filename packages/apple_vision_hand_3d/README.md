@@ -5,7 +5,7 @@
 [![Star on Github](https://img.shields.io/github/stars/Knightro63/apple_vision.svg?style=flat&logo=github&colorB=deeppink&label=stars)](https://github.com/Knightro63/apple_vision)
 [![License: MIT](https://img.shields.io/badge/license-MIT-purple.svg)](https://opensource.org/licenses/MIT)
 
-Apple Vision Hand Detection is a Flutter plugin that enables Flutter apps to use [Apple Vision Hand Detection](https://developer.apple.com/documentation/vision/detecting_hand_poses_with_vision).
+Apple Vision Hand 3D is a Flutter plugin that enables Flutter apps to use tensor flows Blaze Hand landmarks.
 
 - This plugin is not sponsor or maintained by Apple. The [authors](https://github.com/Knightro63/apple_vision/blob/main/AUTHORS) are developers who wanted to make a similar plugin to Google's ml kit for macos.
 
@@ -28,135 +28,124 @@ Apple Vision Hand Detection is a Flutter plugin that enables Flutter apps to use
 You need to first import 'package:apple_vision/apple_vision.dart';
 
 ```dart
-  final GlobalKey cameraKey = GlobalKey(debugLabel: "cameraKey");
-  late AppleVisionHandController cameraController;
-  late List<CameraMacOSDevice> _cameras;
-  CameraMacOSController? controller;
-  String? deviceId;
+final GlobalKey cameraKey = GlobalKey(debugLabel: "cameraKey");
+AppleVisionHand3DController visionController = AppleVisionHand3DController();
+InsertCamera camera = InsertCamera();
+Size imageSize = const Size(640,640*9/16);
+String? deviceId;
+bool loading = true;
 
-  HandData? poseData;
-  late double deviceWidth;
-  late double deviceHeight;
+List<HandMesh>? handData;
+late double deviceWidth;
+late double deviceHeight;
 
-  @override
-  void initState() {
-    cameraController = AppleVisionHandController();
-    CameraMacOS.instance.listDevices(deviceType: CameraMacOSDeviceType.video).then((value){
-      _cameras = value;
-      deviceId = _cameras.first.deviceId;
+@override
+void initState() {
+  camera.setupCameras().then((value){
+    setState(() {
+      loading = false;
     });
-    super.initState();
-  }
-  @override
-  void dispose() {
-    controller?.destroy();
-    super.dispose();
-  }
-  void onTakePictureButtonPressed() async{
-    CameraMacOSFile? file = await controller?.takePicture();
-    if(file != null && mounted) {
-      Uint8List? image = file.bytes;
-      if(image != null){
-        cameraController.processImage(image, const Size(640,480)).then((data){
-          poseData = data;
+    camera.startLiveFeed((InputImage i){
+      if(i.metadata?.size != null){
+        imageSize = i.metadata!.size;
+      }
+      if(mounted) {
+        Uint8List? image = i.bytes;
+        visionController.processImage(image!, imageSize, ImageOrientation.up).then((data){
+          handData = data;
           setState(() {
             
           });
         });
       }
-    }
-  }
+    });
+  });
+  super.initState();
+}
+@override
+void dispose() {
+  camera.dispose();
+  super.dispose();
+}
 
-  @override
-  Widget build(BuildContext context) {
-    deviceWidth = MediaQuery.of(context).size.width;
-    deviceHeight = MediaQuery.of(context).size.height;
-    return Stack(
-      children:<Widget>[
-        SizedBox(
-          width: 640, 
-          height: 480, 
-          child: _getScanWidgetByPlatform()
-        )
-      ]+showPoints()
-    );
-  }
+@override
+Widget build(BuildContext context) {
+  deviceWidth = MediaQuery.of(context).size.width;
+  deviceHeight = MediaQuery.of(context).size.height;
+  return Stack(
+    children:<Widget>[
+      SizedBox(
+        width: imageSize.width, 
+        height: imageSize.height, 
+        child: loading?Container():CameraSetup(camera: camera, size: imageSize)
+    ),
+    ]+showPoints()
+  );
+}
 
-  List<Widget> showPoints(){
-    if(poseData == null || poseData!.poses.isEmpty) return[];
-    Map<FingerJoint,Color> colors = {
-      FingerJoint.thumbCMC: Colors.amber,
-      FingerJoint.thumbIP: Colors.amber,
-      FingerJoint.thumbMP: Colors.amber,
-      FingerJoint.thumbTip: Colors.amber,
+List<Widget> showPoints(){
+  if(handData == null || handData!.isEmpty) return[];
+  List<Widget> widgets = [];
+  Map<FingerJoint3D,Color> colors = {
+    FingerJoint3D.thumbCMC: Colors.amber,
+    FingerJoint3D.thumbIP: Colors.amber,
+    FingerJoint3D.thumbMCP: Colors.amber,
+    FingerJoint3D.thumbTip: Colors.amber,
 
-      FingerJoint.indexDIP: Colors.green,
-      FingerJoint.indexMCP: Colors.green,
-      FingerJoint.indexPIP: Colors.green,
-      FingerJoint.indexTip: Colors.green,
+    FingerJoint3D.indexDIP: Colors.green,
+    FingerJoint3D.indexMCP: Colors.green,
+    FingerJoint3D.indexPIP: Colors.green,
+    FingerJoint3D.indexTip: Colors.green,
 
-      FingerJoint.middleDIP: Colors.purple,
-      FingerJoint.middleMCP: Colors.purple,
-      FingerJoint.middlePIP: Colors.purple,
-      FingerJoint.middleTip: Colors.purple,
+    FingerJoint3D.middleDIP: Colors.purple,
+    FingerJoint3D.middleMCP: Colors.purple,
+    FingerJoint3D.middlePIP: Colors.purple,
+    FingerJoint3D.middleTip: Colors.purple,
 
-      FingerJoint.ringDIP: Colors.pink,
-      FingerJoint.ringMCP: Colors.pink,
-      FingerJoint.ringPIP: Colors.pink,
-      FingerJoint.ringTip: Colors.pink,
+    FingerJoint3D.ringDIP: Colors.pink,
+    FingerJoint3D.ringMCP: Colors.pink,
+    FingerJoint3D.ringPIP: Colors.pink,
+    FingerJoint3D.ringTip: Colors.pink,
 
-      FingerJoint.littleDIP: Colors.cyanAccent,
-      FingerJoint.littleMCP: Colors.cyanAccent,
-      FingerJoint.littlePIP: Colors.cyanAccent,
-      FingerJoint.littleTip: Colors.cyanAccent
-    };
-    List<Widget> widgets = [];
-    for(int i = 0; i < poseData!.poses.length; i++){
-      if(poseData!.poses[i].confidence > 0.5){
-        widgets.add(
-          Positioned(
-            bottom: poseData!.poses[i].location.y,
-            left: poseData!.poses[i].location.x,
-            child: Container(
-              width: 10,
-              height: 10,
-              decoration: BoxDecoration(
-                color: colors[poseData!.poses[i].joint],
-                borderRadius: BorderRadius.circular(5)
-              ),
-            )
+    FingerJoint3D.littleDIP: Colors.cyanAccent,
+    FingerJoint3D.littleMCP: Colors.cyanAccent,
+    FingerJoint3D.littlePIP: Colors.cyanAccent,
+    FingerJoint3D.littleTip: Colors.cyanAccent,
+
+    FingerJoint3D.wrist: Colors.black
+  };
+  for(int j = 0; j < handData!.length; j++){
+    //print(handData![j].poses[0].location.y);
+    for(int i = 0; i < handData![j].poses.length; i++){
+      HandPoint3D points = handData![j].poses[i].location;
+      widgets.add(
+        Positioned(
+          left: points.x * imageSize.width/2.56 + handData![0].image.origin.x,
+          bottom: imageSize.height/2 - points.y * imageSize.width/2.56 + handData![0].image.origin.y+120,
+          child: Container(
+            width: 10,
+            height: 10,
+            decoration: BoxDecoration(
+              color: colors[handData![j].poses[i].joint],
+              borderRadius: BorderRadius.circular(5)
+            ),
           )
-        );
-      }
+        )
+      );
     }
-    return widgets;
   }
+  return widgets;
+}
 
-  Widget _getScanWidgetByPlatform() {
-    return CameraMacOSView(
-      key: cameraKey,
-      fit: BoxFit.fill,
-      cameraMode: CameraMacOSMode.photo,
-      enableAudio: false,
-      onCameraLoading: (ob){
-        return Container(
-          width: deviceWidth,
-          height: deviceHeight,
-          color: Theme.of(context).canvasColor,
-          alignment: Alignment.center,
-          child: const CircularProgressIndicator(color: Colors.blue)
-        );
-      },
-      onCameraInizialized: (CameraMacOSController controller) {
-        setState(() {
-          this.controller = controller;
-          Timer.periodic(const Duration(milliseconds: 128),(_){
-            onTakePictureButtonPressed();
-          });
-        });
-      },
-    );
-  }
+Widget loadingWidget(){
+  return Container(
+    width: deviceWidth,
+    height:deviceHeight,
+    color: Theme.of(context).canvasColor,
+    alignment: Alignment.center,
+    child: const CircularProgressIndicator(color: Colors.blue)
+  );
+}
 ```
 
 ## Example

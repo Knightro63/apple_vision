@@ -74,11 +74,10 @@ Widget build(BuildContext context) {
   deviceHeight = MediaQuery.of(context).size.height;
   return Stack(
     children:<Widget>[
-      Container(
-        color: Colors.red,
+      SizedBox(
         width: imageSize.width, 
         height: imageSize.height, 
-        child: loading?Container():CameraSetup(camera: camera,size: imageSize,)
+        child: loading?Container():CameraSetup(camera: camera, size: imageSize)
     ),
     ]+showPoints()
   );
@@ -95,8 +94,8 @@ List<Widget> showPoints(){
       //print(min.width);
       widgets.add(
         Positioned(
-          left: points[j].x,
-          top: points[j].y,
+          left: points[j].x*imageSize.aspectRatio+faceData![0].image.origin.x+20,
+          bottom: imageSize.height/2+90-points[j].y*imageSize.aspectRatio+faceData![0].image.origin.y,
           child: Container(
             width: 2,
             height: 2,

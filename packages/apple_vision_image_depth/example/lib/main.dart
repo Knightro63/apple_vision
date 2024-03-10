@@ -66,7 +66,6 @@ class _VisionDepth extends State<VisionDepth>{
           visionController.processImage(ImageDepthData(image:image!, imageSize: imageSize)).then((data){
             this.image = data;
             if(intr == 0){
-              print(data);
               intr++;
             }
             setState(() {
@@ -99,7 +98,7 @@ class _VisionDepth extends State<VisionDepth>{
           width: 320, 
           height: 320*9/16,
           child: Image.memory(
-            rgba2bitmap(image!,imageSize.width.toInt(),imageSize.height.toInt()), 
+            image!, 
             fit: BoxFit.fitHeight,
           )
         )

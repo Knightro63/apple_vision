@@ -212,8 +212,16 @@ public extension CIImage {
             let coord =  VNImagePointForNormalizedPoint(points.origin,
                                                         Int(imageSize.width),
                                                         Int(imageSize.height))
+
+            let boxSize = points.width > points.height ? points.width : points.height
+            let imsize = imageSize.width > imageSize.height ? imageSize.width : imageSize.height
             
-            rects.append(CGRect(x:coord.x-margin.width/2, y: coord.y-10, width: points.width*imageSize.width+margin.width, height: points.height*imageSize.height+margin.height))
+            rects.append(CGRect(
+                x:coord.x-margin.height,
+                y: coord.y-margin.height,
+                width: boxSize*imsize, 
+                height: boxSize*imsize
+            ))
         }
         return rects
     }

@@ -113,125 +113,124 @@ public class AppleVisionImageDepthPlugin: NSObject, FlutterPlugin {
         if model == nil{
             model = AppleVisionImageDepthPlugin.createImageDepth()
         }
-        else{
-            let imageRecognition = VNCoreMLRequest(model: model!, completionHandler: { (request, error) in
-                if let results = request.results as? [VNCoreMLFeatureValueObservation] {
-                    var depthData:[Data?] = []
-                    for observation in results {
-                        let depthmap = observation.featureValue.multiArrayValue
 
-                        var originalImageOr:CIImage
-                        if originalImage == nil{
-                            originalImageOr = CIImage(data:data)!
-                        }
-                        else{
-                            originalImageOr = originalImage!
+        let imageRecognition = VNCoreMLRequest(model: model!, completionHandler: { (request, error) in
+            if let results = request.results as? [VNCoreMLFeatureValueObservation] {
+                var depthData:[Data?] = []
+                for observation in results {
+                    let depthmap = observation.featureValue.multiArrayValue
+
+                    var originalImageOr:CIImage
+                    if originalImage == nil{
+                        originalImageOr = CIImage(data:data)!
+                    }
+                    else{
+                        originalImageOr = originalImage!
+                    }
+                    
+                    if depthmap != nil{
+                        (min, max) = self.getMinMax(from: depthmap!)
+                        var ciImage = CIImage(cgImage: depthmap!.cgImage(min: min,max: max)!)
+                        
+                        // Scale the mask image to fit the bounds of the video frame.
+                        let scaleX = originalImageOr.extent.width / ciImage.extent.width
+                        let scaleY = originalImageOr.extent.height / ciImage.extent.height
+                        ciImage = ciImage.transformed(by: .init(scaleX: scaleX, y: scaleY))
+
+                    #if os(iOS)
+                        var uiImage:Data?
+                        switch fileType {
+                            case "jpg":
+                                uiImage = UIImage(ciImage: ciImage).jpegData(compressionQuality: 1.0)
+                            case "jpeg":
+                                uiImage = UIImage(ciImage: ciImage).jpegData(compressionQuality: 1.0)
+                            case "bmp":
+                                uiImage = nil
+                            case "png":
+                                uiImage = UIImage(ciImage: ciImage).pngData()
+                            case "tiff":
+                                uiImage = nil
+                            default:
+                            uiImage = nil
                         }
                         
-                        if depthmap != nil{
-                            (min, max) = self.getMinMax(from: depthmap!)
-                            var ciImage = CIImage(cgImage: depthmap!.cgImage(min: min,max: max)!)
-                            
-                            // Scale the mask image to fit the bounds of the video frame.
-                            let scaleX = originalImageOr.extent.width / ciImage.extent.width
-                            let scaleY = originalImageOr.extent.height / ciImage.extent.height
-                            ciImage = ciImage.transformed(by: .init(scaleX: scaleX, y: scaleY))
-
-                        #if os(iOS)
-                            var uiImage:Data?
-                            switch fileType {
-                                case "jpg":
-                                    uiImage = UIImage(ciImage: ciImage).jpegData(compressionQuality: 1.0)
-                                case "jpeg":
-                                    uiImage = UIImage(ciImage: ciImage).jpegData(compressionQuality: 1.0)
-                                case "bmp":
-                                    uiImage = nil
-                                case "png":
-                                    uiImage = UIImage(ciImage: ciImage).pngData()
-                                case "tiff":
-                                    uiImage = nil
-                                default:
-                                uiImage = nil
+                        if uiImage == nil{
+                            let ciContext = CIContext()
+                            let rowBytes = 4 * Int(ciImage.extent.width) // 4 channels (RGBA) of 8-bit data
+                            let dataSize = rowBytes * Int(ciImage.extent.height)
+                            var data = Data(count: dataSize)
+                            data.withUnsafeMutableBytes { data in
+                                ciContext.render(ciImage, toBitmap: data, rowBytes: rowBytes, bounds: ciImage.extent, format: .RGBA8, colorSpace: CGColorSpace(name: CGColorSpace.sRGB)!)
                             }
-                            
-                            if uiImage == nil{
-                                let ciContext = CIContext()
-                                let rowBytes = 4 * Int(ciImage.extent.width) // 4 channels (RGBA) of 8-bit data
-                                let dataSize = rowBytes * Int(ciImage.extent.height)
-                                var data = Data(count: dataSize)
-                                data.withUnsafeMutableBytes { data in
-                                    ciContext.render(ciImage, toBitmap: data, rowBytes: rowBytes, bounds: ciImage.extent, format: .RGBA8, colorSpace: CGColorSpace(name: CGColorSpace.sRGB)!)
-                                }
-                                if fileType == "bmp"{
-                                    uiImage = rgba2bitmap(
-                                        data,
-                                        Int(ciImage.extent.width),
-                                        Int(ciImage.extent.height)
-                                    )
-                                }
-                                else{
-                                    uiImage = data
-                                }
+                            if fileType == "bmp"{
+                                uiImage = rgba2bitmap(
+                                    data,
+                                    Int(ciImage.extent.width),
+                                    Int(ciImage.extent.height)
+                                )
                             }
-                            depthData.append(ciImage?.cgImage?.dataProvider?.data as Data?)
-                        #elseif os(macOS)
-                            var nsImage:Data?
-                            switch fileType {
-                                case "jpg":
-                                    nsImage = NSBitmapImageRep(ciImage:ciImage).representation(
-                                        using: .jpeg,
-                                        properties: [:]
-                                    )
-                                case "jpeg":
-                                    nsImage = NSBitmapImageRep(ciImage:ciImage).representation(
-                                        using: .jpeg2000,
-                                        properties: [:]
-                                    )
-                                case "bmp":
-                                    nsImage = NSBitmapImageRep(ciImage:ciImage).representation(
-                                        using: .bmp,
-                                        properties: [:]
-                                    )
-                                case "png":
-                                    nsImage = NSBitmapImageRep(ciImage:ciImage).representation(
-                                        using: .png,
-                                        properties: [:]
-                                    )
-                                case "tiff":
-                                    nsImage = NSBitmapImageRep(ciImage:ciImage).representation(
-                                        using: .tiff,
-                                        properties: [:]
-                                    )
-                                default:
-                                    nsImage = nil
+                            else{
+                                uiImage = data
                             }
-                            if nsImage == nil{
-                                let u = NSBitmapImageRep(ciImage:ciImage)
-                                let bytesPerRow = u.bytesPerRow
-                                let height = Int(u.size.height)
-                                
-                                nsImage = Data(bytes: u.bitmapData!, count: Int(bytesPerRow*height))
-                            }
-                            depthData.append(nsImage!)
-                        #endif
                         }
+                        depthData.append(ciImage?.cgImage?.dataProvider?.data as Data?)
+                    #elseif os(macOS)
+                        var nsImage:Data?
+                        switch fileType {
+                            case "jpg":
+                                nsImage = NSBitmapImageRep(ciImage:ciImage).representation(
+                                    using: .jpeg,
+                                    properties: [:]
+                                )
+                            case "jpeg":
+                                nsImage = NSBitmapImageRep(ciImage:ciImage).representation(
+                                    using: .jpeg2000,
+                                    properties: [:]
+                                )
+                            case "bmp":
+                                nsImage = NSBitmapImageRep(ciImage:ciImage).representation(
+                                    using: .bmp,
+                                    properties: [:]
+                                )
+                            case "png":
+                                nsImage = NSBitmapImageRep(ciImage:ciImage).representation(
+                                    using: .png,
+                                    properties: [:]
+                                )
+                            case "tiff":
+                                nsImage = NSBitmapImageRep(ciImage:ciImage).representation(
+                                    using: .tiff,
+                                    properties: [:]
+                                )
+                            default:
+                                nsImage = nil
+                        }
+                        if nsImage == nil{
+                            let u = NSBitmapImageRep(ciImage:ciImage)
+                            let bytesPerRow = u.bytesPerRow
+                            let height = Int(u.size.height)
+                            
+                            nsImage = Data(bytes: u.bitmapData!, count: Int(bytesPerRow*height))
+                        }
+                        depthData.append(nsImage!)
+                    #endif
                     }
-                    event = [
-                        "name": "imageDepth",
-                        "data": depthData,
-                        "max": max,
-                        "min":min,
-                        "imageSize": [
-                            "width": imageSize.width,
-                            "height": imageSize.height
-                        ]
-                    ]
                 }
-            })
-            let requests: [VNRequest] = [imageRecognition]
-            // Start the image classification request.
-            try? imageRequestHandler.perform(requests)
-        }
+                event = [
+                    "name": "imageDepth",
+                    "data": depthData,
+                    "max": max,
+                    "min":min,
+                    "imageSize": [
+                        "width": imageSize.width,
+                        "height": imageSize.height
+                    ]
+                ]
+            }
+        })
+        let requests: [VNRequest] = [imageRecognition]
+        // Start the image classification request.
+        try? imageRequestHandler.perform(requests)
 
         return event;
     }

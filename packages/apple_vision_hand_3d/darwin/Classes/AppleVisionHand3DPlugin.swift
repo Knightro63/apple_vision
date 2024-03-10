@@ -251,8 +251,10 @@ public extension CIImage {
                 }
             }
 
-            let origin:CGPoint = CGPoint(x: CGFloat(xmin!-margin.width/2), y: CGFloat(ymin!-margin.height/2))
-            let size:CGSize = CGSize(width: CGFloat(xmax!-xmin!+margin.width), height: CGFloat(ymax!-ymin!+margin.height))
+            let boxSize = xmax!-xmin! > ymax!-ymin! ? xmax!-xmin! : ymax!-ymin!
+
+            let origin:CGPoint = CGPoint(x: CGFloat(xmin!-margin.height/2), y: CGFloat(ymin!-margin.height/2))
+            let size:CGSize = CGSize(width: CGFloat(boxSize+margin.height), height: CGFloat(boxSize+margin.height))
             
             rects.append(CGRect(origin: origin, size: size))
         }

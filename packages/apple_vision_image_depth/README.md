@@ -11,6 +11,8 @@ Apple Vision Depth Detection is a Flutter plugin that enables Flutter apps to us
 
 ## Requirements
 
+Please go to 'https://ml-assets.apple.com/coreml/models/Image/DepthEstimation/FCRN/FCRN.mlmodel' and save the model in '/Users/${userName}/development/tools/flutter/.pub-cache/hosted/pub.dartlang.org/apple_vision_image_depth-${version}/darwin/Classes'. If this step is not done this api will give an error.
+
 **MacOS**
  - Minimum osx Deployment Target: 10.13
  - Xcode 13 or newer
@@ -28,97 +30,83 @@ Apple Vision Depth Detection is a Flutter plugin that enables Flutter apps to us
 You need to first import 'package:apple_vision/apple_vision.dart';
 
 ```dart
-  final GlobalKey cameraKey = GlobalKey(debugLabel: "cameraKey");
-  AppleVisionImageClassificationController visionController = AppleVisionImageClassificationController();
-  InsertCamera camera = InsertCamera();
-  Size imageSize = const Size(640,640*9/16);
-  String? deviceId;
-  bool loading = true;
+final GlobalKey cameraKey = GlobalKey(debugLabel: "cameraKey");
+AppleVisionImageDepthController visionController = AppleVisionImageDepthController();
+InsertCamera camera = InsertCamera();
+Size imageSize = const Size(640,640*9/16);
+String? deviceId;
+bool loading = true;
 
-  List<Label>? labels;
-  late double deviceWidth;
-  late double deviceHeight;
+Uint8List? image;
+late double deviceWidth;
+late double deviceHeight;
 
-  @override
-  void initState() {
-    camera.setupCameras().then((value){
-      setState(() {
-        loading = false;
-      });
-      camera.startLiveFeed((InputImage i){
-        if(i.metadata?.size != null){
-          imageSize = i.metadata!.size;
-        }
-        if(mounted) {
-          Uint8List? image = i.bytes;
-          visionController.processImage(image!, imageSize).then((data){
-            labels = data;
-            setState(() {
-              
-            });
-          });
-        }
-      });
+int intr = 0;
+
+@override
+void initState() {
+  camera.setupCameras().then((value){
+    setState(() {
+      loading = false;
     });
-    super.initState();
-  }
-  @override
-  void dispose() {
-    camera.dispose();
-    super.dispose();
-  }
+    camera.startLiveFeed((InputImage i){
+      if(i.metadata?.size != null){
+        imageSize = i.metadata!.size;
+      }
+      if(mounted) {
+        Uint8List? image = i.bytes;
+        visionController.processImage(ImageDepthData(image:image!, imageSize: imageSize)).then((data){
+          this.image = data;
+          if(intr == 0){
+            intr++;
+          }
+          setState(() {
+            
+          });
+        });
+      }
+    });
+  });
+  super.initState();
+}
+@override
+void dispose() {
+  camera.dispose();
+  super.dispose();
+}
 
-  @override
-  Widget build(BuildContext context) {
-    deviceWidth = MediaQuery.of(context).size.width;
-    deviceHeight = MediaQuery.of(context).size.height;
-    return Stack(
-      children:<Widget>[
-        SizedBox(
-          width: imageSize.width, 
-          height: imageSize.height, 
-          child: loading?Container():CameraSetup(camera: camera, size: imageSize)
-        ),
-        Column(children: showLabel(),)
-      ]
-    );
-  }
-
-  List<Widget> showLabel(){
-    if(labels == null || labels!.isEmpty) return [];
-    List<Widget> widgets = [];
-
-    for(int i = 0; i < labels!.length; i++){
-      widgets.add(
-        Container(
-          width: 320,
-          height: 20,
-          decoration: BoxDecoration(
-            color: Colors.green,
-            borderRadius: BorderRadius.circular(5)
-          ),
-          child: Text(
-            '${labels![i].label}: ${labels![i].confidence}',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 12
-            ),
-          ),
+@override
+Widget build(BuildContext context) {
+  deviceWidth = MediaQuery.of(context).size.width;
+  deviceHeight = MediaQuery.of(context).size.height;
+  return ListView(
+    children:<Widget>[
+      SizedBox(
+        width: 320, 
+        height: 320*9/16, 
+        child: loading?Container():CameraSetup(camera: camera, size: imageSize)
+      ),
+      if(image != null) SizedBox(
+        width: 320, 
+        height: 320*9/16,
+        child: Image.memory(
+          image!, 
+          fit: BoxFit.fitHeight,
         )
-      );
-    }
-    return widgets;
-  }
+      )
+    ]
+  );
+}
 
-  Widget loadingWidget(){
-    return Container(
-      width: deviceWidth,
-      height:deviceHeight,
-      color: Theme.of(context).canvasColor,
-      alignment: Alignment.center,
-      child: const CircularProgressIndicator(color: Colors.blue)
-    );
-  }
+Widget loadingWidget(){
+  return Container(
+    width: deviceWidth,
+    height:deviceHeight,
+    color: Theme.of(context).canvasColor,
+    alignment: Alignment.center,
+    child: const CircularProgressIndicator(color: Colors.blue)
+  );
+}
 ```
 
 ## Example

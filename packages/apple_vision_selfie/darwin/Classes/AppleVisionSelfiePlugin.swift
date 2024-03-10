@@ -90,8 +90,7 @@ public class AppleVisionSelfiePlugin: NSObject, FlutterPlugin {
             // Create a bitmap graphics context with the sample buffer data
             originalImage =  CIImage(bitmapData: data, bytesPerRow: Int(imageSize.width)*4, size: imageSize, format: format, colorSpace: nil)
             
-            imageRequestHandler = VNImageRequestHandler(ciImage:originalImage!,
-                orientation: orientation)
+            imageRequestHandler = VNImageRequestHandler(ciImage:originalImage!,orientation: orientation)
         }
         else{
             originalImage = CIImage(data:data)!

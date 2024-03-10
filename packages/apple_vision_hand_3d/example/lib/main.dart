@@ -83,26 +83,14 @@ class _VisionHand extends State<VisionHand>{
   Widget build(BuildContext context) {
     deviceWidth = MediaQuery.of(context).size.width;
     deviceHeight = MediaQuery.of(context).size.height;
-    return Column(
-      children: [
-        Stack(
-          children:<Widget>[
-            SizedBox(
-              width: imageSize.width, 
-              height: imageSize.height, 
-              child: loading?Container():CameraSetup(camera: camera, size: imageSize)
-          ),
-          ]+showPoints()
-        ),
-        if(handData!= null)SizedBox(
-          width: 200,
-          height: 200,
-          child: Image.memory(
-            handData![0].image.croppedImage,
-            fit: BoxFit.fitHeight,
-          ),
-        )
-      ]
+    return Stack(
+      children:<Widget>[
+        SizedBox(
+          width: imageSize.width, 
+          height: imageSize.height, 
+          child: loading?Container():CameraSetup(camera: camera, size: imageSize)
+      ),
+      ]+showPoints()
     );
   }
 
@@ -140,10 +128,11 @@ class _VisionHand extends State<VisionHand>{
     for(int j = 0; j < handData!.length; j++){
       //print(handData![j].poses[0].location.y);
       for(int i = 0; i < handData![j].poses.length; i++){
+        HandPoint3D points = handData![j].poses[i].location;
         widgets.add(
           Positioned(
-            top: handData![j].poses[i].location.y*imageSize.height,
-            left: handData![j].poses[i].location.x*imageSize.width,
+            left: points.x * imageSize.width/2.56 + handData![0].image.origin.x,
+            bottom: imageSize.height/2 - points.y * imageSize.width/2.56 + handData![0].image.origin.y+120,
             child: Container(
               width: 10,
               height: 10,
