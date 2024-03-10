@@ -16,7 +16,6 @@ dependencies:
   apple_vision_face: ^0.0.3
   apple_vision_face_mesh: ^0.0.1
   apple_vision_face_detection: ^0.0.2
-  apple_vision_face_mesh: ^0.0.1
   apple_vision_hand: ^0.0.3
   apple_vision_hand_3d: ^0.0.1
   apple_vision_image_classification: ^0.0.2

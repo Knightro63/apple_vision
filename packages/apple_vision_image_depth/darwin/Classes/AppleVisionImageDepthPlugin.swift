@@ -242,7 +242,7 @@ public class AppleVisionImageDepthPlugin: NSObject, FlutterPlugin {
         // Use a default model configuration.
         let defaultConfig = MLModelConfiguration()
         // Create an instance of the image classifier's wrapper class.
-        let imageDepthWrapper = try? FCRN(configuration: defaultConfig)
+        let imageDepthWrapper = try? FCRNFP16(configuration: defaultConfig)
         guard let imageDepth = imageDepthWrapper else {
             fatalError("App failed to create an image classifier model instance.")
         }

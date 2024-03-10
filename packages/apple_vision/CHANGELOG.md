@@ -1,6 +1,8 @@
-## 0.0.5
+## 0.0.6
 
 * Updated Selfie Segmentation
+* Added Hand Pose 3D
+* Added Face Mesh
 
 ## 0.0.5
 
