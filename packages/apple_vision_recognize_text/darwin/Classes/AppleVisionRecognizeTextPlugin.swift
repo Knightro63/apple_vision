@@ -225,7 +225,7 @@ public class AppleVisionRecognizeTextPlugin: NSObject, FlutterPlugin {
             "minX":Double(recognizedPoints.minX),
             "maxX":Double(recognizedPoints.maxX),
             "minY":Double(recognizedPoints.minY),
-            "maxY":Double(recognizedPoints.maxX),
+            "maxY":Double(recognizedPoints.maxY),
             "height":Double(recognizedPoints.height),
             "width":Double(recognizedPoints.width),
             "origin": ["x":(imageSize.width-coord.x)-(recognizedPoints.width*imageSize.width),"y":coord.y],
