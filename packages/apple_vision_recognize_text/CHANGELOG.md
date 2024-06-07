@@ -1,3 +1,7 @@
+## 0.0.4
+
+* Fixed spelling error
+
 ## 0.0.3
 
 * Added language support

@@ -1,3 +1,7 @@
+## 0.0.7
+
+* Updated apple_vision_recognize_text
+
 ## 0.0.6
 
 * Updated Selfie Segmentation
