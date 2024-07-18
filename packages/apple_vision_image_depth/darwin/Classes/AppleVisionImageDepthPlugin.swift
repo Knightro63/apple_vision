@@ -52,8 +52,12 @@ public class AppleVisionImageDepthPlugin: NSObject, FlutterPlugin {
                     return result(FlutterError(code: "INVALID OS", message: "requires version 14.0", details: nil))
                 }
             #elseif os(macOS)
-                return result(convertImage(Data(data.data),CGSize(width: width , height: height),CIFormat.ARGB8,orientation,format))
-            #endif        
+                if #available(macOS 14.0, *) {
+                    return result(convertImage(Data(data.data),CGSize(width: width , height: height),CIFormat.ARGB8,orientation,format))
+                } else {
+                    return result(FlutterError(code: "INVALID OS", message: "requires version 14.0", details: nil))
+                }
+            #endif
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -62,6 +66,8 @@ public class AppleVisionImageDepthPlugin: NSObject, FlutterPlugin {
     // Gets called when a new image is added to the buffer
     #if os(iOS)
     @available(iOS 14.0, *)
+    #elseif os(macOS)
+    @available(macOS 14.0, *)
     #endif
     func convertImage(_ data: Data,_ imageSize: CGSize,_ format: CIFormat,_ oriString: String,_ fileType: String) -> [String:Any?]{
         var event:[String:Any?] = ["name":"noData"];
@@ -115,106 +121,104 @@ public class AppleVisionImageDepthPlugin: NSObject, FlutterPlugin {
         }
 
         let imageRecognition = VNCoreMLRequest(model: model!, completionHandler: { (request, error) in
-            if let results = request.results as? [VNCoreMLFeatureValueObservation] {
+            if let results = request.results as? [VNPixelBufferObservation] {
                 var depthData:[Data?] = []
                 for observation in results {
-                    let depthmap = observation.featureValue.multiArrayValue
+                    let depthmap = CIImage(cvPixelBuffer: observation.pixelBuffer)
 
-                    var originalImageOr:CIImage
-                    if originalImage == nil{
-                        originalImageOr = CIImage(data:data)!
-                    }
-                    else{
-                        originalImageOr = originalImage!
-                    }
+                     var originalImageOr:CIImage
+                     if originalImage == nil{
+                         originalImageOr = CIImage(data:data)!
+                     }
+                     else{
+                         originalImageOr = originalImage!
+                     }
                     
-                    if depthmap != nil{
-                        (min, max) = self.getMinMax(from: depthmap!)
-                        var ciImage = CIImage(cgImage: depthmap!.cgImage(min: min,max: max)!)
-                        
-                        // Scale the mask image to fit the bounds of the video frame.
-                        let scaleX = originalImageOr.extent.width / ciImage.extent.width
-                        let scaleY = originalImageOr.extent.height / ciImage.extent.height
-                        ciImage = ciImage.transformed(by: .init(scaleX: scaleX, y: scaleY))
+
+                    var ciImage = depthmap
+                    let scaleX = originalImageOr.extent.width / ciImage.extent.width
+                    let scaleY = originalImageOr.extent.height / ciImage.extent.height
+                    ciImage = ciImage.transformed(by: .init(scaleX: scaleX, y: scaleY))
 
                     #if os(iOS)
-                        var uiImage:Data?
-                        switch fileType {
-                            case "jpg":
-                                uiImage = UIImage(ciImage: ciImage).jpegData(compressionQuality: 1.0)
-                            case "jpeg":
-                                uiImage = UIImage(ciImage: ciImage).jpegData(compressionQuality: 1.0)
-                            case "bmp":
-                                uiImage = nil
-                            case "png":
-                                uiImage = UIImage(ciImage: ciImage).pngData()
-                            case "tiff":
-                                uiImage = nil
-                            default:
+                    var uiImage:Data?
+                    switch fileType {
+                        case "jpg":
+                            uiImage = UIImage(ciImage: ciImage).jpegData(compressionQuality: 1.0)
+                        case "jpeg":
+                            uiImage = UIImage(ciImage: ciImage).jpegData(compressionQuality: 1.0)
+                        case "bmp":
                             uiImage = nil
-                        }
-                        
-                        if uiImage == nil{
-                            let ciContext = CIContext()
-                            let rowBytes = 4 * Int(ciImage.extent.width) // 4 channels (RGBA) of 8-bit data
-                            let dataSize = rowBytes * Int(ciImage.extent.height)
-                            var data = Data(count: dataSize)
-                            data.withUnsafeMutableBytes { data in
-                                ciContext.render(ciImage, toBitmap: data, rowBytes: rowBytes, bounds: ciImage.extent, format: .RGBA8, colorSpace: CGColorSpace(name: CGColorSpace.sRGB)!)
-                            }
-                            if fileType == "bmp"{
-                                uiImage = rgba2bitmap(
-                                    data,
-                                    Int(ciImage.extent.width),
-                                    Int(ciImage.extent.height)
-                                )
-                            }
-                            else{
-                                uiImage = data
-                            }
-                        }
-                        depthData.append(ciImage?.cgImage?.dataProvider?.data as Data?)
-                    #elseif os(macOS)
-                        var nsImage:Data?
-                        switch fileType {
-                            case "jpg":
-                                nsImage = NSBitmapImageRep(ciImage:ciImage).representation(
-                                    using: .jpeg,
-                                    properties: [:]
-                                )
-                            case "jpeg":
-                                nsImage = NSBitmapImageRep(ciImage:ciImage).representation(
-                                    using: .jpeg2000,
-                                    properties: [:]
-                                )
-                            case "bmp":
-                                nsImage = NSBitmapImageRep(ciImage:ciImage).representation(
-                                    using: .bmp,
-                                    properties: [:]
-                                )
-                            case "png":
-                                nsImage = NSBitmapImageRep(ciImage:ciImage).representation(
-                                    using: .png,
-                                    properties: [:]
-                                )
-                            case "tiff":
-                                nsImage = NSBitmapImageRep(ciImage:ciImage).representation(
-                                    using: .tiff,
-                                    properties: [:]
-                                )
-                            default:
-                                nsImage = nil
-                        }
-                        if nsImage == nil{
-                            let u = NSBitmapImageRep(ciImage:ciImage)
-                            let bytesPerRow = u.bytesPerRow
-                            let height = Int(u.size.height)
-                            
-                            nsImage = Data(bytes: u.bitmapData!, count: Int(bytesPerRow*height))
-                        }
-                        depthData.append(nsImage!)
-                    #endif
+                        case "png":
+                            uiImage = UIImage(ciImage: ciImage).pngData()
+                        case "tiff":
+                            uiImage = nil
+                        default:
+                        uiImage = nil
                     }
+                    
+                    if uiImage == nil{
+                        let ciContext = CIContext()
+                        let rowBytes = 4 * Int(ciImage.extent.width) // 4 channels (RGBA) of 8-bit data
+                        let dataSize = rowBytes * Int(ciImage.extent.height)
+                        var data = Data(count: dataSize)
+                        data.withUnsafeMutableBytes { data in
+                            ciContext.render(ciImage, toBitmap: data, rowBytes: rowBytes, bounds: ciImage.extent, format: .RGBA8, colorSpace: CGColorSpace(name: CGColorSpace.sRGB)!)
+                        }
+                        if fileType == "bmp"{
+                            uiImage = rgba2bitmap(
+                                data,
+                                Int(ciImage.extent.width),
+                                Int(ciImage.extent.height)
+                            )
+                        }
+                        else{
+                            uiImage = data
+                        }
+                    }
+                    depthData.append(ciImage?.cgImage?.dataProvider?.data as Data?)
+
+                    #elseif os(macOS)
+                    var nsImage:Data?
+                    switch fileType {
+                        case "jpg":
+                            nsImage = NSBitmapImageRep(ciImage:ciImage).representation(
+                                using: .jpeg,
+                                properties: [:]
+                            )
+                        case "jpeg":
+                            nsImage = NSBitmapImageRep(ciImage:ciImage).representation(
+                                using: .jpeg2000,
+                                properties: [:]
+                            )
+                        case "bmp":
+                            nsImage = NSBitmapImageRep(ciImage:ciImage).representation(
+                                using: .bmp,
+                                properties: [:]
+                            )
+                        case "png":
+                            nsImage = NSBitmapImageRep(ciImage:ciImage).representation(
+                                using: .png,
+                                properties: [:]
+                            )
+                        case "tiff":
+                            nsImage = NSBitmapImageRep(ciImage:ciImage).representation(
+                                using: .tiff,
+                                properties: [:]
+                            )
+                        default:
+                            nsImage = nil
+                    }
+                    if nsImage == nil{
+                        let u = NSBitmapImageRep(ciImage:ciImage)
+                        let bytesPerRow = u.bytesPerRow
+                        let height = Int(u.size.height)
+                        
+                        nsImage = Data(bytes: u.bitmapData!, count: Int(bytesPerRow*height))
+                    }
+                    depthData.append(nsImage!)
+                    #endif
+                    
                 }
                 event = [
                     "name": "imageDepth",
@@ -224,6 +228,17 @@ public class AppleVisionImageDepthPlugin: NSObject, FlutterPlugin {
                     "imageSize": [
                         "width": imageSize.width,
                         "height": imageSize.height
+                    ]
+                ]
+            }else{
+                event = [
+                    "name": "imageDepth",
+                    "data": request.results,
+                    "max": 0,
+                    "min":0,
+                    "imageSize": [
+                        "width": 0,
+                        "height": 0
                     ]
                 ]
             }
@@ -237,12 +252,14 @@ public class AppleVisionImageDepthPlugin: NSObject, FlutterPlugin {
 
     #if os(iOS)
     @available(iOS 14.0, *)
+    #elseif os(macOS)
+    @available(macOS 14.0, *)
     #endif
     static func createImageDepth() -> VNCoreMLModel {
         // Use a default model configuration.
         let defaultConfig = MLModelConfiguration()
         // Create an instance of the image classifier's wrapper class.
-        let imageDepthWrapper = try? FCRNFP16(configuration: defaultConfig)
+        let imageDepthWrapper = try? DepthModel(configuration: defaultConfig)
         guard let imageDepth = imageDepthWrapper else {
             fatalError("App failed to create an image classifier model instance.")
         }
@@ -252,38 +269,7 @@ public class AppleVisionImageDepthPlugin: NSObject, FlutterPlugin {
         guard let imageDepthVisionModel = try? VNCoreMLModel(for: imageDepthModel) else {
             fatalError("App failed to create a `VNCoreMLModel` instance.")
         }
+        
         return imageDepthVisionModel
-    }
-    func getMinMax(from heatmaps: MLMultiArray) -> (Double, Double) {
-        guard heatmaps.shape.count >= 3 else {
-            print("heatmap's shape is invalid. \(heatmaps.shape)")
-            return (0, 0)
-        }
-        let _/*keypoint_number*/ = heatmaps.shape[0].intValue
-        let heatmap_w = heatmaps.shape[1].intValue
-        let heatmap_h = heatmaps.shape[2].intValue
-        
-        var convertedHeatmap: Array<Array<Double>> = Array(repeating: Array(repeating: 0.0, count: heatmap_w), count: heatmap_h)
-        
-        var minimumValue: Double = Double.greatestFiniteMagnitude
-        var maximumValue: Double = -Double.greatestFiniteMagnitude
-        
-        for i in 0..<heatmap_w {
-            for j in 0..<heatmap_h {
-                let index = i*(heatmap_h) + j
-                let confidence = heatmaps[index].doubleValue
-                guard confidence > 0 else { continue }
-                convertedHeatmap[j][i] = confidence
-                
-                if minimumValue > confidence {
-                    minimumValue = confidence
-                }
-                if maximumValue < confidence {
-                    maximumValue = confidence
-                }
-            }
-        }
-        
-        return (minimumValue,maximumValue)
     }
 }
