@@ -11,8 +11,6 @@ Apple Vision Depth Detection is a Flutter plugin that enables Flutter apps to us
 
 ## Requirements
 
-Please go to 'https://ml-assets.apple.com/coreml/models/Image/DepthEstimation/FCRN/FCRN.mlmodel' and save the model in '/Users/${userName}/development/tools/flutter/.pub-cache/hosted/pub.dartlang.org/apple_vision_image_depth-${version}/darwin/Classes'. If this step is not done this api will give an error.
-
 **MacOS**
  - Minimum osx Deployment Target: 10.13
  - Xcode 13 or newer
