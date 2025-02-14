@@ -167,7 +167,7 @@ public class AppleVisionObjectPlugin: NSObject, FlutterPlugin {
             "minX":Double(recognizedPoints.minX),
             "maxX":Double(recognizedPoints.maxX),
             "minY":Double(recognizedPoints.minY),
-            "maxY":Double(recognizedPoints.maxX),
+            "maxY":Double(recognizedPoints.maxY),
             "height":Double(recognizedPoints.height),
             "width":Double(recognizedPoints.width),
             "origin": ["x":coord.x,"y":coord.y],

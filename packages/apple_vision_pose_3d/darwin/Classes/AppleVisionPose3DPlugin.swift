@@ -97,12 +97,13 @@ public class AppleVisionPose3DPlugin: NSObject, FlutterPlugin {
         var event:[String:Any?] = ["name":"noData"];
         do {
 
-            try imageRequestHandler.perform([VNDetectHumanBodyPose3DRequest { (request, error) in
+            try imageRequestHandler.perform([VNDetectHumanBodyPose3DRequest { [weak self] (request, error) in
                 if error == nil {
                     if let results = request.results as? [VNHumanBodyPose3DObservation] {
                         var poseData:[[[String:Any?]]] = []
                         for pose in results {
-                            poseData.append(self.processObservation(pose))
+                            let temp = self?.processObservation(pose)
+                            poseData.append(temp!)
                         }
                         event = [
                             "name": "pose3d",
@@ -110,12 +111,19 @@ public class AppleVisionPose3DPlugin: NSObject, FlutterPlugin {
                         ]
                     }
                 } else {
-                    event = ["name":"error","code": "No Face In Detected", "message": error!.localizedDescription]
+                    event = ["name":"error",
+                             "code": "No Face In Detected",
+                             "message": error!.localizedDescription
+                    ]
                     print(error!.localizedDescription)
                 }
             }])
         } catch {
-            event = ["name":"error","code": "Data Corropted", "message": error.localizedDescription]
+            event = [
+                "name":"error",
+                "code": "Data Corropted",
+                "message": error.localizedDescription
+            ]
             print(error)
         }
 
@@ -125,7 +133,7 @@ public class AppleVisionPose3DPlugin: NSObject, FlutterPlugin {
     #if os(iOS)
     @available(iOS 17.0, *)
     #endif
-    func processObservation(_ observation: VNHumanBodyPose3DObservation) -> [[String:Any?]] {
+    private func processObservation(_ observation: VNHumanBodyPose3DObservation) -> [[String:Any?]] {
         // Retrieve all torso points.
         guard let recognizedPoints =
                 try? observation.recognizedPoints(.all) else { return [[:]]}
