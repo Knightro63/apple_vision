@@ -1,3 +1,7 @@
+## 0.0.3
+
+* Fixed rectangle max points
+
 ## 0.0.2
 
 * Added image orientation

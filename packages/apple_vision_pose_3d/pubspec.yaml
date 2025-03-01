@@ -1,6 +1,6 @@
 name: apple_vision_pose_3d
 description: A Flutter plugin to use Apple Vision Pose Detection to detect the pose of a subject's body in real time from a continuous video or static image.
-version: 0.0.1
+version: 0.0.2
 homepage: https://github.com/Knightro63/apple_vision/tree/main/packages/apple_vision_pose_3d
 
 environment:
@@ -10,12 +10,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  apple_vision_commons: ^0.0.2
+  apple_vision_commons: ^0.0.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.3
+  flutter_lints: ^5.0.0
 
 flutter:
   plugin:
