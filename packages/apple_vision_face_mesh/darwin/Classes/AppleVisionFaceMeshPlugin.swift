@@ -49,7 +49,11 @@ public class AppleVisionFaceMeshPlugin: NSObject, FlutterPlugin {
                     return result(FlutterError(code: "INVALID OS", message: "requires version 14.0", details: nil))
                 }
             #elseif os(macOS)
-                return result(convertImage(Data(data.data),CGSize(width: width , height: height),CIFormat.ARGB8,orientation))
+                if #available(macOS 15.0, *) {
+                    return result(convertImage(Data(data.data),CGSize(width: width , height: height),CIFormat.ARGB8,orientation))
+                } else {
+                    return result(FlutterError(code: "INVALID OS", message: "requires version 14.0", details: nil))
+                }
             #endif
         default:
             result(FlutterMethodNotImplemented)
@@ -58,6 +62,8 @@ public class AppleVisionFaceMeshPlugin: NSObject, FlutterPlugin {
     
     #if os(iOS)
     @available(iOS 14.0, *)
+    #elseif os(macOS)
+    @available(macOS 10.15, *)
     #endif
     func convertImage(_ data: Data,_ imageSize: CGSize,_ format: CIFormat,_ oriString: String) -> [String:Any?]{
         var event:[String:Any?] = ["name":"noData"];
@@ -122,9 +128,13 @@ public class AppleVisionFaceMeshPlugin: NSObject, FlutterPlugin {
                         }
                     }
                     var nsImage:Data?
+                    #if os(iOS)
+                        nsImage = UIImage(ciImage: croppedImage.0!).pngData()
+                    #elseif os(macOS)
                     if croppedImage.0 != nil{
                         nsImage = NSBitmapImageRep(ciImage:croppedImage.0!).representation(using: .png,properties: [:])
                     }
+                    #endif
                     
                     event = [
                         "name": "faceMesh",
@@ -145,7 +155,10 @@ public class AppleVisionFaceMeshPlugin: NSObject, FlutterPlugin {
     
     #if os(iOS)
     @available(iOS 14.0, *)
+    #elseif os(macOS)
+    @available(macOS 10.15, *)
     #endif
+    
     static func createFaceMesh() -> VNCoreMLModel {
         // Use a default model configuration.
         let defaultConfig = MLModelConfiguration()
@@ -165,7 +178,7 @@ public class AppleVisionFaceMeshPlugin: NSObject, FlutterPlugin {
 }
 
 public extension CIImage {
-    func scale(targetSize: NSSize = NSSize(width:192, height:192)) -> CIImage?{
+    func scale(targetSize: CGSize = CGSize(width:192, height:192)) -> CIImage?{
         let resizeFilter = CIFilter(name:"CILanczosScaleTransform")!
 
         // Compute scale and corrective aspect ratio
@@ -180,7 +193,7 @@ public extension CIImage {
     }
     
     @available(iOS 14.0, *)
-    func faceCrop(_ imageSize: CGSize,_ orientation: CGImagePropertyOrientation, margin: NSSize = NSSize(width:40, height:60)) -> (CIImage?,CGRect?) {
+    func faceCrop(_ imageSize: CGSize,_ orientation: CGImagePropertyOrientation, margin: CGSize = CGSize(width:40, height:60)) -> (CIImage?,CGRect?) {
         var ciImage:CIImage?
         var croppingRect:[CGRect]?
         let req = VNDetectFaceRectanglesRequest { request, error in
@@ -205,7 +218,7 @@ public extension CIImage {
     }
     
     @available(iOS 14.0, *)
-    private func getCroppingRect(_ imageSize: CGSize, for faces: [VNFaceObservation], margin: NSSize) -> [CGRect] {
+    private func getCroppingRect(_ imageSize: CGSize, for faces: [VNFaceObservation], margin: CGSize) -> [CGRect] {
         var rects:[CGRect] = []
         for face in faces {
             let points = face.boundingBox

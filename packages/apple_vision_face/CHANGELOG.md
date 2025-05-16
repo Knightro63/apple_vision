@@ -1,3 +1,7 @@
+## 0.0.4
+
+* Fixed pitch, yaw and roll issue.
+
 ## 0.0.3
 
 * Added image orientation

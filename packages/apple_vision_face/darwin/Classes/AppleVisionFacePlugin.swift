@@ -101,8 +101,26 @@ public class AppleVisionFacePlugin: NSObject, FlutterPlugin {
                 orientation: orientation)
         }
 
-        var event:[String:Any?] = ["name":"noData"];
+        var event:[String:Any?] = [
+            "name":"noData",
+            "imageSize": ["width":imageSize.width ,"height":imageSize.height]
+        ];
         do {
+            try imageRequestHandler.perform([VNDetectFaceCaptureQualityRequest { (request, error) in
+                if error == nil {
+                    if let results = request.results as? [VNFaceObservation] {
+                        var faceData:[[String:Any?]] = []
+                        for face in results {
+                            faceData.append(self.assessFaceCaptureQuality(face,imageSize))
+                        }
+                        event["orientation"] = faceData;
+                    }
+                } else {
+                    event = ["name":"error","code": "No Face In Detected", "message": error!.localizedDescription]
+                    print(error!.localizedDescription)
+                }
+            }])
+            
             try imageRequestHandler.perform([VNDetectFaceLandmarksRequest { (request, error) in
                 if error == nil {
                     if let results = request.results as? [VNFaceObservation] {
@@ -110,11 +128,8 @@ public class AppleVisionFacePlugin: NSObject, FlutterPlugin {
                         for face in results {
                             faceData.append(self.processObservation(face,imageSize))
                         }
-                        event = [
-                            "name": "face",
-                            "data": faceData,
-                            "imageSize": ["width":imageSize.width ,"height":imageSize.height]
-                        ]
+                        event["name"] = "face";
+                        event["data"] = faceData;
                     }
                 } else {
                     event = ["name":"error","code": "No Face In Detected", "message": error!.localizedDescription]
@@ -127,6 +142,30 @@ public class AppleVisionFacePlugin: NSObject, FlutterPlugin {
         }
 
         return event;
+    }
+    
+    #if os(iOS)
+    @available(iOS 13.0, *)
+    #endif
+    func assessFaceCaptureQuality(_ face: VNFaceObservation,_ imageSize: CGSize) -> [String:Any?] {
+        var pitch: Double?;
+        #if os(iOS)
+            if #available(iOS 15.0, *){
+                pitch = face.pitch as! Double?
+            }
+        #elseif os(macOS)
+            if #available(macOS 12.0, *){
+                pitch = face.pitch as! Double?
+            }
+        #endif
+        let data:[String: Any?] = [
+            "yaw": face.yaw,
+            "roll": face.roll,
+            "pitch": pitch,
+            "quailty": face.faceCaptureQuality
+        ];
+        
+        return data
     }
     
     #if os(iOS)
@@ -179,27 +218,8 @@ public class AppleVisionFacePlugin: NSObject, FlutterPlugin {
             i+=1;
         }
         
-        var pitch: Double?;
-        #if os(iOS)
-            if #available(iOS 15.0, *){
-                pitch = face.pitch as! Double?
-            }
-        #elseif os(macOS)
-            if #available(macOS 12.0, *){
-                pitch = face.pitch as! Double?
-            }
-        #endif
-        let data:[String: Any?] = [
-            "yaw": face.yaw,
-            "roll": face.roll,
-            "pitch": pitch,
-            "quailty": face.faceCaptureQuality
-        ];
-        
-            
         let event: [String: Any?] = [
             "data" : imagePoints,
-            "orientation": data,
         ]
         
         return event

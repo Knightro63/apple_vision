@@ -11,9 +11,7 @@ dependencies:
     sdk: flutter
   apple_vision_face_mesh:
     path: ../../apple_vision_face_mesh
-  camera_macos:
-    git:
-      url: https://github.com/Knightro63/camera_macos.git
+  camera_macos: ^0.0.9
   camera: ^0.10.5+2
   cupertino_icons: ^1.0.2
   permission_handler: ^11.0.1

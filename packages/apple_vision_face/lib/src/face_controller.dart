@@ -49,10 +49,10 @@ class AppleVisionFaceController {
             FaceData(
               marks:FaceFunctions.getFaceDataFromList(event['data'][i]['data']),
               imageSize:Size(event['imageSize']['width'],event['imageSize']['height']),
-              yaw: event['data'][i]['orientation']['yaw'],
-              pitch: event['data'][i]['orientation']['pitch'],
-              roll: event['data'][i]['orientation']['roll'],
-              quality: event['data'][i]['orientation']['quality']
+              yaw: event['orientation'][i]['yaw'],
+              pitch: event['orientation'][i]['pitch'],
+              roll: event['orientation'][i]['roll'],
+              quality: event['orientation'][i]['quality']
             )
           );
         }

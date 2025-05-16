@@ -56,6 +56,18 @@ class FaceData{
   final double roll;
   final double? pitch;
   final double? quality;
+
+  @override
+  String toString() {
+    return {
+      'yaw': yaw,
+      'roll': roll,
+      'pitch': pitch,
+      'quality': quality,
+      'width': imageSize.width,
+      'height':imageSize.height
+    }.toString();
+  }
 }
 
 /// A class that converts the information from apple vision to dart
