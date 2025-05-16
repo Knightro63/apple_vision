@@ -1,3 +1,8 @@
+## 0.0.9
+
+* Updated apple_vision_face_mesh
+* Updated apple_vision_face
+
 ## 0.0.8
 
 * Added Image Depth

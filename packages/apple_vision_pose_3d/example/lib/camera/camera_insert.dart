@@ -137,9 +137,9 @@ class InsertCamera{
     isLive = true;
     if(Platform.isMacOS){
       controllerMacos?.startImageStream((p){
-        imageSize ??= imageSize = Size(p.width.toDouble(), p.height.toDouble());
+        imageSize ??= imageSize = Size(p!.width.toDouble(), p!.height.toDouble());
         InputImage i = InputImage.fromBytes(
-          bytes: p.bytes,
+          bytes: p!.bytes,
           metadata: InputImageMetadata(
             size: imageSize!,
             rotation: InputImageRotation.rotation0deg,

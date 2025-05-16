@@ -9,9 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  camera_macos:
-    git:
-      url: https://github.com/Knightro63/camera_macos.git
+  camera_macos: 0.0.9
   camera: ^0.10.5+2
   apple_vision_pose_3d:
     path: ../../apple_vision_pose_3d

@@ -18,6 +18,7 @@
 
 # Visual Studio Code related
 .classpath
+.meta
 .project
 .settings/
 .vscode/*
