@@ -1,6 +1,6 @@
 name: apple_vision_lift_subjects
 description: A Flutter plugin to use Apple Vision Lift Subject to extract objects in real time from a continuous video or static image.
-version: 0.0.2
+version: 0.1.0
 homepage: https://github.com/Knightro63/apple_vision/tree/main/packages/apple_vision_lift_subjects
 
 environment:

@@ -1,6 +1,6 @@
 name: apple_vision_scanner
 description: A Flutter plugin to use Apple Vision Barcode Scanning to read data encoded using most standard barcode formats.
-version: 0.0.2
+version: 0.1.0
 homepage: https://github.com/Knightro63/apple_vision/tree/main/packages/apple_vision_scanner
 
 environment:

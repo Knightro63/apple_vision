@@ -1,3 +1,7 @@
+## 0.1.0
+
+* Updated to SPM.
+
 ## 0.0.5
 
 * Fiex Segmentation only working on raw image format

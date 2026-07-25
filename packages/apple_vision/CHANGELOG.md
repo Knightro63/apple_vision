@@ -1,3 +1,7 @@
+## 0.1.0
+
+* Updated apple_vision packages to SPM.
+
 ## 0.0.9
 
 * Updated apple_vision_face_mesh

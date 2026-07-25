@@ -1,3 +1,7 @@
+## 0.1.0
+
+* Upgraded to SPM.
+
 ## 0.0.2
 
 * Added image orientation
