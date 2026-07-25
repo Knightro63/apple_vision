@@ -12,8 +12,8 @@ Pod::Spec.new do |s|
   s.license          = { :file => '../LICENSE' }
   s.authors          = 'Multiple Authors'
   s.source           = { :path => '.' }
-  s.source_files = 'apple_vision_recognize_text/Sources/**/*'
-  s.public_header_files = 'apple_vision_recognize_text/Sources/**/*.h'
+  s.source_files = 'apple_vision_recognize_text/Sources/apple_vision_recognize_text/**/*'
+  s.public_header_files = 'apple_vision_recognize_text/Sources/apple_vision_recognize_text/**/*.h'
   s.osx.dependency 'FlutterMacOS'
   s.ios.dependency 'Flutter'
   s.osx.deployment_target = '10.15'

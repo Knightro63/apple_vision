@@ -2,23 +2,24 @@
 import PackageDescription
 
 let package = Package(
-    name: "apple_vision_hand_3d",
+    name: "apple_vision_hane",
     platforms: [
-        .macOS(.v11),
+        .macOS(.v12),
         .iOS(.v14)
     ],
     products: [
-        .library(name: "apple-vision-hand-3d", targets: ["apple_vision_hand_3d"]),
+        .library(name: "apple-vision-hand", targets: ["apple_vision_hand"]),
     ],
     dependencies: [
         .package(name: "FlutterFramework", path: "../FlutterFramework")
     ],
     targets: [
         .target(
-            name: "apple_vision_hand_3d",
+            name: "apple_vision_hand",
             dependencies: [
                 .product(name: "FlutterFramework", package: "FlutterFramework")
-            ]
+            ],
+            path: "Sources"
         )
     ]
 )

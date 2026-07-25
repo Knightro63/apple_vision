@@ -57,8 +57,16 @@ class InsertCamera{
   Future<void> setupCameras() async {
     print("Setting up Cameras");
     try {
-      if(await Permission.camera.request().isGranted){
-        if(Platform.isMacOS){
+      late PermissionStatus p;
+      if(!kIsWeb){
+        p = await Permission.camera.request();
+        if(p.isPermanentlyDenied){
+          openAppSettings();
+        }
+      }
+      
+      if(kIsWeb || p.isGranted){
+        if(!kIsWeb && Platform.isMacOS){
           await CameraMacOS.instance.listDevices(deviceType: CameraMacOSDeviceType.video).then((value){
             _camerasMacos = value;
             cameraSides = _camerasMacos.length;
@@ -137,9 +145,9 @@ class InsertCamera{
     isLive = true;
     if(Platform.isMacOS){
       controllerMacos?.startImageStream((p){
-        imageSize ??= imageSize = Size(p.width.toDouble(), p.height.toDouble());
+        imageSize ??= imageSize = Size(p!.width.toDouble(), p.height.toDouble());
         InputImage i = InputImage.fromBytes(
-          bytes: p.bytes,
+          bytes: p!.bytes,
           metadata: InputImageMetadata(
             size: imageSize!,
             rotation: InputImageRotation.rotation0deg,

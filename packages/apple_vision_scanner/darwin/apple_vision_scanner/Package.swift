@@ -2,23 +2,24 @@
 import PackageDescription
 
 let package = Package(
-    name: "apple_vision_image_classification",
+    name: "apple_vision_scanner",
     platforms: [
         .macOS(.v10_13),
-        .iOS(.v14)
+        .iOS(.v11)
     ],
     products: [
-        .library(name: "apple-vision-image-classification", targets: ["apple_vision_image_classification"]),
+        .library(name: "apple-vision-scanner", targets: ["apple_vision_scanner"]),
     ],
     dependencies: [
         .package(name: "FlutterFramework", path: "../FlutterFramework")
     ],
     targets: [
         .target(
-            name: "apple_vision_image_classification",
+            name: "apple_vision_scanner",
             dependencies: [
                 .product(name: "FlutterFramework", package: "FlutterFramework")
-            ]
+            ],
+            path: "Sources"
         )
     ]
 )

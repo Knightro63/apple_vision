@@ -11,25 +11,57 @@ dependencies:
   flutter:
     sdk: flutter
 
-  apple_vision_animal_pose: ^0.1.0
-  apple_vision_commons: ^0.1.0
-  apple_vision_face: ^0.1.0
-  apple_vision_face_mesh: ^0.1.0
-  apple_vision_face_detection: ^0.1.0
-  apple_vision_hand: ^0.1.0
-  apple_vision_hand_3d: ^0.1.0
-  apple_vision_image_classification: ^0.1.0
-  apple_vision_object: ^0.1.0
-  apple_vision_object_tracking: ^0.1.0
-  apple_vision_pose: ^0.1.0
-  apple_vision_pose_3d: ^0.1.0
-  apple_vision_recognize_text: ^0.1.0
-  apple_vision_scanner: ^0.1.0
-  apple_vision_selfie: ^0.1.0
-  apple_vision_saliency: ^0.1.0
-  apple_vision_lift_subjects: ^0.1.0
-  apple_vision_image_depth: ^0.1.0
+  # apple_vision_animal_pose: ^0.1.0
+  # apple_vision_commons: ^0.0.3
+  # apple_vision_face: ^0.1.0
+  # apple_vision_face_mesh: ^0.1.0
+  # apple_vision_face_detection: ^0.1.0
+  # apple_vision_hand: ^0.1.0
+  # apple_vision_hand_3d: ^0.1.0
+  # apple_vision_image_classification: ^0.1.0
+  # apple_vision_object: ^0.1.0
+  # apple_vision_object_tracking: ^0.1.0
+  # apple_vision_pose: ^0.1.0
+  # apple_vision_pose_3d: ^0.1.0
+  # apple_vision_recognize_text: ^0.1.0
+  # apple_vision_scanner: ^0.1.0
+  # apple_vision_selfie: ^0.1.0
+  # apple_vision_saliency: ^0.1.0
+  # apple_vision_lift_subjects: ^0.1.0
   
+  apple_vision_animal_pose:
+    path: ../apple_vision_animal_pose
+  apple_vision_face:
+    path: ../apple_vision_face
+  apple_vision_face_mesh:
+    path: ../apple_vision_face_mesh
+  apple_vision_face_detection:
+    path: ../apple_vision_face_detection
+  apple_vision_hand:
+    path: ../apple_vision_hand
+  apple_vision_hand_3d:
+    path: ../apple_vision_hand_3d
+  apple_vision_image_classification:
+    path: ../apple_vision_image_classification
+  apple_vision_object:
+    path: ../apple_vision_object
+  apple_vision_object_tracking:
+    path: ../apple_vision_object_tracking
+  apple_vision_pose:
+    path: ../apple_vision_pose
+  apple_vision_pose_3d:
+    path: ../apple_vision_pose_3d
+  apple_vision_recognize_text:
+    path: ../apple_vision_recognize_text
+  apple_vision_scanner:
+    path: ../apple_vision_scanner
+  apple_vision_selfie: 
+    path: ../apple_vision_selfie
+  apple_vision_saliency:
+    path: ../apple_vision_saliency
+  apple_vision_lift_subjects:
+    path: ../apple_vision_lift_subjects
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

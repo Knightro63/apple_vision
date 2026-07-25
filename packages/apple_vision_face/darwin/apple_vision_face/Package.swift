@@ -2,23 +2,24 @@
 import PackageDescription
 
 let package = Package(
-    name: "apple_vision_object",
+    name: "apple_vision_face",
     platforms: [
-        .macOS(.v10_13),
-        .iOS(.v14)
+        .macOS(.v11),
+        .iOS(.v13)
     ],
     products: [
-        .library(name: "apple-vision-object", targets: ["apple_vision_object"]),
+        .library(name: "apple-vision-face", targets: ["apple_vision_face"]),
     ],
     dependencies: [
         .package(name: "FlutterFramework", path: "../FlutterFramework")
     ],
     targets: [
         .target(
-            name: "apple_vision_object",
+            name: "apple_vision_face",
             dependencies: [
                 .product(name: "FlutterFramework", package: "FlutterFramework")
-            ]
+            ],
+            path: "Sources"
         )
     ]
 )

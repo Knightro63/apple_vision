@@ -28,10 +28,11 @@ dependency_overrides:
     git:
       url: https://github.com/riccardo-lomazzi/flutter-permission-handler.git
       path: permission_handler_apple/
-
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:
+  config:
+    enable-swift-package-manager: true
   uses-material-design: true

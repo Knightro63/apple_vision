@@ -2,23 +2,24 @@
 import PackageDescription
 
 let package = Package(
-    name: "apple_vision_face_detection",
+    name: "apple_vision_object_tracking",
     platforms: [
-        .macOS(.v10_13),
+        .macOS(.v10_14),
         .iOS(.v12)
     ],
     products: [
-        .library(name: "apple-vision-face-detection", targets: ["apple_vision_face_detection"]),
+        .library(name: "apple-vision-object-tracking", targets: ["apple_vision_object_tracking"]),
     ],
     dependencies: [
         .package(name: "FlutterFramework", path: "../FlutterFramework")
     ],
     targets: [
         .target(
-            name: "apple_vision_face_detection",
+            name: "apple_vision_object_tracking",
             dependencies: [
                 .product(name: "FlutterFramework", package: "FlutterFramework")
-            ]
+            ],
+            path: "Sources"
         )
     ]
 )

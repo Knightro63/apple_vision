@@ -12,8 +12,8 @@ Pod::Spec.new do |s|
   s.license          = { :file => '../LICENSE' }
   s.authors          = 'Multiple Authors'
   s.source           = { :path => '.' }
-  s.source_files = 'apple_vision_selfie/Sources/**/*'
-  s.public_header_files = 'apple_vision_selfie/Sources/**/*.h'
+  s.source_files = 'apple_vision_selfie/Sources/apple_vision_selfie/**/*'
+  s.public_header_files = 'apple_vision_selfie/Sources/apple_vision_selfie/**/*.h'
   s.osx.dependency 'FlutterMacOS'
   s.ios.dependency 'Flutter'
   s.osx.deployment_target = '12.0'

@@ -18,7 +18,8 @@ let package = Package(
             name: "apple_vision_saliency",
             dependencies: [
                 .product(name: "FlutterFramework", package: "FlutterFramework")
-            ]
+            ],
+            path: "Sources"
         )
     ]
 )

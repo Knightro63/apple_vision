@@ -2,23 +2,24 @@
 import PackageDescription
 
 let package = Package(
-    name: "apple_vision_lift_subjects",
+    name: "apple_vision_object",
     platforms: [
-        .macOS(.v14),
-        .iOS(.v17)
+        .macOS(.v10_14),
+        .iOS(.v14)
     ],
     products: [
-        .library(name: "apple-vision-lift-subjects", targets: ["apple_vision_lift_subjects"]),
+        .library(name: "apple-vision-object", targets: ["apple_vision_object"]),
     ],
     dependencies: [
         .package(name: "FlutterFramework", path: "../FlutterFramework")
     ],
     targets: [
         .target(
-            name: "apple_vision_lift_subjects",
+            name: "apple_vision_object",
             dependencies: [
                 .product(name: "FlutterFramework", package: "FlutterFramework")
-            ]
+            ],
+            path: "Sources"
         )
     ]
 )
